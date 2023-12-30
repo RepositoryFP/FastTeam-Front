@@ -27,7 +27,7 @@ class LoginUser {
         await prefs.setInt('user-id_divisi', data['divisi_id']);
         await prefs.setString('user-email', data['email']);
         await prefs.setString('user-nama', data['nama']);
-        await prefs.setString('user-divisi', data['divisi']);
+        // Rawait prefs.setString('user-divisi', data['divisi']);
         await prefs.setString('user-img_prof', data['img_prof']);
         await prefs.setString('user-img_url', data['img_url']);
         await prefs.setString('user-kantor', data['shift']['name']);
@@ -35,6 +35,7 @@ class LoginUser {
         await prefs.setString('user-masuk_akhir', data['clock_in']['max']);
         await prefs.setString('user-keluar_awal', data['clock_out']['min']);
         await prefs.setString('user-keluar_akhir', data['clock_out']['max']);
+        // print(data['clock_in']['min']);
         // Format clock_in_time and clock_out_time to "H:mm" format
         final clockInTime = data['shift']['clock_in_time'] != null
             ? formatTime(data['shift']['clock_in_time'])
@@ -42,7 +43,7 @@ class LoginUser {
         final clockOutTime = data['shift']['clock_out_time'] != null
             ? formatTime(data['shift']['clock_out_time'])
             : '';
-
+        // print(clockInTime);
         await prefs.setString('user-shift', '$clockInTime - $clockOutTime');
         return true;
       } else {
