@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   double lat = 0;
   double long = 0;
   String kantor = '';
-  String masukAwal = '';
+  String masukAwal = '00:00:00';
   String masukAkhir = '';
   String keluarAwal = '';
   String keluarAkhir = '';
@@ -56,18 +56,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    initializeState();
+    loadSharedPreferences();
+    getCurrentLocation();
+    loadData();
   }
-
-  Future<void> initializeState() async {
-    await loadSharedPreferences();
-    await getCurrentLocation();
-    await loadData();
-    setState(() {
-      isLoading = false;
-    });
-  }
-
 
   Future<void> getCurrentLocation() async {
     bool serviceEnabled;
@@ -109,10 +101,13 @@ class _HomePageState extends State<HomePage> {
       posLong = sharedPreferences.getDouble('user-position_long') ?? 0;
       imgProf = sharedPreferences.getString('user-img_prof') ?? '';
       kantor = sharedPreferences.getString('user-kantor') ?? '';
-      masukAwal = sharedPreferences.getString('user-masuk_awal') ?? '';
-      masukAkhir = sharedPreferences.getString('user-masuk_akhir') ?? '';
+      masukAwal = sharedPreferences.getString('user-masuk_awal') ?? '00:00:00';
+      masukAkhir = sharedPreferences.getString('user-masuk_akhir') ?? '00:00:00';
       keluarAwal = sharedPreferences.getString('user-keluar_awal') ?? '';
       keluarAkhir = sharedPreferences.getString('user-keluar_akhir') ?? '';
+
+      print("shared");
+      print(sharedPreferences.getString('user-masuk_akhir'));
     });
   }
 
@@ -220,45 +215,20 @@ class _HomePageState extends State<HomePage> {
     final indonesia = tz.getLocation("Asia/Jakarta");
     var now = tz.TZDateTime.now(indonesia);
     String currentDate = DateFormat('yyyy-MM-dd').format(now);
-    // DateTime masukAwalDateTime =
-    //     tz.TZDateTime.parse(indonesia, "$currentDate $masukAwal");
-    // DateTime masukAkhirDateTime =
-    //     tz.TZDateTime.parse(indonesia, "$currentDate $masukAkhir");
-    // DateTime keluarAwalDateTime =
-    //     tz.TZDateTime.parse(indonesia, "$currentDate $keluarAwal");
-    // DateTime keluarAkhirDateTime =
-    //     tz.TZDateTime.parse(indonesia, "$currentDate $keluarAkhir");
-    // bool canClockIn = 
-    //     now.isAfter(masukAwalDateTime) && now.isBefore(masukAkhirDateTime);
-    // bool canClockOut = 
-    //     now.isAfter(keluarAwalDateTime) && now.isBefore(keluarAkhirDateTime);
-    DateTime? masukAwalDateTime;
-    DateTime? masukAkhirDateTime;
-    DateTime? keluarAwalDateTime;
-    DateTime? keluarAkhirDateTime;
-
-    if (masukAwal.isNotEmpty) {
-      masukAwalDateTime = tz.TZDateTime.parse(indonesia, "$currentDate $masukAwal");
-    }
-
-    if (masukAkhir.isNotEmpty) {
-      masukAkhirDateTime = tz.TZDateTime.parse(indonesia, "$currentDate $masukAkhir");
-    }
-
-    if (keluarAwal.isNotEmpty) {
-      keluarAwalDateTime = tz.TZDateTime.parse(indonesia, "$currentDate $keluarAwal");
-    }
-
-    if (keluarAkhir.isNotEmpty) {
-      keluarAkhirDateTime = tz.TZDateTime.parse(indonesia, "$currentDate $keluarAkhir");
-    }
-
-    bool canClockIn = masukAwalDateTime != null && masukAkhirDateTime != null &&
-        now.isAfter(masukAwalDateTime!) && now.isBefore(masukAkhirDateTime!);
-
-    bool canClockOut = keluarAwalDateTime != null && keluarAkhirDateTime != null &&
-        now.isAfter(keluarAwalDateTime!) && now.isBefore(keluarAkhirDateTime!);
-
+    print("awal $currentDate $masukAwal");
+    print("akhir $currentDate $masukAkhir");
+    DateTime masukAwalDateTime =
+        tz.TZDateTime.parse(indonesia, "$currentDate $masukAwal");
+    DateTime masukAkhirDateTime =
+        tz.TZDateTime.parse(indonesia, "$currentDate $masukAkhir");
+    DateTime keluarAwalDateTime =
+        tz.TZDateTime.parse(indonesia, "$currentDate $keluarAwal");
+    DateTime keluarAkhirDateTime =
+        tz.TZDateTime.parse(indonesia, "$currentDate $keluarAkhir");
+    bool canClockIn =
+        now.isAfter(masukAwalDateTime) && now.isBefore(masukAkhirDateTime);
+    bool canClockOut =
+        now.isAfter(keluarAwalDateTime) && now.isBefore(keluarAkhirDateTime);
 
     return WillPopScope(
       onWillPop: () async {

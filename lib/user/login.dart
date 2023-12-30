@@ -26,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       bool isValid = await LoginUser().validateUser(username, password);
+      
       if (isValid) {
         Navigator.pushReplacementNamed(context, '/home');
       } else {
