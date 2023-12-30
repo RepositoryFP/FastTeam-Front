@@ -605,10 +605,10 @@ class _HomePageState extends State<HomePage> {
         'link': '/daftarAbsensi'
       },
       {
-        'icon': Icons.calendar_today,
-        'title': 'Attendance List',
-        'color': Colors.purple,
-        'link': '/daftarKehadiran'
+        'icon': Icons.folder,
+        'title': 'Module',
+        'color': Colors.yellow[600],
+        'link': '/modul'
       },
       {
         'icon': Icons.attach_money,
@@ -618,7 +618,7 @@ class _HomePageState extends State<HomePage> {
       },
       {
         'icon': Icons.history,
-        'title': 'Job History',
+        'title': 'Milestone',
         'color': Colors.amber,
         'link': '/history'
       },

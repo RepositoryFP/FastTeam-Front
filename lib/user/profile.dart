@@ -117,6 +117,25 @@ class ProfileBody extends StatelessWidget {
               Divider(),
               ListTile(
                 leading: Icon(
+                  Icons.badge,
+                  color: Colors.cyan,
+                ),
+                title: Text(
+                  'Sertificate',
+                  style: TextStyle(color: Colors.cyan),
+                ),
+                trailing: Icon(
+                  Icons.keyboard_arrow_right,
+                  color: Colors.blue,
+                ),
+                tileColor: Colors.transparent,
+                onTap: () {
+                  // Navigasi ke halaman Personal Info
+                },
+              ),
+              Divider(),
+              ListTile(
+                leading: Icon(
                   Icons.monetization_on,
                   color: Colors.green,
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:Fast_Team/utils/bottom_navigation_bar.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -9,13 +10,13 @@ void main() {
 class History extends StatelessWidget {
   final List<Milestone> milestones = [
     Milestone(
-        label: 'Milestone 1', date: 'Jan 2023', description: 'Description 1'),
+        label: 'TTD Kontrak', date: 'Jan 2023', description: 'Kontrak Training'),
     Milestone(
-        label: 'Milestone 2', date: 'Mar 2023', description: 'Description 2'),
+        label: 'TTD Kontrak', date: 'Mar 2023', description: 'Kontrak Junior'),
     Milestone(
-        label: 'Milestone 3', date: 'May 2023', description: 'Description 3'),
+        label: 'Kenaikan Gaji', date: 'May 2023', description: 'Dari 2.000.000 menjadi 10.000.000'),
     Milestone(
-        label: 'Milestone 4', date: 'Aug 2023', description: 'Description 4'),
+        label: 'Punishment', date: 'Aug 2023', description: 'SP 1'),
   ];
 
   @override
@@ -25,6 +26,20 @@ class History extends StatelessWidget {
         title: Text('Milestone History'),
       ),
       body: TimelineView(milestones: milestones),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: 1,
+        onTabTapped: (index) {
+          if (index == 0) {
+            Navigator.of(context).pushNamed('/home');
+          } else if (index == 4) {
+            Navigator.of(context).pushNamed('/profile');
+          } else if (index == 2) {
+            Navigator.of(context).pushNamed('/request');
+          } else if (index == 3) {
+            Navigator.of(context).pushNamed('/inbox');
+          }
+        },
+      ),
     );
   }
 }

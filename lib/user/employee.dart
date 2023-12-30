@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http; // Import paket http
+import 'dart:convert'; // Import library untuk manipulasi JSON
 import 'package:Fast_Team/utils/bottom_navigation_bar.dart';
 
 class EmployeePage extends StatefulWidget {
@@ -7,32 +9,33 @@ class EmployeePage extends StatefulWidget {
 }
 
 class _EmployeePageState extends State<EmployeePage> {
-  final List<Map<String, dynamic>> employees = [
-    {
-      'name': 'John Doe',
-      'email': 'john.doe@example.com',
-      'phone': '+1 123-456-7890',
-      'whatsapp': '+1 123-456-7890',
-      'avatar':
-          'https://media.istockphoto.com/id/1296058958/vector/happy-young-woman-watching-into-rounded-frame-isolated-on-white-3d-vector-illustration.jpg?s=612x612&w=0&k=20&c=x9lmmoKVqxRro-G3S48IWIKQiykb2Yv1CkuiizDJ6gw=',
-    },
-    {
-      'name': 'Jane Smith',
-      'email': 'jane.smith@example.com',
-      'phone': '+1 987-654-3210',
-      'whatsapp': '+1 987-654-3210',
-      'avatar':
-          'https://media.istockphoto.com/id/1296058958/vector/happy-young-woman-watching-into-rounded-frame-isolated-on-white-3d-vector-illustration.jpg?s=612x612&w=0&k=20&c=x9lmmoKVqxRro-G3S48IWIKQiykb2Yv1CkuiizDJ6gw=',
-    },
-    // Add more employees here
-  ];
-
+  List<Map<String, dynamic>> employees = [];
   List<Map<String, dynamic>> filteredEmployees = [];
 
   @override
   void initState() {
     super.initState();
-    filteredEmployees.addAll(employees);
+    fetchData(); // Memanggil fungsi untuk mengambil data saat inisialisasi
+  }
+
+  Future<void> fetchData() async {
+    final response = await http.get(Uri.parse('http://103.29.214.154:9002/api_absensi/user-absen/'));
+
+    if (response.statusCode == 200) {
+      // Jika request berhasil, parsing data JSON
+      Map<String, dynamic> data = json.decode(response.body);
+      
+      // Sesuaikan dengan struktur respons API
+      List<dynamic> employeesData = data['data'];
+
+      setState(() {
+        employees = List<Map<String, dynamic>>.from(employeesData);
+        filteredEmployees.addAll(employees);
+      });
+    } else {
+      // Jika request gagal, tampilkan pesan kesalahan
+      print('Failed to load data. Error: ${response.statusCode}');
+    }
   }
 
   void filterEmployees(String query) {
@@ -81,19 +84,19 @@ class _EmployeePageState extends State<EmployeePage> {
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       leading: CircleAvatar(
-                        backgroundImage: NetworkImage(employee['avatar']),
+                        backgroundImage: NetworkImage(employee['image']),
                       ),
                       title: Text(
-                        employee['name'],
+                        employee['nama'],
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16, // Mengubah ukuran font
+                          fontSize: 16,
                         ),
                       ),
-                      subtitle: Text(
-                        employee['email'],
-                        style: TextStyle(fontSize: 14), // Mengubah ukuran font
-                      ),
+                      // subtitle: Text(
+                      //   employee['email'],
+                      //   style: TextStyle(fontSize: 14),
+                      // ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -117,8 +120,8 @@ class _EmployeePageState extends State<EmployeePage> {
                             padding: EdgeInsets.all(5),
                             child: Image.asset(
                               'assets/img/whatsapp.png',
-                              width: 20, // Mengubah ukuran ikon WhatsApp
-                              height: 20, // Mengubah ukuran ikon WhatsApp
+                              width: 20,
+                              height: 20,
                               color: Colors.green,
                             ),
                           ),
@@ -126,8 +129,8 @@ class _EmployeePageState extends State<EmployeePage> {
                       ),
                     ),
                     Divider(
-                      thickness: 1, // Mengubah ketebalan garis pembatas
-                      color: Colors.grey, // Mengubah warna garis pembatas
+                      thickness: 1,
+                      color: Colors.grey,
                     ),
                   ],
                 );
