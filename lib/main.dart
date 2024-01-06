@@ -16,6 +16,7 @@ import 'package:Fast_Team/user/history.dart';
 import 'package:Fast_Team/user/employee.dart';
 import 'package:Fast_Team/user/inbox.dart';
 import 'package:Fast_Team/user/approval.dart';
+import 'package:Fast_Team/user/sertificate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 
@@ -72,6 +73,7 @@ class MyApp extends StatelessWidget {
         '/employee': (context) => EmployeePage(),
         '/inbox': (context) => InboxPage(),
         '/approval': (context) => ApprovalPage(),
+        '/sertificate': (context) => SertificatePage(),
       },
     );
   }

@@ -129,8 +129,12 @@ class ProfileBody extends StatelessWidget {
                   color: Colors.blue,
                 ),
                 tileColor: Colors.transparent,
-                onTap: () {
-                  // Navigasi ke halaman Personal Info
+                onTap: () async {
+                  SharedPreferences sharedPreferences =
+                      await SharedPreferences.getInstance();
+                  sharedPreferences.clear();
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/sertificate', (Route<dynamic> route) => false);
                 },
               ),
               Divider(),
