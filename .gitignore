@@ -21,6 +21,17 @@ migrate_working_dir/
 # is commented out by default.
 #.vscode/
 
+# Ignore platform-specific directories
+/android/
+/ios/
+/linux/
+/windows/
+/macos/
+/web/
+
+# Ignore test directory
+/test/
+
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
