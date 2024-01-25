@@ -15,6 +15,12 @@ class LoginController extends GetxController {
     return ResponseHelper().jsonResponse(result);
   }
   
+  requestResetPassword(email) async {
+    var result = await loginNetUtils.requestResetPassword(email);
+
+    return ResponseHelper().jsonResponse(result);
+  }
+
   retrieveEmployeeInfo(userId) async {
     var result = await employeeNetUtils.retrieveEmployeeInfo(userId);
 
