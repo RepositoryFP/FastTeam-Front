@@ -25,16 +25,20 @@ void main() async {
       .ensureInitialized(); // Pastikan Flutter sudah terinisialisasi
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   String avatarImageUrl = sharedPreferences.getString('user-img_url') ?? '';
-  runApp(MyApp(avatarImageUrl: avatarImageUrl));
+  int userId = sharedPreferences.getInt('user-id_user') ?? 0;
+  print(userId);
+  bool loggedIn = userId > 0;
+  runApp(MyApp(avatarImageUrl: avatarImageUrl, loggedIn: loggedIn));
 }
 
 class MyApp extends StatelessWidget {
   final String avatarImageUrl;
+  final bool loggedIn;
 
   static const Color navyBlue =
       Color.fromARGB(255, 2, 65, 128); // Nilai warna biru navy
 
-  MyApp({required this.avatarImageUrl});
+  MyApp({required this.avatarImageUrl, required this.loggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +62,7 @@ class MyApp extends StatelessWidget {
                   height: 1000, width: 1000),
               splashTransition: SplashTransition.fadeTransition,
               duration: 3000,
-              nextScreen: LoginPage(),
+              nextScreen: loggedIn ? HomePage() : LoginPage(),
             ),
         '/home': (context) => HomePage(),
         '/map': (context) => MapPage(),
