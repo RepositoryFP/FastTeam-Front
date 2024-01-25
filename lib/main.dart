@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:Fast_Team/user/login.dart';
+// import 'package:Fast_Team/user/login.dart';
 import 'package:Fast_Team/user/home.dart';
 import 'package:Fast_Team/user/map.dart';
 import 'package:Fast_Team/user/kamera.dart';
@@ -10,6 +10,7 @@ import 'package:Fast_Team/user/daftarKehadiran.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:Fast_Team/utils/bottom_navigation_bar.dart';
+import 'package:Fast_Team/view/auth/login_page.dart';
 import 'package:Fast_Team/user/profile.dart';
 import 'package:Fast_Team/user/request.dart';
 import 'package:Fast_Team/user/history.dart';
