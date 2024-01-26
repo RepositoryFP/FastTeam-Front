@@ -3,6 +3,7 @@ import 'package:Fast_Team/view/absen/daftarAbsensi.dart';
 import 'package:Fast_Team/view/absen/daftarKehadiran.dart';
 import 'package:Fast_Team/view/absen/detailAbsensi.dart';
 import 'package:Fast_Team/view/absen/kamera.dart';
+import 'package:Fast_Team/view/request/schedule_request_page.dart';
 import 'package:Fast_Team/view/account/profile.dart';
 import 'package:Fast_Team/view/approval.dart';
 import 'package:Fast_Team/view/auth/login_page.dart';
@@ -86,7 +87,7 @@ class _MyAppState extends State<MyApp> {
               '/detailAbsensi': (context) => DetailAbsensiPage(),
               '/daftarAbsensi': (context) => DaftarAbsensiPage(),
               '/profile': (context) => ProfilePage(),
-              '/request': (context) => RequestPage(),
+              '/request': (context) => ScheduleRequestPage(),
               '/daftarKehadiran': (context) => DaftarKehadiranPage(),
               '/history': (context) => History(),
               '/employee': (context) => EmployeePage(),
