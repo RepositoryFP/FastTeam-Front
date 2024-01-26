@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
 class LocalSession {
-
   static var idUser = 0.obs;
   static var idDivisi = 0.obs;
   static var email = "".obs;
@@ -19,7 +18,6 @@ class LocalSession {
   static var keluarAwal = "".obs;
   static var keluarAkhir = "".obs;
   static var statusLogin = "".obs;
-
 
   storeUserInfo(jsonData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -44,7 +42,6 @@ class LocalSession {
         ? TimeHelper().formatTime(jsonData['shift']['clock_out_time'])
         : '';
 
-
     await prefs.setString('user-shift', '$clockInTime - $clockOutTime');
   }
 
@@ -64,44 +61,33 @@ class LocalSession {
     keluarAwal.value = prefs.getString('user-keluar_awal')!;
     keluarAkhir.value = prefs.getString('user-keluar_akhir')!;
 
-        
-    await prefs.setString('user-shift', '$clockInTime - $clockOutTime');
-
-
-
-  storeEmployeeInfo(jsonData) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString(
-        'emp-full_name', "${jsonData['nama_awal']} ${jsonData['nama_akhir']}");
-    await prefs.setString('emp-date_birth', jsonData['tanggal_lahir']);
-    await prefs.setString('emp-email', jsonData['email']);
-    await prefs.setInt('emp-nomor_ktp', jsonData['nomor_ktp']);
   }
 
-  storeCoordinateUser(lat, long) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('user-position_lat', lat);
-    await prefs.setDouble('user-position_long', long);
-  }
+    storeEmployeeInfo(jsonData) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  retrieveIsLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    if (prefs.getInt('user-id_user') != 0 ||
-        prefs.getInt('user-id_user') != null) {
-      statusLogin.value = "true";
-    } else {
-      statusLogin.value = "false";
+      await prefs.setString('emp-full_name',
+          "${jsonData['nama_awal']} ${jsonData['nama_akhir']}");
+      await prefs.setString('emp-date_birth', jsonData['tanggal_lahir']);
+      await prefs.setString('emp-email', jsonData['email']);
+      await prefs.setInt('emp-nomor_ktp', jsonData['nomor_ktp']);
     }
+
+    storeCoordinateUser(lat, long) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setDouble('user-position_lat', lat);
+      await prefs.setDouble('user-position_long', long);
+    }
+
+    retrieveIsLogin() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      if (prefs.getInt('user-id_user') != 0 ||
+          prefs.getInt('user-id_user') != null) {
+        statusLogin.value = "true";
+      } else {
+        statusLogin.value = "false";
+      }
+    }
+  
   }
-}
-
-    await prefs.setString('emp-full_name', "${jsonData['nama_awal']} ${jsonData['nama_akhir']}");
-    await prefs.setString('emp-date_birth', jsonData['tanggal_lahir']);
-    await prefs.setString('emp-email', jsonData['email']);
-    await prefs.setInt('emp-nomor_ktp', jsonData['nomor_ktp']);
-  } 
-
-}
-

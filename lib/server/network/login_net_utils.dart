@@ -35,3 +35,4 @@ class LoginNetUtils {
 
     return response;
   }
+}
