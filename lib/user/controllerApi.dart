@@ -22,6 +22,7 @@ class LoginUser {
       final dataBody = json.decode(response.body);
       if (dataBody['status'] == 'success') {
         final data = dataBody['data'];
+        print(data);
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt('user-id_user', data['id_user']);
         await prefs.setInt('user-id_divisi', data['divisi_id']);

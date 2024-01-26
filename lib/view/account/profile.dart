@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Fast_Team/utils/bottom_navigation_bar.dart';
 
+import 'package:Fast_Team/user/login.dart';
+
 import 'package:Fast_Team/main.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -169,6 +171,7 @@ class ProfileBody extends StatelessWidget {
                   await sharedPreferences.clear();
                   // Navigator.of(context).pushNamedAndRemoveUntil(
                   //     '/', (Route<dynamic> route) => false);
+
                   // Navigator.of(context).pushReplacement(
                   //   MaterialPageRoute(
                   //     builder: (BuildContext context) {
@@ -179,6 +182,18 @@ class ProfileBody extends StatelessWidget {
                   //     },
                   //   ),
                   // );
+
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) {
+                        return MyApp(
+                            avatarImageUrl: '',
+                            loggedIn:
+                                false); // Replace with the actual constructor of your main page
+                      },
+                    ),
+                  );
+
                 },
               ),
             ],

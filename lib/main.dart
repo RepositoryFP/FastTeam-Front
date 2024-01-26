@@ -12,10 +12,30 @@ import 'package:Fast_Team/view/navigator_bottom_menu.dart';
 import 'package:Fast_Team/view/sertificate.dart';
 import 'package:Fast_Team/view/splash_screen_page.dart';
 import 'package:flutter/material.dart';
+
+// import 'package:Fast_Team/user/login.dart';
+import 'package:Fast_Team/user/home.dart';
+import 'package:Fast_Team/user/map.dart';
+import 'package:Fast_Team/user/kamera.dart';
+import 'package:Fast_Team/user/absensi.dart';
+import 'package:Fast_Team/user/detailAbsensi.dart';
+import 'package:Fast_Team/user/daftarAbsensi.dart';
+import 'package:Fast_Team/user/daftarKehadiran.dart';
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:Fast_Team/utils/bottom_navigation_bar.dart';
+
+import 'package:Fast_Team/view/auth/login_page.dart';
+import 'package:Fast_Team/user/profile.dart';
+import 'package:Fast_Team/user/request.dart';
+import 'package:Fast_Team/user/history.dart';
+import 'package:Fast_Team/user/employee.dart';
+import 'package:Fast_Team/user/inbox.dart';
+import 'package:Fast_Team/user/approval.dart';
+import 'package:Fast_Team/user/sertificate.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 

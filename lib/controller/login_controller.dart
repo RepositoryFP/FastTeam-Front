@@ -9,10 +9,19 @@ class LoginController extends GetxController {
   EmployeeNetUtils employeeNetUtils = Get.put(EmployeeNetUtils());
   LocalSession localSession = Get.put(LocalSession());
 
+
   static var isLogin = "".obs;
+
 
   requestLoginUser(email, password) async {
     var result = await loginNetUtils.requestLoginUser(email, password);
+
+    return ResponseHelper().jsonResponse(result);
+  }
+
+  
+  requestResetPassword(email) async {
+    var result = await loginNetUtils.requestResetPassword(email);
 
     return ResponseHelper().jsonResponse(result);
   }
@@ -31,9 +40,11 @@ class LoginController extends GetxController {
     await localSession.storeEmployeeInfo(jsonData);
   }
 
+
   retrieveUserIsLogin() async {
     await localSession.retrieveIsLogin();
 
     isLogin.value = LocalSession.statusLogin.value;
   }
 }
+
