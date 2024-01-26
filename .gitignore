@@ -20,7 +20,7 @@ migrate_working_dir/
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
 #.vscode/
-# ignore platform-specific directories
+# Ignore platform-specific directories
 /android/
 /ios/
 /linux/
@@ -28,8 +28,9 @@ migrate_working_dir/
 /macos/
 /web/
 
-#ignore test directory
+# Ignore test directory
 /test/
+
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id

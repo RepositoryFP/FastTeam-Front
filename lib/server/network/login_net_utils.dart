@@ -20,6 +20,7 @@ class LoginNetUtils {
     return response;
   }
 
+
   requestResetPassword(email) async {
     Map<String, dynamic> bodyParams = {
       'email': email,
@@ -34,4 +35,3 @@ class LoginNetUtils {
 
     return response;
   }
-}

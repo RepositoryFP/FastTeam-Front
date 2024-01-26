@@ -21,11 +21,13 @@ class ResponseHelper {
         "status": 200,
         "details": jsonDecode(result.body),
       };
+
     } else if (result.statusCode == 400) {
       out = {
         "status": 400,
         "details": jsonDecode(result.body),
       };
+
     } else if (result.statusCode == 401) {
       out = {
         "status": 401,
