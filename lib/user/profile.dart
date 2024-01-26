@@ -197,13 +197,13 @@ class ProfileBody extends StatelessWidget {
                   await sharedPreferences.clear();
                   // Navigator.of(context).pushNamedAndRemoveUntil(
                   //     '/', (Route<dynamic> route) => false);
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) {
-                        return MyApp(avatarImageUrl: '', loggedIn: false); // Replace with the actual constructor of your main page
-                      },
-                    ),
-                  );
+                  // Navigator.of(context).pushReplacement(
+                  //   MaterialPageRoute(
+                  //     builder: (BuildContext context) {
+                  //       return MyApp(avatarImageUrl: '', loggedIn: false); // Replace with the actual constructor of your main page
+                  //     },
+                  //   ),
+                  // );
                 },
               ),
             ],

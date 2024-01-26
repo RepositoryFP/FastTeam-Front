@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:Fast_Team/user/controllerApi.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -102,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                           opacity: 0.5,
                           child: Image.asset(
                             'assets/img/logo.png',
-                            width: 50.0,
+                            width: 50.w,
                             height: 50.0,
                           ),
                         ),
