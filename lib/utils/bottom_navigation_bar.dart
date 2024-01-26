@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:Fast_Team/user/home.dart';
-import 'package:Fast_Team/user/profile.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;

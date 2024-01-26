@@ -52,9 +52,9 @@ class _NavigatorBottomMenuState extends State<NavigatorBottomMenu> {
               ? HomePage()
               : (selectedIndex.value == 1)
                   ? EmployeePage()
-                  : (selectedIndex.value == 2)
+                  : (selectedIndex.value == 3)
                       ? InboxPage()
-                      : (selectedIndex.value == 3)
+                      : (selectedIndex.value == 2)
                           ? RequestPage()
                           : ProfilePage(),
           onWillPop: onBackPressed,

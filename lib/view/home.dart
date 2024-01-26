@@ -1,6 +1,15 @@
 import 'dart:async';
+import 'package:Fast_Team/controller/home_controller.dart';
+import 'package:Fast_Team/server/local/local_session.dart';
 import 'package:Fast_Team/style/color_theme.dart';
+import 'package:Fast_Team/style/style.dart';
+import 'package:Fast_Team/widget/header_background_home.dart';
+import 'package:Fast_Team/widget/refresh_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,23 +28,50 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late SharedPreferences sharedPreferences;
-  int idUser = 0;
-  String email = '';
-  int idDivisi = 0;
-  String nama = '';
-  String divisi = '';
-  double posLong = 0;
-  double posLat = 0;
-  String imgProf = '';
-  double lat = 0;
-  double long = 0;
-  String kantor = '';
-  String masukAwal = '';
-  String masukAkhir = '';
-  String keluarAwal = '';
-  String keluarAkhir = '';
+  // Future? _loadData;
 
+  late SharedPreferences sharedPreferences;
+  var idUser;
+  var email;
+  var idDivisi;
+  var nama;
+  var divisi;
+  var posLong;
+  var posLat;
+  var imgProf;
+  var lat;
+  var long;
+  var kantor;
+  var masukAwal;
+  var masukAkhir;
+  var keluarAwal;
+  var keluarAkhir;
+  var avatarImageUrl;
+
+  TextStyle alertErrorTextStyle = TextStyle(
+    fontFamily: 'Poppins',
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w400,
+    color: ColorsTheme.white,
+  );
+  TextStyle headerStyle(isSubHeader) => TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: (isSubHeader) ? 12.sp : 15.sp,
+        fontWeight: (isSubHeader) ? FontWeight.w500 : FontWeight.w700,
+        color: ColorsTheme.white,
+      );
+  TextStyle employeeStyle(isSubHeader) => TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: (isSubHeader) ? 10.sp : 12.sp,
+        fontWeight: (isSubHeader) ? FontWeight.w500 : FontWeight.w700,
+        color: ColorsTheme.black,
+      );
+  TextStyle contentStyle2 = TextStyle(
+    fontFamily: 'Poppins',
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w500,
+    color: ColorsTheme.black,
+  );
   int _currentIndex = 0;
   bool isLoading = true;
 
@@ -43,20 +79,64 @@ class _HomePageState extends State<HomePage> {
   String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
   List<Map<String, dynamic>> divisiList = [];
 
+  HomeController? homeController;
+
   @override
   void initState() {
     super.initState();
+    initConstructor();
     initializeState();
+  }
+
+  initConstructor() {
+    homeController = Get.put(HomeController());
+
+    idUser = 0.obs;
+    email = ''.obs;
+    idDivisi = 0.obs;
+    nama = ''.obs;
+    divisi = ''.obs;
+    posLong = 0.obs;
+    posLat = 0.obs;
+    imgProf = ''.obs;
+    lat = 0.0.obs;
+    long = 0.0.obs;
+    kantor = ''.obs;
+    masukAwal = ''.obs;
+    masukAkhir = ''.obs;
+    keluarAwal = ''.obs;
+    keluarAkhir = ''.obs;
+    avatarImageUrl = ''.obs;
+  }
+
+  Future<void> initData() async {
+    LocalSession localSession = Get.put(LocalSession());
+    idUser = LocalSession.idUser.value;
+    nama = LocalSession.nama.value;
+    imgProf = LocalSession.imgProf.value;
+    avatarImageUrl =
+        "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+    // _loadData = dataRequest();
   }
 
   Future<void> initializeState() async {
     await loadSharedPreferences();
     await getCurrentLocation();
     await loadData();
+    await initData();
+
     setState(() {
       isLoading = false;
     });
   }
+
+  // Future<void> dataRequest() async {
+  //   await retrieveEmployee();
+  // }
+
+  // retrieveEmployee() async {
+  //   var result = await homeController!.retriveListEmployee();
+  // }
 
   Future<void> getCurrentLocation() async {
     bool serviceEnabled;
@@ -84,24 +164,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> loadSharedPreferences() async {
-    sharedPreferences = await SharedPreferences.getInstance();
-    setState(() {
-      sharedPreferences.setDouble('user-position_lat', lat);
-      sharedPreferences.setDouble('user-position_long', long);
+    await homeController!.storeCoordinateUser(lat.value, long.value);
+  }
 
-      idUser = sharedPreferences.getInt('user-id_user') ?? 0;
-      idDivisi = sharedPreferences.getInt('user-id_divisi') ?? 0;
-      email = sharedPreferences.getString('user-email') ?? '';
-      nama = sharedPreferences.getString('user-nama') ?? '';
-      divisi = sharedPreferences.getString('user-divisi') ?? '';
-      posLat = sharedPreferences.getDouble('user-position_lat') ?? 0;
-      posLong = sharedPreferences.getDouble('user-position_long') ?? 0;
-      imgProf = sharedPreferences.getString('user-img_prof') ?? '';
-      kantor = sharedPreferences.getString('user-kantor') ?? '';
-      masukAwal = sharedPreferences.getString('user-masuk_awal') ?? '';
-      masukAkhir = sharedPreferences.getString('user-masuk_akhir') ?? '';
-      keluarAwal = sharedPreferences.getString('user-keluar_awal') ?? '';
-      keluarAkhir = sharedPreferences.getString('user-keluar_akhir') ?? '';
+  Future refreshItem() async {
+    List<Map<String, dynamic>> divisiData = await listDivisi();
+    setState(() {
+      divisiList = divisiData;
     });
   }
 
@@ -226,191 +295,417 @@ class _HomePageState extends State<HomePage> {
     DateTime? keluarAwalDateTime;
     DateTime? keluarAkhirDateTime;
 
-    if (masukAwal.isNotEmpty) {
-      masukAwalDateTime =
-          tz.TZDateTime.parse(indonesia, "$currentDate $masukAwal");
-    }
+    // if (masukAwal.isNotEmpty) {
+    //   masukAwalDateTime =
+    //       tz.TZDateTime.parse(indonesia, "$currentDate $masukAwal");
+    // }
 
-    if (masukAkhir.isNotEmpty) {
-      masukAkhirDateTime =
-          tz.TZDateTime.parse(indonesia, "$currentDate $masukAkhir");
-    }
+    // if (masukAkhir.isNotEmpty) {
+    //   masukAkhirDateTime =
+    //       tz.TZDateTime.parse(indonesia, "$currentDate $masukAkhir");
+    // }
 
-    if (keluarAwal.isNotEmpty) {
-      keluarAwalDateTime =
-          tz.TZDateTime.parse(indonesia, "$currentDate $keluarAwal");
-    }
+    // if (keluarAwal.isNotEmpty) {
+    //   keluarAwalDateTime =
+    //       tz.TZDateTime.parse(indonesia, "$currentDate $keluarAwal");
+    // }
 
-    if (keluarAkhir.isNotEmpty) {
-      keluarAkhirDateTime =
-          tz.TZDateTime.parse(indonesia, "$currentDate $keluarAkhir");
-    }
+    // if (keluarAkhir.isNotEmpty) {
+    //   keluarAkhirDateTime =
+    //       tz.TZDateTime.parse(indonesia, "$currentDate $keluarAkhir");
+    // }
 
-    bool canClockIn = masukAwalDateTime != null &&
-        masukAkhirDateTime != null &&
-        now.isAfter(masukAwalDateTime!) &&
-        now.isBefore(masukAkhirDateTime!);
+    // bool canClockIn = masukAwalDateTime != null &&
+    //     masukAkhirDateTime != null &&
+    //     now.isAfter(masukAwalDateTime!) &&
+    //     now.isBefore(masukAkhirDateTime!);
 
-    bool canClockOut = keluarAwalDateTime != null &&
-        keluarAkhirDateTime != null &&
-        now.isAfter(keluarAwalDateTime!) &&
-        now.isBefore(keluarAkhirDateTime!);
+    // bool canClockOut = keluarAwalDateTime != null &&
+    //     keluarAkhirDateTime != null &&
+    //     now.isAfter(keluarAwalDateTime!) &&
+    //     now.isBefore(keluarAkhirDateTime!);
 
+    Widget headerBackground() => const HeaderCircle(diameter: 500);
     Widget Headers() {
-      return StickyHeader(
-        header: Container(
-          decoration: BoxDecoration(
-            color: ColorsTheme.primary,
-          ),
+      return headerBackground();
+    }
+
+    Widget CardClock() => Container(
+          margin: const EdgeInsets.only(top: 20, bottom: 20),
+          padding: const EdgeInsets.only(bottom: 20),
           width: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                RichText(
-                  text: TextSpan(
-                    text: getGreeting(),
-                    style: TextStyle(fontSize: 16.sp),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: '\n$nama\n',
-                        style: TextStyle(
-                            fontSize: 28.sp, fontWeight: FontWeight.bold),
-                      ),
-                      TextSpan(
-                        text: "\nDon't forget absent today bruh !!!\n",
-                        style: TextStyle(fontSize: 16.sp),
-                      ),
-                      TextSpan(text: '', style: TextStyle(fontSize: 16.sp)),
-                    ],
-                  ),
+          decoration: BoxDecoration(
+            color: ColorsTheme.white,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
+          child: Column(children: <Widget>[
+            Container(
+              padding: const EdgeInsets.only(bottom: 12),
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom:
+                      BorderSide(color: const Color.fromARGB(255, 2, 65, 128)),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: ColorsTheme.whiteCream,
-                    borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Text(
+                      '${kantor} ${getCurrentDay()}',
+                      style: TextStyle(color: ColorsTheme.secondary),
+                    ),
                   ),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                                color: const Color.fromARGB(255, 2, 65, 128)),
+                  Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.sticky_note_2_outlined,
+                          size: 20.sp,
+                        ),
+                        Text(
+                          ' ${DateFormat('d MMM yyyy (HH:mm)').format(now)}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.sp,
                           ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                '${kantor} ${getCurrentDay()}',
-                                style: TextStyle(color: ColorsTheme.secondary),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.sticky_note_2_outlined,
-                                    size: 20.sp,
-                                  ),
-                                  Text(
-                                    ' ${DateFormat('d MMM yyyy (HH:mm)').format(now)}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16.sp,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: true ? _clockIn : null,
+                    style: ElevatedButton.styleFrom(
+                      primary:
+                          true ? Color.fromARGB(255, 2, 65, 128) : Colors.grey,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.input,
+                          color: true
+                              ? ColorsTheme.whiteCream
+                              : ColorsTheme.lightGrey,
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            ElevatedButton(
-                              onPressed: canClockIn ? _clockIn : null,
-                              style: ElevatedButton.styleFrom(
-                                primary: canClockIn
-                                    ? Color.fromARGB(255, 2, 65, 128)
-                                    : Colors.grey,
-                              ),
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.input,
-                                    color: canClockIn
-                                        ? ColorsTheme.whiteCream
-                                        : ColorsTheme.lightGrey,
-                                  ),
-                                  Text(
-                                    ' Clock In',
-                                    style: TextStyle(
-                                        color: canClockIn
-                                            ? ColorsTheme.whiteCream
-                                            : ColorsTheme.lightGrey),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: canClockOut ? _clockOut : null,
-                              style: ElevatedButton.styleFrom(
-                                primary: canClockOut
-                                    ? Color.fromARGB(255, 2, 65, 128)
-                                    : Colors.grey,
-                              ),
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.output,
-                                    color: canClockIn
-                                        ? ColorsTheme.lightGrey
-                                        : ColorsTheme.whiteCream,
-                                  ),
-                                  Text(
-                                    ' Clock Out',
-                                    style: TextStyle(
-                                        color: canClockIn
-                                            ? ColorsTheme.lightGrey
-                                            : ColorsTheme.whiteCream),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                        Text(
+                          ' Clock In',
+                          style: TextStyle(
+                              color: true
+                                  ? ColorsTheme.whiteCream
+                                  : ColorsTheme.lightGrey),
                         ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: true ? _clockOut : null,
+                    style: ElevatedButton.styleFrom(
+                      primary:
+                          true ? Color.fromARGB(255, 2, 65, 128) : Colors.grey,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.output,
+                          color: true
+                              ? ColorsTheme.lightGrey
+                              : ColorsTheme.whiteCream,
+                        ),
+                        Text(
+                          ' Clock Out',
+                          style: TextStyle(
+                              color: true
+                                  ? ColorsTheme.lightGrey
+                                  : ColorsTheme.whiteCream),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ]),
+        );
+
+    Widget headerUsername(statusLoading) {
+      Widget loadingData(statusComponent) => Shimmer.fromColors(
+          baseColor: ColorsTheme.lightBrown!,
+          highlightColor: ColorsTheme.darkerBrown!,
+          child: Container(
+            width: (statusComponent == 1)
+                ? 100.w
+                : (statusComponent == 2)
+                    ? 70.w
+                    : (statusComponent == 3)
+                        ? 40.w
+                        : 50.w,
+            height: 15.h,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3.r),
+              color: ColorsTheme.white,
+            ),
+          ));
+
+      Widget loadingAvatar() => Shimmer.fromColors(
+            child:
+                CircleAvatar(backgroundColor: ColorsTheme.black, radius: 100.r),
+            baseColor: ColorsTheme.lightBrown!,
+            highlightColor: ColorsTheme.darkerBrown!,
+          );
+
+      return SizedBox(
+        width: ScreenUtil().screenWidth,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20.h),
+                  Text(
+                    getGreeting(),
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.bold,
+                      color: ColorsTheme.white,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  SizedBox(height: 10.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: (!statusLoading)
+                            ? [
+                                loadingData(2),
+                                SizedBox(height: 5.h),
+                                loadingData(1),
+                              ]
+                            : [
+                                Text('$nama', style: headerStyle(false)),
+                                Text('IT Programmer', style: headerStyle(true)),
+                              ],
                       ),
+                      SizedBox(
+                          width: 48.w,
+                          height: 48.h,
+                          child: (!statusLoading)
+                              ? loadingAvatar()
+                              : loadingAvatar()),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        content: Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: _buildMenuItems(),
-          ),
+                  CardClock(),
+                ]),
+          ],
         ),
       );
     }
 
+    Widget contentIcon(status) => Column(
+          children: [
+            Container(
+                width: 45.w,
+                height: 45.h,
+                decoration: BoxDecoration(
+                  color: ColorsTheme.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+                child: (status == "Attendance")
+                    ? Icon(
+                        Icons.list_alt,
+                        color: Colors.blue,
+                        size: 30, // Ukuran ikon
+                      )
+                    : (status == "Module")
+                        ? Icon(
+                            Icons.folder,
+                            color: Colors.yellow[600],
+                            size: 30, // Ukuran ikon
+                          )
+                        : (status == "Payslip")
+                            ? Icon(
+                                Icons.attach_money,
+                                color: Colors.pink,
+                                size: 30, // Ukuran ikon
+                              )
+                            : Icon(
+                                Icons.history,
+                                color: Colors.amber,
+                                size: 30, // Ukuran ikon
+                              )),
+            SizedBox(height: 5),
+            Text(
+              (status == "Attendance")
+                  ? 'Attendance\nLog'
+                  : (status == "Module")
+                      ? 'Module'
+                      : (status == "Payslip")
+                          ? 'My Payslip'
+                          : 'Milestone',
+              style: contentStyle2,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        );
+    Widget iconMenu(status, isLoading) => InkWell(
+        onTap: () => (isLoading)
+            ? {}
+            : (status == "Attendance")
+                ? Navigator.pushNamed(context, '/daftarAbsensi')
+                : ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text("Menu masih belum tersedia",
+                        style: alertErrorTextStyle),
+                    backgroundColor: ColorsTheme.lightRed,
+                    behavior: SnackBarBehavior.floating,
+                  )),
+        child: contentIcon(status));
+
+    Widget Menu() {
+      return Container(
+        padding: EdgeInsets.only(left: 8.w, top: 50.h, right: 8.w),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            iconMenu("Attendance", isLoading),
+            iconMenu("Module", isLoading),
+            iconMenu("Payslip", isLoading),
+            iconMenu("Milestone", isLoading),
+          ],
+        ),
+      );
+    }
+
+    Widget ListEmployee(datalist, loading) {
+      Widget loadingAvatar() => Shimmer.fromColors(
+            child:
+                CircleAvatar(backgroundColor: ColorsTheme.black, radius: 30.r),
+            baseColor: ColorsTheme.lightBrown!,
+            highlightColor: ColorsTheme.darkerBrown!,
+          );
+      Widget loadingData(statusComponent) => Shimmer.fromColors(
+          baseColor: ColorsTheme.lightBrown!,
+          highlightColor: ColorsTheme.darkerBrown!,
+          child: Container(
+            width: (statusComponent == 1)
+                ? 100.w
+                : (statusComponent == 2)
+                    ? 70.w
+                    : (statusComponent == 3)
+                        ? 40.w
+                        : 50.w,
+            height: 15.h,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3.r),
+              color: ColorsTheme.white,
+            ),
+          ));
+      return Container(
+          margin: EdgeInsets.only(left: 8.w, right: 8.w, bottom: 5.h),
+          // height: 100.h,
+          decoration: BoxDecoration(
+            color: ColorsTheme.white,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(children: [
+                Container(
+                  margin:
+                      EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
+                  child: CircleAvatar(
+                      child: (loading)
+                          ? loadingAvatar()
+                          : CachedNetworkImage(
+                              imageUrl: datalist['image'],
+                              imageBuilder: (context, imageProvider) =>
+                                  ClipRRect(
+                                borderRadius: BorderRadius.circular(30.r),
+                                child: CircleAvatar(
+                                  radius: 30.r,
+                                  backgroundImage: imageProvider,
+                                ),
+                              ),
+                            ),
+                      radius: 20.r),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: (loading)
+                      ? [
+                          loadingData(1),
+                          SizedBox(
+                            height: 5.h,
+                          ),
+                          loadingData(2)
+                        ]
+                      : [
+                          Container(
+                            width: 150.w,
+                            child: Text(
+                              datalist['nama'],
+                              style: employeeStyle(false),
+                            ),
+                          ),
+                          Text(datalist['divisi'], style: employeeStyle(true)),
+                        ],
+                ),
+              ]),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 10.w),
+                child: Row(
+                  children: [
+                    Icon(Icons.input, color: ColorsTheme.lightGrey),
+                    SizedBox(width: 8),
+                    Icon(Icons.output, color: ColorsTheme.lightGrey),
+                  ],
+                ),
+              ),
+            ],
+          ));
+    }
+
     Widget ListAbsens() {
       return Container(
+        margin: EdgeInsets.symmetric(horizontal: 10.w),
         padding: EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           children: <Widget>[
@@ -444,10 +739,10 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: _reloadData,
-                    child: Icon(Icons.refresh),
-                  ),
+                  // ElevatedButton(
+                  //   onPressed: _reloadData,
+                  //   child: Icon(Icons.refresh),
+                  // ),
                 ],
               ),
             ),
@@ -491,97 +786,86 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+            SizedBox(height: 20.h),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: _fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
+                  return Column(
+                    children: [
+                      ListEmployee(1, true),
+                      ListEmployee(1, true),
+                    ],
+                  );
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else if (snapshot.hasData) {
                   List<Map<String, dynamic>> data = snapshot.data!;
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        columnSpacing: 20,
-                        headingRowHeight: 40,
-                        dataRowHeight: 100,
-                        columns: [
-                          DataColumn(
-                            label:
-                                Text('Photo', style: TextStyle(fontSize: 20)),
-                          ),
-                          DataColumn(
-                            label: Text('Name', style: TextStyle(fontSize: 20)),
-                          ),
-                          DataColumn(
-                            label: Text('Division',
-                                style: TextStyle(fontSize: 20)),
-                          ),
-                          DataColumn(
-                            label:
-                                Text('Status', style: TextStyle(fontSize: 20)),
-                          ),
-                        ],
-                        rows: data.map((rowData) {
-                          String imageUrl = rowData['image'] != ''
-                              ? rowData['image']
-                              : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEPPiaQhO0spbCu9tuFuG3QsKNOjMuplRr2A&usqp=CAU';
-                          Color clockInColor = rowData['clock_in'] > 0
-                              ? Color.fromARGB(255, 2, 65, 128)
-                              : Colors.grey;
-                          Color clockOutColor = rowData['clock_out'] > 0
-                              ? Color.fromARGB(255, 2, 65, 128)
-                              : Colors.grey;
-                          return DataRow(
-                            cells: [
-                              DataCell(
-                                Image.network(
-                                  imageUrl,
-                                  width: 50,
-                                  height: 50,
-                                ),
-                              ),
-                              DataCell(
-                                Container(
-                                  width:
-                                      100, // Sesuaikan lebar kolom "Nama" sesuai dengan kebutuhan Anda
-                                  child: Text(
-                                    '${rowData['nama']}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Text('${rowData['divisi']}'),
-                              ),
-                              DataCell(
-                                Row(
-                                  children: [
-                                    Icon(Icons.input, color: clockInColor),
-                                    SizedBox(width: 8),
-                                    Icon(Icons.output, color: clockOutColor),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  );
+                  return ListView.builder(
+                      itemCount: data.length,
+                      shrinkWrap: true,
+                      physics: const ClampingScrollPhysics(),
+                      itemBuilder: (context, index) =>
+                          ListEmployee(data[index], false));
+                  // return ListEmployee(data);
                 } else {
                   return Text('No data available');
                 }
               },
-            )
+            ),
           ],
         ),
       );
+    }
+
+    Widget contentLoadedData(statusLoading) => SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Headers(),
+                  Positioned(
+                    child: Column(
+                      children: [
+                        headerUsername(statusLoading),
+                        SizedBox(height: 16.h),
+                      ],
+                    ),
+                    top: 2.h,
+                    left: 20.w,
+                    right: 20.w,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+
+    Widget body() {
+      return FutureBuilder(
+          future: _fetchData(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return contentLoadedData(false);
+            } else if (snapshot.hasError) {
+              SchedulerBinding.instance!.addPostFrameCallback((_) {
+                var snackbar = SnackBar(
+                  content: Text('Error: ${snapshot.error}',
+                      style: alertErrorTextStyle),
+                  backgroundColor: ColorsTheme.lightRed,
+                  behavior: SnackBarBehavior.floating,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackbar);
+              });
+              return contentLoadedData(false);
+            } else if (snapshot.hasData) {
+              return contentLoadedData(true);
+            } else {
+              return contentLoadedData(true);
+            }
+          });
     }
 
     return WillPopScope(
@@ -589,107 +873,58 @@ class _HomePageState extends State<HomePage> {
         return Future.value(false);
       },
       child: Scaffold(
-        appBar: null,
-        body: ListView(
-          scrollDirection: Axis.vertical,
-          children: <Widget>[
-            // Wrap the sticky part with StickyHeader widget
-            Headers(),
-            ListAbsens(),
-          ],
-        ),
-        // bottomNavigationBar: BottomNavBar(
-        //   currentIndex: _currentIndex,
-        //   onTabTapped: (index) {
-        //     if (index == 4) {
-        //       Navigator.of(context).pushNamed('/profile');
-        //     } else if (index == 2) {
-        //       Navigator.of(context).pushNamed('/request');
-        //     } else if (index == 3) {
-        //       Navigator.of(context).pushNamed('/inbox');
-        //     } else if (index == 1) {
-        //       Navigator.of(context).pushNamed('/employee');
-        //     }
-        //   },
-        // ),
-      ),
+          appBar: null,
+          // floatingActionButton: FloatingActionButton(
+          //   backgroundColor: ColorsTheme.whiteCream,
+          //   onPressed: () {
+          //     showFilterDropdown(context);
+          //   },
+          //   child: Icon(Icons.filter_list),
+          // ),
+          body: RefreshWidget(
+            onRefresh: refreshItem,
+            child: ListView(
+              scrollDirection: Axis.vertical,
+              children: <Widget>[
+                // Wrap the sticky part with StickyHeader widget
+                body(),
+                Menu(),
+                ListAbsens(),
+              ],
+            ),
+          )),
     );
   }
 
-  List<Widget> _buildMenuItems() {
-    List<Map<String, dynamic>> menuItems = [
-      {
-        'icon': Icons.list_alt,
-        'title': 'Attendance Log',
-        'color': Colors.blue,
-        'link': '/daftarAbsensi'
-      },
-      {
-        'icon': Icons.folder,
-        'title': 'Module',
-        'color': Colors.yellow[600],
-        'link': '/modul'
-      },
-      {
-        'icon': Icons.attach_money,
-        'title': 'My Payslip',
-        'color': Colors.pink,
-        'link': ''
-      },
-      {
-        'icon': Icons.history,
-        'title': 'Milestone',
-        'color': Colors.amber,
-        'link': '/history'
-      },
-    ];
-
-    return [
-      GridView.builder(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          mainAxisSpacing: 0,
-          crossAxisSpacing: 0,
+  void showFilterDropdown(BuildContext context) async {
+    final result = await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(0, 0, 0, 0),
+      items: [
+        PopupMenuItem<String>(
+          value: 'All',
+          child: Text('All', style: TextStyle(fontSize: 16)),
         ),
-        itemCount: menuItems.length,
-        itemBuilder: (BuildContext context, int index) {
-          return InkWell(
-            onTap: () {
-              String link = menuItems[index]['link'];
-              if (link.isNotEmpty) {
-                Navigator.pushNamed(context, link);
-              }
-            },
-            child: Container(
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                color: Colors.grey[300], // Warna abu-abu latar belakang
-                borderRadius: BorderRadius.circular(10), // Sudut melengkung
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    menuItems[index]['icon'],
-                    color: menuItems[index]['color'],
-                    size: 24, // Ukuran ikon
-                  ),
-                  SizedBox(height: 6), // Jarak antara ikon dan teks
-                  Text(
-                    menuItems[index]['title'],
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12), // Ukuran font
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    ];
+        ...divisiList.map<PopupMenuItem<String>>(
+          (Map<String, dynamic> divisi) {
+            return PopupMenuItem<String>(
+              value: divisi['id'].toString(),
+              child: Text(divisi['name'], style: TextStyle(fontSize: 16)),
+            );
+          },
+        ).toList(),
+      ],
+      elevation: 8.0,
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedFilter = result;
+      });
+
+      // Call loadData to fetch data based on the selected filter
+      loadData();
+    }
   }
 
   void onTabTapped(int index) {
