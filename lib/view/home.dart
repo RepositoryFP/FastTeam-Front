@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:Fast_Team/controller/home_controller.dart';
 import 'package:Fast_Team/server/local/local_session.dart';
 import 'package:Fast_Team/style/color_theme.dart';
-import 'package:Fast_Team/style/style.dart';
 import 'package:Fast_Team/widget/header_background_home.dart';
 import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -77,6 +76,15 @@ class _HomePageState extends State<HomePage> {
 
   String _selectedFilter = 'All';
   String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  var now;
+
+  late bool canClockIn;
+  late bool canClockOut;
+
+  DateTime? masukAwalDateTime;
+  DateTime? masukAkhirDateTime;
+  DateTime? keluarAwalDateTime;
+  DateTime? keluarAkhirDateTime;
   List<Map<String, dynamic>> divisiList = [];
 
   HomeController? homeController;
@@ -107,6 +115,7 @@ class _HomePageState extends State<HomePage> {
     keluarAwal = ''.obs;
     keluarAkhir = ''.obs;
     avatarImageUrl = ''.obs;
+    now = Rxn<DateTime>();
   }
 
   Future<void> initData() async {
@@ -114,14 +123,40 @@ class _HomePageState extends State<HomePage> {
     idUser = LocalSession.idUser.value;
     nama = LocalSession.nama.value;
     imgProf = LocalSession.imgProf.value;
+    kantor = LocalSession.kantor.value;
+    masukAwal = LocalSession.masukAwal.value;
+    masukAkhir = LocalSession.masukAkhir.value;
+    keluarAwal = LocalSession.keluarAwal.value;
+    keluarAkhir = LocalSession.keluarAkhir.value;
+    tz.initializeTimeZones();
+    final indonesia = tz.getLocation("Asia/Jakarta");
+    now = tz.TZDateTime.now(indonesia);
     avatarImageUrl =
         "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-    // _loadData = dataRequest();
+    if (masukAwal != null) {
+      masukAwalDateTime =
+          tz.TZDateTime.parse(indonesia, "$currentDate $masukAwal");
+    }
+
+    if (masukAkhir != null) {
+      masukAkhirDateTime =
+          tz.TZDateTime.parse(indonesia, "$currentDate $masukAkhir");
+    }
+
+    if (keluarAwal != null) {
+      keluarAwalDateTime =
+          tz.TZDateTime.parse(indonesia, "$currentDate $keluarAwal");
+    }
+
+    if (keluarAkhir != null) {
+      keluarAkhirDateTime =
+          tz.TZDateTime.parse(indonesia, "$currentDate $keluarAkhir");
+    }
   }
 
   Future<void> initializeState() async {
     await loadSharedPreferences();
-    await getCurrentLocation();
+    // await getCurrentLocation();
     await loadData();
     await initData();
 
@@ -138,30 +173,30 @@ class _HomePageState extends State<HomePage> {
   //   var result = await homeController!.retriveListEmployee();
   // }
 
-  Future<void> getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+  // Future<void> getCurrentLocation() async {
+  //   bool serviceEnabled;
+  //   LocationPermission permission;
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return;
-    }
+  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //   if (!serviceEnabled) {
+  //     return;
+  //   }
 
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission != LocationPermission.whileInUse &&
-          permission != LocationPermission.always) {
-        return;
-      }
-    }
+  //   permission = await Geolocator.checkPermission();
+  //   if (permission == LocationPermission.denied) {
+  //     permission = await Geolocator.requestPermission();
+  //     if (permission != LocationPermission.whileInUse &&
+  //         permission != LocationPermission.always) {
+  //       return;
+  //     }
+  //   }
 
-    Position position = await Geolocator.getCurrentPosition();
-    setState(() {
-      lat = position.latitude;
-      long = position.longitude;
-    });
-  }
+  //   Position position = await Geolocator.getCurrentPosition();
+  //   setState(() {
+  //     lat = position.latitude;
+  //     long = position.longitude;
+  //   });
+  // }
 
   Future<void> loadSharedPreferences() async {
     await homeController!.storeCoordinateUser(lat.value, long.value);
@@ -274,196 +309,150 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    tz.initializeTimeZones();
-    final indonesia = tz.getLocation("Asia/Jakarta");
-    var now = tz.TZDateTime.now(indonesia);
-    String currentDate = DateFormat('yyyy-MM-dd').format(now);
-    // DateTime masukAwalDateTime =
-    //     tz.TZDateTime.parse(indonesia, "$currentDate $masukAwal");
-    // DateTime masukAkhirDateTime =
-    //     tz.TZDateTime.parse(indonesia, "$currentDate $masukAkhir");
-    // DateTime keluarAwalDateTime =
-    //     tz.TZDateTime.parse(indonesia, "$currentDate $keluarAwal");
-    // DateTime keluarAkhirDateTime =
-    //     tz.TZDateTime.parse(indonesia, "$currentDate $keluarAkhir");
-    // bool canClockIn =
-    //     now.isAfter(masukAwalDateTime) && now.isBefore(masukAkhirDateTime);
-    // bool canClockOut =
-    //     now.isAfter(keluarAwalDateTime) && now.isBefore(keluarAkhirDateTime);
-    DateTime? masukAwalDateTime;
-    DateTime? masukAkhirDateTime;
-    DateTime? keluarAwalDateTime;
-    DateTime? keluarAkhirDateTime;
+    canClockIn = masukAwalDateTime != null &&
+        masukAkhirDateTime != null &&
+        now.isAfter(masukAwalDateTime!) &&
+        now.isBefore(masukAkhirDateTime!);
 
-    // if (masukAwal.isNotEmpty) {
-    //   masukAwalDateTime =
-    //       tz.TZDateTime.parse(indonesia, "$currentDate $masukAwal");
-    // }
-
-    // if (masukAkhir.isNotEmpty) {
-    //   masukAkhirDateTime =
-    //       tz.TZDateTime.parse(indonesia, "$currentDate $masukAkhir");
-    // }
-
-    // if (keluarAwal.isNotEmpty) {
-    //   keluarAwalDateTime =
-    //       tz.TZDateTime.parse(indonesia, "$currentDate $keluarAwal");
-    // }
-
-    // if (keluarAkhir.isNotEmpty) {
-    //   keluarAkhirDateTime =
-    //       tz.TZDateTime.parse(indonesia, "$currentDate $keluarAkhir");
-    // }
-
-    // bool canClockIn = masukAwalDateTime != null &&
-    //     masukAkhirDateTime != null &&
-    //     now.isAfter(masukAwalDateTime!) &&
-    //     now.isBefore(masukAkhirDateTime!);
-
-    // bool canClockOut = keluarAwalDateTime != null &&
-    //     keluarAkhirDateTime != null &&
-    //     now.isAfter(keluarAwalDateTime!) &&
-    //     now.isBefore(keluarAkhirDateTime!);
+    canClockOut = keluarAwalDateTime != null &&
+        keluarAkhirDateTime != null &&
+        now.isAfter(keluarAwalDateTime!) &&
+        now.isBefore(keluarAkhirDateTime!);
 
     Widget headerBackground() => const HeaderCircle(diameter: 500);
     Widget Headers() {
       return headerBackground();
     }
 
-    Widget CardClock() => Container(
-          margin: const EdgeInsets.only(top: 20, bottom: 20),
-          padding: const EdgeInsets.only(bottom: 20),
-          width: double.infinity,
+    Widget loadingData(statusComponent) => Shimmer.fromColors(
+        baseColor: ColorsTheme.lightBrown!,
+        highlightColor: ColorsTheme.darkerBrown!,
+        child: Container(
+          width: (statusComponent == 1)
+              ? 100.w
+              : (statusComponent == 2)
+                  ? 70.w
+                  : (statusComponent == 3)
+                      ? 200.w
+                      : 50.w,
+          height: (statusComponent == 3) ? 20.h : 15.h,
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(3.r),
             color: ColorsTheme.white,
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 5,
-                blurRadius: 7,
-                offset: Offset(0, 3), // changes position of shadow
-              ),
-            ],
           ),
-          child: Column(children: <Widget>[
-            Container(
-              padding: const EdgeInsets.only(bottom: 12),
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom:
-                      BorderSide(color: const Color.fromARGB(255, 2, 65, 128)),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Text(
-                      '${kantor} ${getCurrentDay()}',
-                      style: TextStyle(color: ColorsTheme.secondary),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.sticky_note_2_outlined,
-                          size: 20.sp,
-                        ),
-                        Text(
-                          ' ${DateFormat('d MMM yyyy (HH:mm)').format(now)}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16.sp,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.only(top: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    onPressed: true ? _clockIn : null,
-                    style: ElevatedButton.styleFrom(
-                      primary:
-                          true ? Color.fromARGB(255, 2, 65, 128) : Colors.grey,
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.input,
-                          color: true
-                              ? ColorsTheme.whiteCream
-                              : ColorsTheme.lightGrey,
-                        ),
-                        Text(
-                          ' Clock In',
-                          style: TextStyle(
-                              color: true
-                                  ? ColorsTheme.whiteCream
-                                  : ColorsTheme.lightGrey),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: true ? _clockOut : null,
-                    style: ElevatedButton.styleFrom(
-                      primary:
-                          true ? Color.fromARGB(255, 2, 65, 128) : Colors.grey,
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          Icons.output,
-                          color: true
-                              ? ColorsTheme.lightGrey
-                              : ColorsTheme.whiteCream,
-                        ),
-                        Text(
-                          ' Clock Out',
-                          style: TextStyle(
-                              color: true
-                                  ? ColorsTheme.lightGrey
-                                  : ColorsTheme.whiteCream),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ]),
-        );
-
-    Widget headerUsername(statusLoading) {
-      Widget loadingData(statusComponent) => Shimmer.fromColors(
+        ));
+    Widget CardClock(statusLoading) {
+      Widget absnetButtonLoading() => Shimmer.fromColors(
           baseColor: ColorsTheme.lightBrown!,
           highlightColor: ColorsTheme.darkerBrown!,
           child: Container(
-            width: (statusComponent == 1)
-                ? 100.w
-                : (statusComponent == 2)
-                    ? 70.w
-                    : (statusComponent == 3)
-                        ? 40.w
-                        : 50.w,
-            height: 15.h,
+            width: 120.w,
+            height: 35.h,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3.r),
+              borderRadius: BorderRadius.circular(40.r),
               color: ColorsTheme.white,
             ),
           ));
+      Widget absnetButton(name, status, loading) => (loading)
+          ? absnetButtonLoading()
+          : ElevatedButton(
+              onPressed: status ? _clockIn : null,
+              style: ElevatedButton.styleFrom(
+                primary: status ? Color.fromARGB(255, 2, 65, 128) : Colors.grey,
+              ),
+              child: Row(
+                children: <Widget>[
+                  Icon(
+                    Icons.input,
+                    color:
+                        status ? ColorsTheme.whiteCream : ColorsTheme.lightGrey,
+                  ),
+                  Text(
+                    name,
+                    style: TextStyle(
+                        color: status
+                            ? ColorsTheme.whiteCream
+                            : ColorsTheme.lightGrey),
+                  ),
+                ],
+              ),
+            );
 
+      return Container(
+        margin: const EdgeInsets.only(top: 20, bottom: 20),
+        padding: const EdgeInsets.only(bottom: 20),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: ColorsTheme.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Column(children: <Widget>[
+          Container(
+            padding: const EdgeInsets.only(bottom: 12),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom:
+                    BorderSide(color: const Color.fromARGB(255, 2, 65, 128)),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: (statusLoading)
+                      ? loadingData(1)
+                      : Text(
+                          '${kantor} ${getCurrentDay()}',
+                          style: TextStyle(color: ColorsTheme.secondary),
+                        ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    children: (statusLoading)
+                        ? [loadingData(3)]
+                        : [
+                            Icon(
+                              Icons.sticky_note_2_outlined,
+                              size: 20.sp,
+                            ),
+                            Text(
+                              ' ${DateFormat('d MMM yyyy (HH:mm)').format(DateTime.now())}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.sp,
+                              ),
+                            ),
+                          ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.only(top: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                absnetButton('Clock In', canClockIn, statusLoading),
+                absnetButton('Clock Out', canClockOut, statusLoading),
+              ],
+            ),
+          ),
+        ]),
+      );
+    }
+
+    Widget headerUsername(statusLoading) {
       Widget loadingAvatar() => Shimmer.fromColors(
             child:
                 CircleAvatar(backgroundColor: ColorsTheme.black, radius: 100.r),
@@ -515,7 +504,7 @@ class _HomePageState extends State<HomePage> {
                               : loadingAvatar()),
                     ],
                   ),
-                  CardClock(),
+                  CardClock(!statusLoading),
                 ]),
           ],
         ),
