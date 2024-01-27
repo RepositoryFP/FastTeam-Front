@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:Fast_Team/controller/login_controller.dart';
+import 'package:Fast_Team/model/user_model.dart';
 import 'package:Fast_Team/server/local/local_session.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Fast_Team/style/color_theme.dart';
@@ -36,10 +38,17 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   initData() async {
-    LocalSession localSession = Get.put(LocalSession());
-    await localSession.retriveUserInfo();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var jsonData = prefs.getString('jsonUser');
+    var jsonDataEmployee = prefs.getString('jsonEmployeeInfo');
+    Map<String, dynamic> jsonUserMap = json.decode(jsonData!);
+    Map<String, dynamic> jsonEmployeeMap = json.decode(jsonDataEmployee!);
+    // Merge the two JSON maps
+    Map<String, dynamic> mergedJson = {...jsonUserMap, ...jsonEmployeeMap};
+    // print(mergedJson);
+    DataAccountModel accountModel = DataAccountModel.fromJson(mergedJson);
    
-    userId = LocalSession.idUser.value ?? 0;
+    userId = accountModel.idUser ?? 0;
 
     if (userId > 0) {
       isLogin = "true".obs;

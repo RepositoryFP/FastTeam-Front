@@ -71,13 +71,7 @@ class _MyAppState extends State<MyApp> {
             // initialRoute: '/',
             home: const SplashScreen(), // Set rute awal ke '/splash'
             routes: {
-              // '/': (context) => AnimatedSplashScreen(
-              //       splash: Image.asset('assets/img/logo_besar.jpg',
-              //           height: 1000, width: 1000),
-              //       splashTransition: SplashTransition.fadeTransition,
-              //       duration: 3000,
-              //       nextScreen: loggedIn ? NavigatorBottomMenu() : LoginPage(),
-              //     ),
+              // '/': (context) => SplashScreen(),
               '/login': (context) => LoginPage(),
               '/navigation': (context) => NavigatorBottomMenu(),
               '/home': (context) => HomePage(),

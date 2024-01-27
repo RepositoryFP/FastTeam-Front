@@ -9,9 +9,24 @@ class LoginController extends GetxController {
   EmployeeNetUtils employeeNetUtils = Get.put(EmployeeNetUtils());
   LocalSession localSession = Get.put(LocalSession());
 
+  static var idUser = 0.obs;
+  static var idDivisi = 0.obs;
+  static var email = "".obs;
+  static var nama = "".obs;
+  static var fullNama = "".obs;
+  static var divisi = "".obs;
+  static var posLat = 0.0.obs;
+  static var posLong = 0.0.obs;
+  static var imgProf = "".obs;
+  static var imgUrl = "".obs;
+  static var kantor = "".obs;
+  static var masukAwal = "".obs;
+  static var masukAkhir = "".obs;
+  static var keluarAwal = "".obs;
+  static var keluarAkhir = "".obs;
+  static var statusLogin = "".obs;
 
   static var isLogin = "".obs;
-
 
   requestLoginUser(email, password) async {
     var result = await loginNetUtils.requestLoginUser(email, password);
@@ -19,7 +34,6 @@ class LoginController extends GetxController {
     return ResponseHelper().jsonResponse(result);
   }
 
-  
   requestResetPassword(email) async {
     var result = await loginNetUtils.requestResetPassword(email);
 
@@ -40,11 +54,25 @@ class LoginController extends GetxController {
     await localSession.storeEmployeeInfo(jsonData);
   }
 
+  storeJsonUser(jsonData) async {
+    await localSession.storeJsonUser(jsonData);
+  }
 
-  retrieveUserIsLogin() async {
-    await localSession.retrieveIsLogin();
-
-    isLogin.value = LocalSession.statusLogin.value;
+  clearData() async {
+    await localSession.clearData();
+    idUser.value = 0;
+    email.value = '';
+    idDivisi.value = 0;
+    nama.value = '';
+    fullNama.value = '';
+    divisi.value = '';
+    posLong.value = 0;
+    posLat.value = 0;
+    imgProf.value = '';
+    kantor.value = '';
+    masukAwal.value = '';
+    masukAkhir.value = '';
+    keluarAwal.value = '';
+    keluarAkhir.value = '';
   }
 }
-
