@@ -172,45 +172,11 @@ class _HomePageState extends State<HomePage> {
     masukAkhir = accountModel.masukAkhir;
     keluarAwal = accountModel.keluarAwal;
     keluarAkhir = accountModel.keluarAkhir;
-    print('nama = $nama');
     tz.initializeTimeZones();
 
     avatarImageUrl =
         "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
   }
-
-  // Future<void> dataRequest() async {
-  //   await retrieveEmployee();
-  // }
-
-  // retrieveEmployee() async {
-  //   var result = await homeController!.retriveListEmployee();
-  // }
-
-  // Future<void> getCurrentLocation() async {
-  //   bool serviceEnabled;
-  //   LocationPermission permission;
-
-  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  //   if (!serviceEnabled) {
-  //     return;
-  //   }
-
-  //   permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission != LocationPermission.whileInUse &&
-  //         permission != LocationPermission.always) {
-  //       return;
-  //     }
-  //   }
-
-  //   Position position = await Geolocator.getCurrentPosition();
-  //   setState(() {
-  //     lat = position.latitude;
-  //     long = position.longitude;
-  //   });
-  // }
 
   Future<void> loadSharedPreferences() async {
     await homeController!.storeCoordinateUser(lat.value, long.value);
@@ -511,11 +477,23 @@ class _HomePageState extends State<HomePage> {
                               ],
                       ),
                       SizedBox(
-                          width: 48.w,
-                          height: 48.h,
-                          child: (!statusLoading)
-                              ? loadingAvatar()
-                              : loadingAvatar()),
+                        width: 60.w,
+                        height: 60.h,
+                        child: (!statusLoading)
+                            ? loadingAvatar()
+                            : CachedNetworkImage(
+                                imageUrl: imgUrl,
+                                imageBuilder: (context, imageProvider) =>
+                                    ClipRRect(
+                                  borderRadius: BorderRadius.circular(30.r),
+                                  child: CircleAvatar(
+                                    radius: 30.r,
+                                    backgroundImage: imageProvider,
+                                  ),
+                                ),
+                                placeholder: (context, url) => loadingAvatar(),
+                              ),
+                      ),
                     ],
                   ),
                   CardClock(!statusLoading),

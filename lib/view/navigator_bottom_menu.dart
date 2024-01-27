@@ -1,7 +1,6 @@
-import 'package:Fast_Team/view/account/profile.dart';
+import 'package:Fast_Team/view/account/account_page.dart';
 import 'package:Fast_Team/view/employee/employee.dart';
 import 'package:Fast_Team/view/inbox/inbox.dart';
-import 'package:Fast_Team/view/request/request.dart';
 import 'package:Fast_Team/view/request/schedule_request_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -57,7 +56,7 @@ class _NavigatorBottomMenuState extends State<NavigatorBottomMenu> {
                       ? InboxPage()
                       : (selectedIndex.value == 2)
                           ? ScheduleRequestPage()
-                          : ProfilePage(),
+                          : AccountPage(),
           onWillPop: onBackPressed,
         ),
       );
