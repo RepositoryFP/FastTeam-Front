@@ -157,16 +157,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> initData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var jsonData = prefs.getString('jsonUser');
-    var jsonDataEmployee = prefs.getString('jsonEmployeeInfo');
-    Map<String, dynamic> jsonUserMap = json.decode(jsonData!);
-    Map<String, dynamic> jsonEmployeeMap = json.decode(jsonDataEmployee!);
-
-    // Merge the two JSON maps
-    Map<String, dynamic> mergedJson = {...jsonUserMap, ...jsonEmployeeMap};
-    // print(mergedJson);
-    DataAccountModel accountModel = DataAccountModel.fromJson(mergedJson);
+    DataAccountModel accountModel = await UserController();
     idUser = accountModel.idUser;
     nama = (accountModel.fullname != null)
         ? accountModel.fullname
@@ -184,6 +175,20 @@ class _HomePageState extends State<HomePage> {
 
     avatarImageUrl =
         "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+  }
+
+  Future<DataAccountModel> UserController() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var jsonData = prefs.getString('jsonUser');
+    var jsonDataEmployee = prefs.getString('jsonEmployeeInfo');
+    Map<String, dynamic> jsonUserMap = json.decode(jsonData!);
+    Map<String, dynamic> jsonEmployeeMap = json.decode(jsonDataEmployee!);
+    
+    // Merge the two JSON maps
+    Map<String, dynamic> mergedJson = {...jsonUserMap, ...jsonEmployeeMap};
+    // print(mergedJson);
+    DataAccountModel accountModel = DataAccountModel.fromJson(mergedJson);
+    return accountModel;
   }
 
   // Future<void> dataRequest() async {
