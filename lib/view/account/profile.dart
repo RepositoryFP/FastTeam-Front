@@ -1,12 +1,14 @@
+import 'package:Fast_Team/controller/login_controller.dart';
+import 'package:Fast_Team/view/auth/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Fast_Team/utils/bottom_navigation_bar.dart';
-
-import 'package:Fast_Team/user/login.dart';
 
 import 'package:Fast_Team/main.dart';
 
 class ProfilePage extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String>(
@@ -105,9 +107,12 @@ class ProfileBody extends StatelessWidget {
                 ),
                 tileColor: Colors.transparent,
                 onTap: () async {
+                  LoginController loginController = Get.put(LoginController());
                   SharedPreferences sharedPreferences =
                       await SharedPreferences.getInstance();
                   sharedPreferences.clear();
+                  loginController.clearData();
+                  
                   Navigator.of(context).pushNamedAndRemoveUntil(
                       '/sertificate', (Route<dynamic> route) => false);
                 },
@@ -169,31 +174,15 @@ class ProfileBody extends StatelessWidget {
                   SharedPreferences sharedPreferences =
                       await SharedPreferences.getInstance();
                   await sharedPreferences.clear();
-                  // Navigator.of(context).pushNamedAndRemoveUntil(
-                  //     '/', (Route<dynamic> route) => false);
 
-                  // Navigator.of(context).pushReplacement(
-                  //   MaterialPageRoute(
-                  //     builder: (BuildContext context) {
-                  //       return MyApp(
-                  //           avatarImageUrl: '',
-                  //           loggedIn:
-                  //               false); // Replace with the actual constructor of your main page
-                  //     },
-                  //   ),
-                  // );
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/login', (Route<dynamic> route) => false);
 
-                  // Navigator.of(context).pushReplacement(
-                  //   MaterialPageRoute(
-                  //     builder: (BuildContext context) {
-                  //       return MyApp(
-                  //           avatarImageUrl: '',
-                  //           loggedIn:
-                  //               false); // Replace with the actual constructor of your main page
-                  //     },
-                  //   ),
-                  // );
-
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => LoginPage(),
+                    ),
+                  );
                 },
               ),
             ],

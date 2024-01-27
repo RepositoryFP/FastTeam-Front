@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:Fast_Team/controller/home_controller.dart';
+import 'package:Fast_Team/model/user_model.dart';
 import 'package:Fast_Team/server/local/local_session.dart';
 import 'package:Fast_Team/style/color_theme.dart';
 import 'package:Fast_Team/widget/header_background_home.dart';
@@ -34,10 +36,12 @@ class _HomePageState extends State<HomePage> {
   var email;
   var idDivisi;
   var nama;
+  var fullNama;
   var divisi;
   var posLong;
   var posLat;
   var imgProf;
+  var imgUrl;
   var lat;
   var long;
   var kantor;
@@ -103,10 +107,12 @@ class _HomePageState extends State<HomePage> {
     email = ''.obs;
     idDivisi = 0.obs;
     nama = ''.obs;
+    fullNama = ''.obs;
     divisi = ''.obs;
     posLong = 0.obs;
     posLat = 0.obs;
     imgProf = ''.obs;
+    imgUrl = ''.obs;
     lat = 0.0.obs;
     long = 0.0.obs;
     kantor = ''.obs;
@@ -118,21 +124,13 @@ class _HomePageState extends State<HomePage> {
     now = Rxn<DateTime>();
   }
 
-  Future<void> initData() async {
-    LocalSession localSession = Get.put(LocalSession());
-    idUser = LocalSession.idUser.value;
-    nama = LocalSession.nama.value;
-    imgProf = LocalSession.imgProf.value;
-    kantor = LocalSession.kantor.value;
-    masukAwal = LocalSession.masukAwal.value;
-    masukAkhir = LocalSession.masukAkhir.value;
-    keluarAwal = LocalSession.keluarAwal.value;
-    keluarAkhir = LocalSession.keluarAkhir.value;
-    tz.initializeTimeZones();
+  Future<void> initializeState() async {
+    await loadSharedPreferences();
+    // await getCurrentLocation();
+    await loadData();
+    await initData();
     final indonesia = tz.getLocation("Asia/Jakarta");
     now = tz.TZDateTime.now(indonesia);
-    avatarImageUrl =
-        "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
     if (masukAwal != null) {
       masukAwalDateTime =
           tz.TZDateTime.parse(indonesia, "$currentDate $masukAwal");
@@ -152,17 +150,40 @@ class _HomePageState extends State<HomePage> {
       keluarAkhirDateTime =
           tz.TZDateTime.parse(indonesia, "$currentDate $keluarAkhir");
     }
-  }
-
-  Future<void> initializeState() async {
-    await loadSharedPreferences();
-    // await getCurrentLocation();
-    await loadData();
-    await initData();
 
     setState(() {
       isLoading = false;
     });
+  }
+
+  Future<void> initData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var jsonData = prefs.getString('jsonUser');
+    var jsonDataEmployee = prefs.getString('jsonEmployeeInfo');
+    Map<String, dynamic> jsonUserMap = json.decode(jsonData!);
+    Map<String, dynamic> jsonEmployeeMap = json.decode(jsonDataEmployee!);
+
+    // Merge the two JSON maps
+    Map<String, dynamic> mergedJson = {...jsonUserMap, ...jsonEmployeeMap};
+    // print(mergedJson);
+    DataAccountModel accountModel = DataAccountModel.fromJson(mergedJson);
+    idUser = accountModel.idUser;
+    nama = (accountModel.fullname != null)
+        ? accountModel.fullname
+        : accountModel.nama;
+    divisi = accountModel.divisiName;
+    imgProf = accountModel.imgProf;
+    imgUrl = accountModel.imgUrl;
+    kantor = accountModel.shiftName;
+    masukAwal = accountModel.masukAwal;
+    masukAkhir = accountModel.masukAkhir;
+    keluarAwal = accountModel.keluarAwal;
+    keluarAkhir = accountModel.keluarAkhir;
+    print('nama = $nama');
+    tz.initializeTimeZones();
+
+    avatarImageUrl =
+        "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
   }
 
   // Future<void> dataRequest() async {
@@ -325,8 +346,8 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget loadingData(statusComponent) => Shimmer.fromColors(
-        baseColor: ColorsTheme.lightBrown!,
-        highlightColor: ColorsTheme.darkerBrown!,
+        baseColor: ColorsTheme.secondary!,
+        highlightColor: ColorsTheme.lightGrey2!,
         child: Container(
           width: (statusComponent == 1)
               ? 100.w
@@ -343,8 +364,8 @@ class _HomePageState extends State<HomePage> {
         ));
     Widget CardClock(statusLoading) {
       Widget absnetButtonLoading() => Shimmer.fromColors(
-          baseColor: ColorsTheme.lightBrown!,
-          highlightColor: ColorsTheme.darkerBrown!,
+          baseColor: ColorsTheme.secondary!,
+          highlightColor: ColorsTheme.lightGrey2!,
           child: Container(
             width: 120.w,
             height: 35.h,
@@ -456,8 +477,8 @@ class _HomePageState extends State<HomePage> {
       Widget loadingAvatar() => Shimmer.fromColors(
             child:
                 CircleAvatar(backgroundColor: ColorsTheme.black, radius: 100.r),
-            baseColor: ColorsTheme.lightBrown!,
-            highlightColor: ColorsTheme.darkerBrown!,
+            baseColor: ColorsTheme.secondary!,
+            highlightColor: ColorsTheme.lightGrey2!,
           );
 
       return SizedBox(
@@ -493,7 +514,7 @@ class _HomePageState extends State<HomePage> {
                               ]
                             : [
                                 Text('$nama', style: headerStyle(false)),
-                                Text('IT Programmer', style: headerStyle(true)),
+                                Text('$divisi', style: headerStyle(true)),
                               ],
                       ),
                       SizedBox(
@@ -598,12 +619,12 @@ class _HomePageState extends State<HomePage> {
       Widget loadingAvatar() => Shimmer.fromColors(
             child:
                 CircleAvatar(backgroundColor: ColorsTheme.black, radius: 30.r),
-            baseColor: ColorsTheme.lightBrown!,
-            highlightColor: ColorsTheme.darkerBrown!,
+            baseColor: ColorsTheme.secondary!,
+            highlightColor: ColorsTheme.lightGrey2!,
           );
       Widget loadingData(statusComponent) => Shimmer.fromColors(
-          baseColor: ColorsTheme.lightBrown!,
-          highlightColor: ColorsTheme.darkerBrown!,
+          baseColor: ColorsTheme.secondary!,
+          highlightColor: ColorsTheme.lightGrey2!,
           child: Container(
             width: (statusComponent == 1)
                 ? 100.w
