@@ -15,4 +15,5 @@ class HomeController extends GetxController {
     var result = await employeeNetUtils.retriveListEmployee();
     return ResponseHelper().jsonResponse(result);
   }
+  
 }
