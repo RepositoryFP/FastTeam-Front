@@ -126,8 +126,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> initializeState() async {
-    await loadSharedPreferences();
-    // await getCurrentLocation();
     await loadData();
     await initData();
     final indonesia = tz.getLocation("Asia/Jakarta");
@@ -151,10 +149,6 @@ class _HomePageState extends State<HomePage> {
       keluarAkhirDateTime =
           tz.TZDateTime.parse(indonesia, "$currentDate $keluarAkhir");
     }
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   Future<void> initData() async {
@@ -173,14 +167,14 @@ class _HomePageState extends State<HomePage> {
     keluarAwal = accountModel.keluarAwal;
     keluarAkhir = accountModel.keluarAkhir;
     tz.initializeTimeZones();
-
-    avatarImageUrl =
-        "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+    if (accountModel.idUser != null) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
-  Future<void> loadSharedPreferences() async {
-    await homeController!.storeCoordinateUser(lat.value, long.value);
-  }
+  
 
   Future refreshItem() async {
     List<Map<String, dynamic>> divisiData = await listDivisi();
@@ -482,7 +476,7 @@ class _HomePageState extends State<HomePage> {
                         child: (!statusLoading)
                             ? loadingAvatar()
                             : CachedNetworkImage(
-                                imageUrl: imgUrl,
+                                imageUrl: '$imgUrl',
                                 imageBuilder: (context, imageProvider) =>
                                     ClipRRect(
                                   borderRadius: BorderRadius.circular(30.r),

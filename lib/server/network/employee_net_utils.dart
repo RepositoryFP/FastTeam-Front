@@ -12,7 +12,7 @@ class EmployeeNetUtils {
 
   retrieveEmployeeInfo(userId) async {
     var response = await http
-        .get(Uri.parse("${BaseServer.serverUrl}/api/pegawai/by-user/$userId/"))
+        .get(Uri.parse("${BaseServer.serverUrl}api_absensi/personal-info/$userId/"))
         .timeout(BaseServer.durationlimit);
 
     return response;

@@ -21,7 +21,8 @@ class _NavigatorBottomMenuState extends State<NavigatorBottomMenu> {
   var data = false.obs;
 
   @override
-  moveToMenu(index) {
+  moveToMenu(index) async {
+    // await Future.delayed(const Duration(milliseconds: 500));
     selectedIndex.value = index;
   }
 
@@ -66,7 +67,7 @@ class _NavigatorBottomMenuState extends State<NavigatorBottomMenu> {
           color: Colors.blue, // Ganti dengan warna yang sesuai
           child: BottomNavigationBar(
             onTap: (index) => setState(() {
-              selectedIndex.value = index;
+              moveToMenu(index);
             }),
             currentIndex: selectedIndex.value,
             type: BottomNavigationBarType.fixed,
