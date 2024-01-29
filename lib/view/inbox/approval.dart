@@ -132,11 +132,11 @@ class ApprovalItemWidget extends StatelessWidget {
   String getStatusText(int status) {
     switch (status) {
       case 0:
-        return 'Dalam Proses';
+        return 'Pending';
       case 1:
-        return 'Disetujui';
+        return 'Approved';
       case 2:
-        return 'Ditolak';
+        return 'Rejected';
       default:
         return 'Tidak Diketahui';
     }

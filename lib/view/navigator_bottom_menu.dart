@@ -1,6 +1,6 @@
 import 'package:Fast_Team/view/account/account_page.dart';
 import 'package:Fast_Team/view/employee/employee.dart';
-import 'package:Fast_Team/view/inbox/inbox.dart';
+import 'package:Fast_Team/view/inbox/inbox_page.dart';
 import 'package:Fast_Team/view/request/schedule_request_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
