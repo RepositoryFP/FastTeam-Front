@@ -7,9 +7,7 @@ class HomeController extends GetxController {
   LocalSession localSession = Get.put(LocalSession());
    EmployeeNetUtils employeeNetUtils = Get.put(EmployeeNetUtils());
 
-  storeCoordinateUser(lat, long) async {
-    await localSession.storeCoordinateUser(lat, long);
-  }
+  
 
   retriveListEmployee() async{
     var result = await employeeNetUtils.retriveListEmployee();

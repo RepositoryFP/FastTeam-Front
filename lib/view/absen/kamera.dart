@@ -50,6 +50,7 @@ class KameraPageState extends State<KameraPage> {
   Widget build(BuildContext context) {
     Map<String, dynamic>? routeArguments =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    print("ini argumen = $routeArguments");
     if (routeArguments != null) {
       idUser = routeArguments['idUser'];
       long = routeArguments['long'];

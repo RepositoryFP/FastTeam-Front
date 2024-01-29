@@ -41,7 +41,6 @@ class LocalSession {
   }
 
   
-
   storeEmployeeInfo(jsonData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String jsonString = json.encode(jsonData);

@@ -33,7 +33,7 @@ class CustomCircle extends CustomPainter {
         Rect.fromCenter(
           center: Offset(size.width / 2, 500),
           width: 1200,
-          height: 863.75,
+          height: 900,
         ),
         math.pi,
         math.pi,
