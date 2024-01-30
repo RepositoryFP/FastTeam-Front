@@ -22,7 +22,10 @@ class _InboxPageState extends State<InboxPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Inbox'),
-          bottom: const TabBar(
+          bottom: TabBar(
+            labelColor: Colors.blue[900],
+            unselectedLabelColor: Colors.black,
+            indicatorColor: Colors.blue[900],
             tabs: [
               Tab(text: 'Notification'),
               Tab(text: 'Approval'),
@@ -35,9 +38,7 @@ class _InboxPageState extends State<InboxPage> {
             TabApprovalPage(),
           ],
         ),
-        
       ),
-    );;
-  
+    );
   }
 }

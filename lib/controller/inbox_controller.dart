@@ -22,5 +22,23 @@ class InboxController {
 
     return ResponseHelper().jsonResponse(result);
   }
+  
+  retrieveNotificationList(userId) async {
+    var result = await inboxNetUtils.retrieveNotificationList(userId);
+
+    return ResponseHelper().jsonResponse(result);
+  }
+  
+  retrieveNotificationDetail(notifId) async {
+    var result = await inboxNetUtils.retrieveNotificationDetail(notifId);
+
+    return ResponseHelper().jsonResponse(result);
+  }
+
+  requestReadAllNotification(userId) async {
+    var result = await inboxNetUtils.requestReadAllNotification(userId);
+
+    return ResponseHelper().jsonResponse(result);
+  }
 
 }
