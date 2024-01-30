@@ -51,10 +51,10 @@ class _MapPageState extends State<MapPage> {
   Future<void> loadSharedPreferences() async {
     AccountController accountController = Get.put(AccountController());
     var result = await accountController.retriveAccountInformation();
-
     AccountInformationModel accountModel =
         AccountInformationModel.fromJson(result['details']['data']);
-    print("ini account = ${accountModel.imgProfUrl}");
+
+    print("data = ${accountModel.id}");
     setState(() {
       idUser = accountModel.id;
       imgProf = accountModel.imgProfUrl;
@@ -182,6 +182,4 @@ class _MapPageState extends State<MapPage> {
       ),
     );
   }
-
-  
 }

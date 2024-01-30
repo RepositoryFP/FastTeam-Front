@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:Fast_Team/controller/absent_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +28,7 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
   String lokasi = '-';
   bool imageValid = true;
   bool _isMapReady = false;
+  AbsentController? absentController;
 
   @override
   void initState() {
@@ -37,9 +40,12 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     id = ModalRoute.of(context)!.settings.arguments as int;
+    print(id);
 
     initializeDateFormatting("id_ID", null).then((_) {
-      fetchData(id).then((data) {
+      absentController = Get.put(AbsentController());
+      absentController!.retriveDetailAbsenst(id).then((data) {
+        print("test = ${data}");
         setState(() {
           _latitude = double.parse(data['lat']);
           _longitude = double.parse(data['long']);
@@ -51,7 +57,7 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
             final indonesiaDateTime = utcDateTime.add(offset);
 
             final format = DateFormat('yyyy-MM-dd HH:mm:ss', 'id_ID');
-            createdAt = format.format(indonesiaDateTime);
+            createdAt = '${format.format(indonesiaDateTime)}';
             imgbase64 = data['image64'];
             lokasi = data['lokasi'];
           } catch (error) {
@@ -81,70 +87,14 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Title(
-          color: Colors.white,
-          child: Row(
-            children: <Widget>[
-              Text('tes'),
-            ],
-          ),
-        ),
-      ),
-      body: ListView(
+    Widget body() {
+      return ListView(
         children: <Widget>[
           Container(
             height: 200,
             child: Row(
               children: <Widget>[
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    color: Colors.blue,
-                    child: Center(
-                      child: _isMapReady
-                          ? FlutterMap(
-                              mapController: _mapController,
-                              options: MapOptions(
-                                center: LatLng(_latitude, _longitude),
-                                zoom: 14.0,
-                              ),
-                              children: [
-                                TileLayer(
-                                  urlTemplate:
-                                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                  userAgentPackageName: 'com.example.app',
-                                ),
-                                MarkerLayer(
-                                  markers: [
-                                    Marker(
-                                      width: 80.0,
-                                      height: 80.0,
-                                      point: LatLng(_latitude, _longitude),
-                                      builder: (ctx) => Container(
-                                        child: Icon(
-                                          Icons.location_on,
-                                          size: 35.0,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            )
-                          : CircularProgressIndicator(),
-                    ),
-                  ),
-                ),
+                showMap(),
                 Expanded(
                   flex: 1,
                   child: Container(
@@ -305,7 +255,28 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
             ),
           ),
         ],
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Title(
+          color: Colors.white,
+          child: Row(
+            children: <Widget>[
+              Text('Detail Absensi'),
+            ],
+          ),
+        ),
       ),
+      body: body(),
       bottomNavigationBar: BottomNavBar(
         currentIndex: 0,
         onTabTapped: (index) {
@@ -321,6 +292,49 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
             Navigator.of(context).pushNamed('/employee');
           }
         },
+      ),
+    );
+  }
+
+  Expanded showMap() {
+    return Expanded(
+      flex: 1,
+      child: Container(
+        color: Colors.blue,
+        child: Center(
+          child: _isMapReady
+              ? FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(
+                    center: LatLng(_latitude, _longitude),
+                    zoom: 14.0,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.example.app',
+                    ),
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          width: 80.0,
+                          height: 80.0,
+                          point: LatLng(_latitude, _longitude),
+                          builder: (ctx) => Container(
+                            child: Icon(
+                              Icons.location_on,
+                              size: 35.0,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              : CircularProgressIndicator(),
+        ),
       ),
     );
   }
