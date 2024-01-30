@@ -53,8 +53,6 @@ class _MapPageState extends State<MapPage> {
     var result = await accountController.retriveAccountInformation();
     AccountInformationModel accountModel =
         AccountInformationModel.fromJson(result['details']['data']);
-
-    print("data = ${accountModel.id}");
     setState(() {
       idUser = accountModel.id;
       imgProf = accountModel.imgProfUrl;

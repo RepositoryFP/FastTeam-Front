@@ -84,8 +84,8 @@ class _HomePageState extends State<HomePage> {
   String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
   var now;
 
-  late bool canClockIn;
-  late bool canClockOut;
+  bool? canClockIn;
+  bool? canClockOut;
 
   DateTime? masukAwalDateTime;
   DateTime? masukAkhirDateTime;
@@ -129,6 +129,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> initializeState() async {
     await loadData();
     await initData();
+
     final indonesia = tz.getLocation("Asia/Jakarta");
     now = tz.TZDateTime.now(indonesia);
     if (masukAwal != null) {
@@ -150,6 +151,15 @@ class _HomePageState extends State<HomePage> {
       keluarAkhirDateTime =
           tz.TZDateTime.parse(indonesia, "$currentDate $keluarAkhir");
     }
+    canClockIn = masukAwalDateTime != null &&
+        masukAkhirDateTime != null &&
+        now.isAfter(masukAwalDateTime!) &&
+        now.isBefore(masukAkhirDateTime!);
+
+    canClockOut = keluarAwalDateTime != null &&
+        keluarAkhirDateTime != null &&
+        now.isAfter(keluarAwalDateTime!) &&
+        now.isBefore(keluarAkhirDateTime!);
   }
 
   Future<void> initData() async {
@@ -282,16 +292,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    canClockIn = masukAwalDateTime != null &&
-        masukAkhirDateTime != null &&
-        now.isAfter(masukAwalDateTime!) &&
-        now.isBefore(masukAkhirDateTime!);
-
-    canClockOut = keluarAwalDateTime != null &&
-        keluarAkhirDateTime != null &&
-        now.isAfter(keluarAwalDateTime!) &&
-        now.isBefore(keluarAkhirDateTime!);
-
     Widget headerBackground() => const HeaderCircle(diameter: 500);
     Widget Headers() {
       return headerBackground();
@@ -314,6 +314,7 @@ class _HomePageState extends State<HomePage> {
             color: ColorsTheme.white,
           ),
         ));
+
     Widget CardClock(statusLoading) {
       Widget absnetButtonLoading() => Shimmer.fromColors(
           baseColor: ColorsTheme.secondary!,
@@ -332,6 +333,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: status ? (clockIn ? _clockIn : _clockOut) : null,
               style: ElevatedButton.styleFrom(
                 primary: status ? Color.fromARGB(255, 2, 65, 128) : Colors.grey,
+                onPrimary: Colors.black87,
               ),
               child: Row(
                 children: <Widget>[

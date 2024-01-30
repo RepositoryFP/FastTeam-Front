@@ -264,7 +264,7 @@ class KameraPageState extends State<KameraPage> {
   }
 
   Future<http.MultipartRequest> storeImageAbsent(File imageFile) async {
-     var request = http.MultipartRequest(
+    var request = http.MultipartRequest(
       'POST',
       Uri.parse('${globalVariable.baseUrl}/compare-image/'),
     );
@@ -323,7 +323,7 @@ class ResultScreen extends StatelessWidget {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pushNamed(context, '/home');
+        Navigator.pushNamed(context, '/navigation');
         return false;
       },
       child: Scaffold(
@@ -400,7 +400,7 @@ class ResultScreen extends StatelessWidget {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/home');
+                          Navigator.pushNamed(context, '/navigation');
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(double.infinity, 50),
