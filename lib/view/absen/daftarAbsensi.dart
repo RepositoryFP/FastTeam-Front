@@ -56,7 +56,6 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
 
     final data = await absentController!.retriveAbsentData(_selectedDate);
     final totalData = await absentController!.retriveTotalData(_selectedDate);
-    print(data);
     setState(() {
       _data = data;
       absenCount = totalData['details']['absen'];
