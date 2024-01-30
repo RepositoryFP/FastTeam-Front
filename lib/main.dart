@@ -23,7 +23,7 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'view/absen/absensi.dart';
 import 'view/history.dart';
 import 'view/home.dart';
-import 'view/map.dart';
+import 'view/absen/map.dart';
 import 'view/request/request.dart';
 
 void main() {

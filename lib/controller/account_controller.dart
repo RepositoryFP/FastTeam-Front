@@ -18,6 +18,7 @@ class AccountController extends GetxController {
 
     // Merge the two JSON maps
     Map<String, dynamic> mergedJson = {...jsonUserMap, ...jsonEmployeeMap};
+    // print
     // print(mergedJson);
     DataAccountModel accountModel = DataAccountModel.fromJson(mergedJson);
     return accountModel;
@@ -25,9 +26,8 @@ class AccountController extends GetxController {
 
   retriveAccountInformation() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var userId = prefs.getInt('user-id_user');
-
-    var result = await employeeNetUtils.retrieveEmployeeInfo(userId);
+    var userEmployeeId = prefs.getInt('user-employee_id');
+    var result = await employeeNetUtils.retrieveEmployeeInfo(userEmployeeId);
     return ResponseHelper().jsonResponse(result);
   }
 }

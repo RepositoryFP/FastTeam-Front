@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:Fast_Team/controller/account_controller.dart';
 import 'package:Fast_Team/controller/home_controller.dart';
+import 'package:Fast_Team/model/account_information_model.dart';
 import 'package:Fast_Team/model/user_model.dart';
 import 'package:Fast_Team/server/local/local_session.dart';
 import 'package:Fast_Team/style/color_theme.dart';
@@ -153,34 +154,32 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> initData() async {
     AccountController accountController = Get.put(AccountController());
-    DataAccountModel accountModel = await accountController.fetchData();
-    idUser = accountModel.idUser;
-    nama = (accountModel.fullname != null)
-        ? accountModel.fullname
-        : accountModel.nama;
-    divisi = accountModel.divisiName;
-    imgProf = accountModel.imgProf;
-    imgUrl = accountModel.imgUrl;
-    kantor = accountModel.shiftName;
+    var result = await accountController.retriveAccountInformation();
+    AccountInformationModel accountModel =
+        AccountInformationModel.fromJson(result['details']['data']);
+    idUser = accountModel.id;
+    nama = accountModel.fullName;
+    divisi = accountModel.divisi;
+    imgUrl = accountModel.imgProfUrl;
+    kantor = accountModel.cabang;
     masukAwal = accountModel.masukAwal;
     masukAkhir = accountModel.masukAkhir;
     keluarAwal = accountModel.keluarAwal;
     keluarAkhir = accountModel.keluarAkhir;
     tz.initializeTimeZones();
-    if (accountModel.idUser != null) {
+    if (accountModel.id != null) {
       setState(() {
         isLoading = false;
       });
     }
   }
 
-  
-
   Future refreshItem() async {
     List<Map<String, dynamic>> divisiData = await listDivisi();
     setState(() {
       divisiList = divisiData;
     });
+    print(divisiList);
   }
 
   Future<void> loadData() async {
@@ -849,13 +848,6 @@ class _HomePageState extends State<HomePage> {
       },
       child: Scaffold(
           appBar: null,
-          // floatingActionButton: FloatingActionButton(
-          //   backgroundColor: ColorsTheme.whiteCream,
-          //   onPressed: () {
-          //     showFilterDropdown(context);
-          //   },
-          //   child: Icon(Icons.filter_list),
-          // ),
           body: RefreshWidget(
             onRefresh: refreshItem,
             child: ListView(

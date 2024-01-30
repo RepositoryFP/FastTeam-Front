@@ -1,5 +1,6 @@
 import 'package:Fast_Team/controller/account_controller.dart';
 import 'package:Fast_Team/controller/login_controller.dart';
+import 'package:Fast_Team/model/account_information_model.dart';
 import 'package:Fast_Team/model/user_model.dart';
 import 'package:Fast_Team/style/color_theme.dart';
 import 'package:Fast_Team/view/account/personal_info_page.dart';
@@ -55,13 +56,13 @@ class _AccountPageState extends State<AccountPage> {
 
   initData() async {
     AccountController accountController = Get.put(AccountController());
-    DataAccountModel accountModel = await accountController.fetchData();
+    var result = await accountController.retriveAccountInformation();
+    AccountInformationModel accountModel =
+        AccountInformationModel.fromJson(result['details']['data']);
 
-    fullNama = (accountModel.fullname != null)
-        ? accountModel.fullname
-        : accountModel.nama;
-    divisi = accountModel.divisiName;
-    imgUrl = accountModel.imgUrl;
+    fullNama = accountModel.fullName;
+    divisi = accountModel.divisi;
+    imgUrl = accountModel.imgProfUrl;
     Future.delayed(Duration(milliseconds: 500), () {
       setState(() {
         isLoading = false;
@@ -71,11 +72,14 @@ class _AccountPageState extends State<AccountPage> {
 
   Future refreshItem() async {
     AccountController accountController = Get.put(AccountController());
-    DataAccountModel accountModel = await accountController.fetchData();
+    var result = await accountController.retriveAccountInformation();
+    AccountInformationModel accountModel =
+        AccountInformationModel.fromJson(result['details']['data']);
+
     setState(() {
-      fullNama = accountModel.fullname;
-      divisi = accountModel.divisiName;
-      imgUrl = accountModel.imgUrl;
+      fullNama = accountModel.fullName;
+      divisi = accountModel.divisi;
+      imgUrl = accountModel.imgProfUrl;
       isLoading = true;
     });
     Future.delayed(Duration(milliseconds: 500), () {

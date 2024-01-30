@@ -36,16 +36,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   initData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    // prefs.clear();
     var jsonData = prefs.getString('jsonUser');
-    var jsonDataEmployee = prefs.getString('jsonEmployeeInfo');
-
+    // print(jsonData);
     if (jsonData != null) {
-      Map<String, dynamic> jsonUserMap = json.decode(jsonData!);
-      Map<String, dynamic> jsonEmployeeMap = json.decode(jsonDataEmployee!);
-
-      Map<String, dynamic> mergedJson = {...jsonUserMap, ...jsonEmployeeMap};
-
-      DataAccountModel accountModel = DataAccountModel.fromJson(mergedJson);
       isLogin = "true".obs;
     } else {
       isLogin = "false".obs;

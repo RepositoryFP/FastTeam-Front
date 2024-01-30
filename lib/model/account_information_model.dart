@@ -31,6 +31,11 @@ class AccountInformationModel {
   String? alamatTinggal;
   String? gaji;
   String? nomorRekening;
+  String? shift;
+  String? masukAwal;
+  String? masukAkhir;
+  String? keluarAwal;
+  String? keluarAkhir;
 
   AccountInformationModel({
     this.id,
@@ -58,6 +63,11 @@ class AccountInformationModel {
     this.alamatTinggal,
     this.gaji,
     this.nomorRekening,
+    this.shift,
+    this.masukAkhir,
+    this.masukAwal,
+    this.keluarAkhir,
+    this.keluarAwal,
   });
 
   factory AccountInformationModel.fromJson(Map<String, dynamic> json) =>
@@ -66,7 +76,7 @@ class AccountInformationModel {
         divisi: json['divisi']['name'],
         email: json['email'],
         fullName: "${json['nama_awal']} ${json['nama_akhir']}",
-        imgProfUrl: json['img_url'],
+        imgProfUrl: json['img_prof_url'],
         gender: json['gender']['name'],
         tempatLahir: json['tempat_lahir'],
         tanggalLahir: json['tanggal_lahir'],
@@ -76,5 +86,12 @@ class AccountInformationModel {
         nomorKtp: json['nomor_ktp'],
         alamatKtp: json['alamat_ktp'],
         alamatTinggal: json['alamat_tinggal'],
+        cabang: json['cabang']['name'],
+        shift:
+            "${json['shift']['clock_in_time']} - ${json['shift']['clock_out_time']}",
+        masukAkhir: json['clock_in']['max'],
+        masukAwal: json['clock_in']['min'],
+        keluarAkhir: json['clock_out']['max'],
+        keluarAwal: json['clock_out']['min'],
       );
 }
