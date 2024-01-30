@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:Fast_Team/user/controllerApi.dart';
 import 'dart:convert';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class KameraPage extends StatefulWidget {
   @override
@@ -24,6 +25,7 @@ class KameraPageState extends State<KameraPage> {
   String note = ''; // Tambahkan variabel untuk input note
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+
   final CameraDescription camera = const CameraDescription(
     name: '1',
     lensDirection: CameraLensDirection.front,
@@ -48,9 +50,9 @@ class KameraPageState extends State<KameraPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     Map<String, dynamic>? routeArguments =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    print("ini argumen = $routeArguments");
     if (routeArguments != null) {
       idUser = routeArguments['idUser'];
       long = routeArguments['long'];
@@ -107,18 +109,20 @@ class KameraPageState extends State<KameraPage> {
             ),
             Stack(
               children: [
-                AspectRatio(
-                  aspectRatio: 0.6,
-                  child: FutureBuilder<void>(
-                    future: _initializeControllerFuture,
-                    builder: (context, snapshot) {
-                      if (_controller != null &&
-                          snapshot.connectionState == ConnectionState.done) {
-                        return CameraPreview(_controller);
-                      } else {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                    },
+                Container(
+                  child: Transform.scale(
+                    scale: size.aspectRatio * 2.1,
+                    child: FutureBuilder<void>(
+                      future: _initializeControllerFuture,
+                      builder: (context, snapshot) {
+                        if (_controller != null &&
+                            snapshot.connectionState == ConnectionState.done) {
+                          return CameraPreview(_controller);
+                        } else {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                      },
+                    ),
                   ),
                 ),
                 Positioned(

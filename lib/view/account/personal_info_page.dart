@@ -33,6 +33,8 @@ class _PersonalInfoState extends State<PersonalInfo> {
   var alamatIdentitas;
   var alamatTinggal;
 
+  bool isLoading = true;
+
   Future? _loadData;
 
   TextStyle alertErrorTextStyle = TextStyle(
@@ -67,6 +69,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
 
   initData() async {
     setState(() {
+      isLoading = false;
       _loadData = initializeState();
     });
   }
@@ -78,8 +81,9 @@ class _PersonalInfoState extends State<PersonalInfo> {
   retriveAccountInformation() async {
     AccountController accountController = Get.put(AccountController());
     var result = await accountController.retriveAccountInformation();
+    // print(result['details']['data']);
     AccountInformationModel accountModel =
-        AccountInformationModel.fromJson(result['details']);
+        AccountInformationModel.fromJson(result['details']['data']);
     email = accountModel.email;
     fullname = accountModel.fullName;
     divisiName.value = accountModel.divisi;
@@ -94,10 +98,14 @@ class _PersonalInfoState extends State<PersonalInfo> {
     alamatTinggal.value = accountModel.alamatTinggal;
   }
 
-  Future refreshItem() async {}
+  Future refreshItem() async {
+    setState(() {
+      _loadData = initializeState();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(fullname);
     Widget listItems(title, subtitle, isLoading) => Container(
           padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.w),
           child: Column(
@@ -118,6 +126,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                       child: Container(
                         width: 150.w,
                         height: 15.h,
+                        margin: EdgeInsets.only(bottom: 3.h),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(3.r),
                           color: ColorsTheme.white,
@@ -135,34 +144,26 @@ class _PersonalInfoState extends State<PersonalInfo> {
           ),
         );
     Widget contentBody(isLoading) {
-      return RefreshWidget(
-          onRefresh: refreshItem,
-          child: Container(
-            color: ColorsTheme.white,
-            child: ListView(scrollDirection: Axis.vertical, children: [
-              listItems('Nama Lengkap', '$fullname', isLoading),
-              listItems('Email', '$email', isLoading),
-              listItems('Jenis Kelamin', '$jenisKelamin', isLoading),
-              listItems('Tempat Lahir', '$tempatLahir', isLoading),
-              listItems('Tanggal Lahir', '$tanggalLahir', isLoading),
-              listItems('Handphone', '$noHp', isLoading),
-              listItems('Status Pernikahan', '$statusPerinkahan', isLoading),
-              listItems('Agama', '$agama', isLoading),
-              listItems('Nomor KTP', '$nomorID', isLoading),
-              listItems('Alamat KTP', '$alamatIdentitas', isLoading),
-              listItems('Alamat Tinggal', '$alamatTinggal', isLoading),
-            ]),
-          ));
+      return Container(
+        color: ColorsTheme.white,
+        child: ListView(scrollDirection: Axis.vertical, children: [
+          listItems('Nama Lengkap', '$fullname', isLoading),
+          listItems('Email', '$email', isLoading),
+          listItems('Jenis Kelamin', '$jenisKelamin', isLoading),
+          listItems('Tempat Lahir', '$tempatLahir', isLoading),
+          listItems('Tanggal Lahir', '$tanggalLahir', isLoading),
+          listItems('Handphone', '$noHp', isLoading),
+          listItems('Status Pernikahan', '$statusPerinkahan', isLoading),
+          listItems('Agama', '$agama', isLoading),
+          listItems('Nomor KTP', '$nomorID', isLoading),
+          listItems('Alamat KTP', '$alamatIdentitas', isLoading),
+          listItems('Alamat Tinggal', '$alamatTinggal', isLoading),
+        ]),
+      );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Personal Info'),
-        actions: <Widget>[
-          IconButton(icon: Icon(Icons.edit_square), onPressed: () {}),
-        ],
-      ),
-      body: FutureBuilder(
+    Widget body() {
+      return FutureBuilder(
         future: _loadData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -184,6 +185,19 @@ class _PersonalInfoState extends State<PersonalInfo> {
             return contentBody(true);
           }
         },
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Personal Info'),
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.edit_square), onPressed: () {}),
+        ],
+      ),
+      body: RefreshWidget(
+        onRefresh: refreshItem,
+        child: body(),
       ),
     );
   }

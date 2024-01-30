@@ -164,6 +164,7 @@ class _LoginPageState extends State<LoginPage> {
     requestLogin() async {
       var userResult = await controller.requestLoginUser(
           emailInput.text, passwordInput.text);
+      print("print = $userResult");
 
       if (userResult['status'] == 200) {
         if (userResult['details']['status'] == "success") {
@@ -173,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
               userResult['details']['data']['id_user'] ?? 0);
 
           if (employeeResult['status'] == 200) {
-            controller.storeEmployeeInfo(employeeResult['details']);
+            // controller.storeEmployeeInfo(employeeResult['details']);
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (BuildContext context) => NavigatorBottomMenu(),

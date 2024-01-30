@@ -18,6 +18,7 @@ class LocalSession {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.setInt('user-id_user', jsonData['id_user']);
+    await prefs.setInt('user-employee_id', jsonData['empoloyee_id']);
     await prefs.setInt('user-id_divisi', jsonData['divisi_id']);
     await prefs.setString('user-email', jsonData['email']);
     await prefs.setString('user-nama', jsonData['nama']);
@@ -47,7 +48,6 @@ class LocalSession {
     prefs.setString('jsonEmployeeInfo', jsonString);
     await prefs.setString(
         'emp-full_name', "${jsonData['nama_awal']} ${jsonData['nama_akhir']}");
-    await prefs.setString('emp-date_birth', jsonData['tanggal_lahir']);
     await prefs.setString('emp-divisi', jsonData['divisi']['name']);
     await prefs.setString('emp-posisi', jsonData['posisi_pekerjaan']['name']);
     await prefs.setString('emp-email', jsonData['email']);
