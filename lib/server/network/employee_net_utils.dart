@@ -17,4 +17,13 @@ class EmployeeNetUtils {
 
     return response;
   }
+
+  retrieveEmployeeList() async {
+    var response = await http
+        .get(Uri.parse(
+            "${BaseServer.serverUrl}/api_absensi/user-absen/"))
+        .timeout(BaseServer.durationlimit);
+
+    return response;
+  }
 }

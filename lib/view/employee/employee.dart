@@ -61,6 +61,7 @@ class _EmployeePageState extends State<EmployeePage> {
               decoration: InputDecoration(
                 hintText: 'Search',
                 prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(100.0)),
                 suffixIcon: IconButton(
                   icon: Icon(Icons.clear),
                   onPressed: () {
