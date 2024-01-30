@@ -7,6 +7,7 @@ AccountInformationModel accountInformationModelFromJson(String str) =>
 
 class AccountInformationModel {
   int? id;
+  int? id_employee;
   String? namaAwal;
   String? fullName;
   String? namaAkhir;
@@ -39,6 +40,7 @@ class AccountInformationModel {
 
   AccountInformationModel({
     this.id,
+    this.id_employee,
     this.fullName,
     this.namaAwal,
     this.namaAkhir,
@@ -72,7 +74,8 @@ class AccountInformationModel {
 
   factory AccountInformationModel.fromJson(Map<String, dynamic> json) =>
       AccountInformationModel(
-        id: json['id'],
+        id: json['user']['id'],
+        id_employee: json['id'],
         divisi: json['divisi']['name'],
         email: json['email'],
         fullName: "${json['nama_awal']} ${json['nama_akhir']}",

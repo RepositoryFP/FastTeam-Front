@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:Fast_Team/style/color_theme.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:camera/camera.dart';
@@ -72,41 +73,30 @@ class KameraPageState extends State<KameraPage> {
             Navigator.pop(context);
           },
         ),
+        centerTitle: true,
+        title: Column(
+          children: [
+            Text(
+              'Office: $kantor',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8), // Space between "Kantor" and "Masuk"
+            Text(
+              'Shift: $shift',
+              style: TextStyle(
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
       ),
       resizeToAvoidBottomInset: true, // Set this to true
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20.0),
-                  bottomRight: Radius.circular(20.0),
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              alignment: Alignment.centerLeft, // Align text to the left
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Office: $kantor',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8), // Space between "Kantor" and "Masuk"
-                  Text(
-                    'Shift: $shift',
-                    style: TextStyle(
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
             Stack(
               children: [
                 Container(
@@ -130,6 +120,7 @@ class KameraPageState extends State<KameraPage> {
                   left: 0, // Adjust the positioning as needed
                   right: 0, // Expand the Positioned widget to full width
                   child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
                     color: Colors.white,
                     child: Column(
                       children: [
@@ -156,7 +147,7 @@ class KameraPageState extends State<KameraPage> {
                         ),
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
                           child: TextFormField(
                             decoration: InputDecoration(
                               labelText: 'Note',
@@ -213,8 +204,8 @@ class KameraPageState extends State<KameraPage> {
       var resp = await kirimCekGambar(imageFile);
       var resp_body = jsonDecode(resp);
       Navigator.pop(context); // Tutup popup loading
-
       if (resp_body['status'] == true) {
+        _controller.dispose();
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -244,7 +235,10 @@ class KameraPageState extends State<KameraPage> {
                     minimumSize:
                         Size(double.infinity, 50), // Atur lebar tombol ke penuh
                   ),
-                  child: Text('OK'),
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: ColorsTheme.white),
+                  ),
                 ),
               ],
             );
@@ -257,7 +251,20 @@ class KameraPageState extends State<KameraPage> {
   }
 
   Future<String> kirimCekGambar(File imageFile) async {
-    var request = http.MultipartRequest(
+    http.MultipartRequest request = await storeImageAbsent(imageFile);
+
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      var responseBody = await response.stream.bytesToString();
+      return responseBody;
+    } else {
+      var responseBody = await response.stream.bytesToString();
+      return responseBody;
+    }
+  }
+
+  Future<http.MultipartRequest> storeImageAbsent(File imageFile) async {
+     var request = http.MultipartRequest(
       'POST',
       Uri.parse('${globalVariable.baseUrl}/compare-image/'),
     );
@@ -272,15 +279,7 @@ class KameraPageState extends State<KameraPage> {
       'base_64': await imageToBase64(imageFile),
       'note': note ?? '',
     });
-
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      var responseBody = await response.stream.bytesToString();
-      return responseBody;
-    } else {
-      var responseBody = await response.stream.bytesToString();
-      return responseBody;
-    }
+    return request;
   }
 
   Future<String> imageToBase64(File imageFile) async {
@@ -339,10 +338,10 @@ class ResultScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                      padding: EdgeInsets.only(top: 50),
+                      padding: EdgeInsets.only(top: 40.w),
                       child: Image.asset(
                         'assets/img/logopanjang.png',
-                        width: 250,
+                        width: 250.w,
                       ),
                     ),
                   ],
@@ -352,79 +351,85 @@ class ResultScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                      padding: EdgeInsets.only(top: 50),
+                      padding: EdgeInsets.only(top: 5.w),
                       child: Image.asset(
                         imageAsset, // Gunakan imageAsset yang sesuai dengan status
-                        width: 250,
+                        width: 230.w,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10.h),
                 Text(
                   'Clock $aksi',
                   style: TextStyle(
-                    fontSize: 40,
+                    fontSize: 30.sp,
                     fontWeight: FontWeight.w900,
                     color: timeColor, // Ganti warna teks currentTime
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10.h),
                 Text(
                   '$kantor - $day',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                  style:
+                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w900),
                 ),
                 Text(
                   '08:00 - 16:00',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                  style:
+                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w900),
                 ),
                 Text(
                   currentDate,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                  style:
+                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w300),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 10.h),
                 Text(
                   currentTime,
                   style: TextStyle(
-                    fontSize: 30,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.w500,
                     color: timeColor, // Ganti warna teks currentTime
                   ),
                 ),
                 SizedBox(height: 16),
-                Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(double.infinity, 50),
-                      ),
-                      child: Text('Back To Home'),
-                    ),
-                    SizedBox(height: 5),
-                    Container(
-                      width: double.infinity,
-                      child: ElevatedButton(
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  child: Column(
+                    children: [
+                      ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/daftarAbsensi');
+                          Navigator.pushNamed(context, '/home');
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.transparent,
-                          elevation: 0,
-                          side: BorderSide(
-                            color: Colors.grey,
-                            width: 1,
+                          minimumSize: Size(double.infinity, 50),
+                        ),
+                        child: Text('Back To Home'),
+                      ),
+                      SizedBox(height: 5),
+                      Container(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/daftarAbsensi');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.transparent,
+                            elevation: 0,
+                            side: BorderSide(
+                              color: Colors.grey,
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            'Show Log Attendance',
+                            style: TextStyle(color: Colors.grey),
                           ),
                         ),
-                        child: Text(
-                          'Show Log Attendance',
-                          style: TextStyle(color: Colors.grey),
-                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 16,

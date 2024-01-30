@@ -1,4 +1,6 @@
+import 'package:Fast_Team/controller/absent_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:http/http.dart' as http;
@@ -30,9 +32,11 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
   int userId = 0;
   int absenCount = 0;
   int lateClockInCount = 0;
-  int earlyClockInCount = 0;
+  int earlyClockOutCount = 0;
   int noClockInCount = 0;
   int noClockOutCount = 0;
+
+  AbsentController? absentController;
 
   @override
   void initState() {
@@ -48,90 +52,19 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
   }
 
   Future<void> _loadDataForSelectedMonth() async {
-    final data = await fetchData(_selectedDate);
-    final totalData = await fetchTotalData(userId,
-        '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}');
+    absentController = Get.put(AbsentController());
+
+    final data = await absentController!.retriveAbsentData(_selectedDate);
+    final totalData = await absentController!.retriveTotalData(_selectedDate);
+    print(data);
     setState(() {
       _data = data;
-      absenCount = totalData['absen'];
-      lateClockInCount = totalData['late_clock_in'];
-      earlyClockInCount = totalData['late_clock_out'];
-      noClockInCount = totalData['no_clock_in'];
-      noClockOutCount = totalData['no_clock_out'];
+      absenCount = totalData['details']['absen'];
+      lateClockInCount = totalData['details']['late_clock_in'];
+      earlyClockOutCount = totalData['details']['early_clock_out'];
+      noClockInCount = totalData['details']['no_clock_in'];
+      noClockOutCount = totalData['details']['no_clock_out'];
     });
-  }
-
-  // Tambahkan metode untuk memanggil API total data
-  Future<Map<String, dynamic>> fetchTotalData(int userId, String date) async {
-    final Uri url = Uri.parse(
-        '${globalVariable.baseUrl}/log-absen/detail-total/$userId/$date/');
-
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load total data');
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> fetchData(DateTime selectedDate) async {
-    final Uri url = Uri.parse(
-        '${globalVariable.baseUrl}/log-absen/$userId/${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}/');
-
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = json.decode(response.body);
-      return jsonData.map((data) {
-        final String rawTimeMasuk = data['clock_in']['jam_absen'];
-        DateTime? dateTimeMasuk;
-
-        if (rawTimeMasuk != null &&
-            RegExp(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$')
-                .hasMatch(rawTimeMasuk)) {
-          dateTimeMasuk = DateTime.parse(rawTimeMasuk).toLocal();
-        }
-
-        final String jamMasuk = dateTimeMasuk != null
-            ? DateFormat.Hm().format(dateTimeMasuk)
-            : '--:--';
-
-        final String rawTimeKeluar = data['clock_out']['jam_absen'];
-        DateTime? dateTimeKeluar;
-
-        if (rawTimeKeluar != null &&
-            RegExp(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$')
-                .hasMatch(rawTimeKeluar)) {
-          dateTimeKeluar = DateTime.parse(rawTimeKeluar).toLocal();
-        }
-
-        final String jamKeluar = dateTimeKeluar != null
-            ? DateFormat.Hm().format(dateTimeKeluar)
-            : '--:--';
-
-        final DateTime tanggal = DateTime.parse(data['tanggal']);
-        final String dateText =
-            '${tanggal.day} ${DateFormat.MMM().format(tanggal)}';
-
-        return {
-          'dateText': dateText,
-          'dateColor':
-              tanggal.weekday == DateTime.sunday ? Colors.red : Colors.black,
-          'id_masuk': data['clock_in']['id_absen'] != null
-              ? data['clock_in']['id_absen']
-              : null,
-          'id_keluar': data['clock_out']['id_absen'] != null
-              ? data['clock_out']['id_absen']
-              : null,
-          'jamMasuk': jamMasuk,
-          'jamKeluar': jamKeluar,
-          'isSunday': tanggal.weekday == DateTime.sunday,
-        };
-      }).toList();
-    } else {
-      throw Exception('Failed to load data');
-    }
   }
 
   Future<void> _selectMonth(BuildContext context) async {
@@ -257,7 +190,7 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
                         _buildStatusItem(
                             'Late Clock In', '$lateClockInCount', 14),
                         _buildStatusItem(
-                            'Early Clock In', '$earlyClockInCount', 14),
+                            'Early Clock Out', '$earlyClockOutCount', 14),
                       ],
                     ),
                     SizedBox(height: 16.0),
