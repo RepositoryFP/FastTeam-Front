@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 void main() {
   // Load time zone data
   tzdata.initializeTimeZones();
-  
+
   // Set the default time zone to Asia/Jakarta
   tz.setLocalLocation(tz.getLocation('Asia/Jakarta'));
 
@@ -27,8 +27,8 @@ class TabNotificationPage extends StatefulWidget {
   State<TabNotificationPage> createState() => _TabNotificationPageState();
 }
 
-class _TabNotificationPageState extends State<TabNotificationPage> with AutomaticKeepAliveClientMixin {
-  
+class _TabNotificationPageState extends State<TabNotificationPage>
+    with AutomaticKeepAliveClientMixin {
   int userId = 0;
   InboxController? inboxController;
   List<Map<String, dynamic>> notificationList = [];
@@ -61,7 +61,8 @@ class _TabNotificationPageState extends State<TabNotificationPage> with Automati
   }
 
   Future markAllAsRead() async {
-    var result = await inboxController!.requestReadAllNotification(userId.toString());
+    var result =
+        await inboxController!.requestReadAllNotification(userId.toString());
     if (result['status'] == 200) {
       await fetchData();
       showSnackBar('All notification is read', Colors.green);
@@ -72,19 +73,19 @@ class _TabNotificationPageState extends State<TabNotificationPage> with Automati
 
   showSnackBar(message, Color color) {
     snackbar() => SnackBar(
-      content: Text(
-        message,
-        style: const TextStyle(
-            fontSize: 12.0,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-        ),
-      ),
-      backgroundColor: color,
-      duration: const Duration(milliseconds: 2000),
-    );
+          content: Text(
+            message,
+            style: const TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: color,
+          duration: const Duration(milliseconds: 2000),
+        );
     ScaffoldMessenger.of(context).showSnackBar(snackbar());
-  } 
+  }
 
   void showCustomDialog(BuildContext context, String message) {
     showDialog(
@@ -108,8 +109,10 @@ class _TabNotificationPageState extends State<TabNotificationPage> with Automati
 
   String dateFormat(String date) {
     String dateString = date;
-    DateTime dateData = DateFormat("yyyy-MM-ddTHH:mm:ss.SSSSSSZ").parseUtc(dateString);
-    tz.TZDateTime jakartaTime = tz.TZDateTime.from(dateData, tz.getLocation('Asia/Jakarta'));
+    DateTime dateData =
+        DateFormat("yyyy-MM-ddTHH:mm:ss.SSSSSSZ").parseUtc(dateString);
+    tz.TZDateTime jakartaTime =
+        tz.TZDateTime.from(dateData, tz.getLocation('Asia/Jakarta'));
     String formattedDate = DateFormat('d MMM y HH:mm').format(jakartaTime);
 
     return formattedDate;
@@ -120,14 +123,19 @@ class _TabNotificationPageState extends State<TabNotificationPage> with Automati
     super.build(context);
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: RefreshWidget(
-        onRefresh: fetchData,
-        child: (notificationList.isNotEmpty) 
-          ? _notificationList()
-          : _noNotifications()
-      ),
-    );
+        resizeToAvoidBottomInset: false,
+        body: RefreshWidget(
+          onRefresh: fetchData,
+          child: (notificationList.isNotEmpty)
+              ? ListView(
+                  children: [_notificationList()],
+                )
+              : _noNotifications(),
+        )
+        // child: (notificationList.isNotEmpty)
+        //     ? _notificationList()
+        //     : _noNotifications()),
+        );
   }
 
   SingleChildScrollView _notificationList() {
@@ -138,10 +146,10 @@ class _TabNotificationPageState extends State<TabNotificationPage> with Automati
           children: <Widget>[
             const Padding(padding: EdgeInsets.only(bottom: 8.0)),
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 markAllAsRead();
               },
-              child: Text (
+              child: Text(
                 'Mark All as Read',
                 style: TextStyle(
                   color: Colors.blue[900],
@@ -149,7 +157,9 @@ class _TabNotificationPageState extends State<TabNotificationPage> with Automati
                 ),
               ),
             ),
-            const SizedBox(height: 16.0,),
+            const SizedBox(
+              height: 16.0,
+            ),
             Divider(
               height: 0.5,
               color: Colors.blue[900],
@@ -165,44 +175,56 @@ class _TabNotificationPageState extends State<TabNotificationPage> with Automati
                   children: [
                     ListTile(
                       onTap: () async {
-                        await Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationDetailPage(notificationId: notification['id']),),);
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NotificationDetailPage(
+                                notificationId: notification['id']),
+                          ),
+                        );
                         await fetchData();
                       },
                       leading: CircleAvatar(
-                        backgroundImage: NetworkImage(notification['sender']['photo'])
-                        // backgroundColor: const Color.fromARGB(255, 10, 106, 184),
-                        // child: Text(
-                        //   notification['sender']['divisi'],
-                        //   style: TextStyle(color: Colors.white),
-                        // ),
-                      ),
+                          backgroundImage:
+                              NetworkImage(notification['sender']['photo'])
+                          // backgroundColor: const Color.fromARGB(255, 10, 106, 184),
+                          // child: Text(
+                          //   notification['sender']['divisi'],
+                          //   style: TextStyle(color: Colors.white),
+                          // ),
+                          ),
                       title: Text(
-                        notification['sender']['divisi'] +" - "+ notification['sender']['name'],
+                        notification['sender']['divisi'] +
+                            " - " +
+                            notification['sender']['name'],
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       subtitle: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            notification['message'],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: false,
-                            style: TextStyle(color: Colors.black, fontSize: 14.0),
-                          ),
-                          Text(
-                            dateSend,
-                            style: TextStyle(color: Colors.black, fontSize: 14.0),
-                          )
-                        ]  
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              notification['message'],
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 14.0),
+                            ),
+                            Text(
+                              dateSend,
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 14.0),
+                            )
+                          ]),
+                      trailing: Icon(
+                        Icons.chevron_right,
+                        color: Colors.blue[900],
                       ),
-                      trailing: Icon(Icons.chevron_right, color: Colors.blue[900],),
-                      tileColor: !notification['is_read']
-                          ? Colors.blue[100]
-                          : null,
+                      tileColor:
+                          !notification['is_read'] ? Colors.blue[100] : null,
                     ),
                     Divider(
                       height: 0.5,
@@ -228,13 +250,20 @@ class _TabNotificationPageState extends State<TabNotificationPage> with Automati
             height: 200, // Adjust height as needed
             decoration: BoxDecoration(
               color: Colors.blue[100], // Adjust color as needed
-              borderRadius: BorderRadius.circular(100), // Half the height for an oval shape
+              borderRadius: BorderRadius.circular(
+                  100), // Half the height for an oval shape
             ),
             child: const Center(
-              child: Icon(Icons.update, size: 100.0, color: Colors.blue,),
+              child: Icon(
+                Icons.update,
+                size: 100.0,
+                color: Colors.blue,
+              ),
             ),
           ),
-          const SizedBox(height: 16.0,),
+          const SizedBox(
+            height: 16.0,
+          ),
           const Text(
             'There is no notification',
             style: TextStyle(
