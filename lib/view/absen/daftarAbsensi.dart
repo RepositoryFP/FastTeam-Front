@@ -1,5 +1,7 @@
 import 'package:Fast_Team/controller/absent_controller.dart';
+import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -44,6 +46,10 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
     _loadUserId().then((_) {
       _loadDataForSelectedMonth();
     });
+  }
+
+  Future refreshItem() async {
+    await _loadDataForSelectedMonth();
   }
 
   Future<void> _loadUserId() async {
@@ -117,7 +123,7 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
         title: Text('Daftar Absensi'),
       ),
       body: Column(
-        children: <Widget>[
+        children: [
           SizedBox(height: 20.0),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0),
@@ -156,87 +162,91 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
               ),
             ),
           ),
+          SizedBox(height: 5.w),
+          cardAbsentInfo(context),
           SizedBox(height: 5.0),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 5.0),
-            constraints:
-                BoxConstraints(maxWidth: MediaQuery.of(context).size.width),
-            child: Card(
-              elevation: 2.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFF42A5F5),
-                      Color(0xFF1976D2),
-                      Color(0xFF0D47A1)
-                    ],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        _buildStatusItem('Absen', '$absenCount', 14),
-                        _buildStatusItem(
-                            'Late Clock In', '$lateClockInCount', 14),
-                        _buildStatusItem(
-                            'Early Clock Out', '$earlyClockOutCount', 14),
-                      ],
-                    ),
-                    SizedBox(height: 16.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        _buildStatusItem('No Clock In', '$noClockInCount', 14),
-                        _buildStatusItem(
-                            'No Clock Out', '$noClockOutCount', 14),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 5.0),
-          Expanded(
-            child: ListView.separated(
-              itemCount: daysInMonth,
-              separatorBuilder: (BuildContext context, int index) =>
-                  SizedBox(height: 10), // Jarak antara setiap item
-              itemBuilder: (BuildContext context, int index) {
-                final Map<String, dynamic> item =
-                    _data.isNotEmpty ? _data[index] : {};
-                String tanggal = (index + 1).toString();
-                bool isSunday = item['isSunday'] ?? false;
-                Color dateColor =
-                    item['dateColor'] ?? (isSunday ? Colors.red : Colors.black);
-                String dateText = item['dateText'] ??
-                    (isSunday
-                        ? '$tanggal ${DateFormat.MMM().format(_selectedDate)}\nHari Libur'
-                        : '$tanggal ${DateFormat.MMM().format(_selectedDate)}');
-
-                return AbsensiListItem(
-                  dateText: dateText,
-                  dateColor: dateColor,
-                  jamMasuk: item['jamMasuk'] ?? '--:--',
-                  jamKeluar: item['jamKeluar'] ?? '--:--',
-                  idMasuk: item['id_masuk'] ?? 0,
-                  idKeluar: item['id_keluar'] ?? 0,
-                  isSunday: isSunday,
-                );
-              },
-            ),
-          ),
+          ListAbsent(daysInMonth),
         ],
+      ),
+    );
+  }
+
+  Widget ListAbsent(int daysInMonth) {
+    return Expanded(
+      child: RefreshWidget(
+        onRefresh: refreshItem,
+        child: ListView.separated(
+          itemCount: daysInMonth,
+          separatorBuilder: (BuildContext context, int index) =>
+              SizedBox(height: 10), // Jarak antara setiap item
+          itemBuilder: (BuildContext context, int index) {
+            final Map<String, dynamic> item =
+                _data.isNotEmpty ? _data[index] : {};
+            String tanggal = (index + 1).toString();
+            bool isSunday = item['isSunday'] ?? false;
+            Color dateColor =
+                item['dateColor'] ?? (isSunday ? Colors.red : Colors.black);
+            String dateText = item['dateText'] ??
+                (isSunday
+                    ? '$tanggal ${DateFormat.MMM().format(_selectedDate)}\nHari Libur'
+                    : '$tanggal ${DateFormat.MMM().format(_selectedDate)}');
+
+            return AbsensiListItem(
+              dateText: dateText,
+              dateColor: dateColor,
+              jamMasuk: item['jamMasuk'] ?? '--:--',
+              jamKeluar: item['jamKeluar'] ?? '--:--',
+              idMasuk: item['id_masuk'] ?? 0,
+              idKeluar: item['id_keluar'] ?? 0,
+              isSunday: isSunday,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget cardAbsentInfo(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 5.0),
+      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width),
+      child: Card(
+        elevation: 2.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF42A5F5), Color(0xFF1976D2), Color(0xFF0D47A1)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  _buildStatusItem('Absen', '$absenCount', 14),
+                  _buildStatusItem('Late Clock In', '$lateClockInCount', 14),
+                  _buildStatusItem(
+                      'Early Clock Out', '$earlyClockOutCount', 14),
+                ],
+              ),
+              SizedBox(height: 16.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  _buildStatusItem('No Clock In', '$noClockInCount', 14),
+                  _buildStatusItem('No Clock Out', '$noClockOutCount', 14),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

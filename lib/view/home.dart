@@ -326,10 +326,10 @@ class _HomePageState extends State<HomePage> {
               color: ColorsTheme.white,
             ),
           ));
-      Widget absnetButton(name, status, loading) => (loading)
+      Widget absnetButton(name, status, clockIn, loading) => (loading)
           ? absnetButtonLoading()
           : ElevatedButton(
-              onPressed: status ? _clockIn : null,
+              onPressed: status ? (clockIn ? _clockIn : _clockOut) : null,
               style: ElevatedButton.styleFrom(
                 primary: status ? Color.fromARGB(255, 2, 65, 128) : Colors.grey,
               ),
@@ -416,8 +416,9 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                absnetButton('Clock In', canClockIn, statusLoading),
-                absnetButton('Clock Out', canClockOut, statusLoading),
+                absnetButton('Clock In', canClockIn, canClockIn, statusLoading),
+                absnetButton(
+                    'Clock Out', canClockOut, canClockIn, statusLoading),
               ],
             ),
           ),
@@ -465,7 +466,12 @@ class _HomePageState extends State<HomePage> {
                                 loadingData(1),
                               ]
                             : [
-                                Text('$nama', style: headerStyle(false)),
+                                Container(
+                                  width: 200.w,
+                                  child:
+                                      Text('$nama', style: headerStyle(false)),
+                                ),
+                                SizedBox(height: 5.h),
                                 Text('$divisi', style: headerStyle(true)),
                               ],
                       ),
