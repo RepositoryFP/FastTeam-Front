@@ -1,3 +1,4 @@
+import 'package:Fast_Team/style/color_theme.dart';
 import 'package:Fast_Team/view/account/account_page.dart';
 import 'package:Fast_Team/view/employee/employee.dart';
 import 'package:Fast_Team/view/inbox/inbox_page.dart';
@@ -64,13 +65,14 @@ class _NavigatorBottomMenuState extends State<NavigatorBottomMenu> {
     }
 
     Widget itemNavigation() => Container(
-          color: Colors.blue, // Ganti dengan warna yang sesuai
+          color: ColorsTheme.primary, // Ganti dengan warna yang sesuai
           child: BottomNavigationBar(
             onTap: (index) => setState(() {
               moveToMenu(index);
             }),
             currentIndex: selectedIndex.value,
             type: BottomNavigationBarType.fixed,
+            selectedItemColor: ColorsTheme.primary,
             items: [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),
