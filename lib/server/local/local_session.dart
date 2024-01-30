@@ -16,7 +16,6 @@ class LocalSession {
 
   storeUserInfo(jsonData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     await prefs.setInt('user-id_user', jsonData['id_user']);
     await prefs.setInt('user-employee_id', jsonData['empoloyee_id']);
     await prefs.setInt('user-id_divisi', jsonData['divisi_id']);
