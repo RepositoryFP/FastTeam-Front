@@ -113,6 +113,7 @@ class _OvertimePageState extends State<OvertimePage> with AutomaticKeepAliveClie
         'tanggal': formattedDate,
         'jam_mulai': formattedStartTime,
         'jam_selesai': formattedEndTime,
+        'alasan': overtimeReason,
       };
 
       var result = await scheduleRequestController!.insertOvertimeSubmission(requestBody);

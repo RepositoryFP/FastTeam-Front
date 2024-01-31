@@ -76,7 +76,7 @@ class _LeavePageState extends State<LeavePage> with AutomaticKeepAliveClientMixi
     }
   }
 
-  showSnackBar(message) {
+  showSnackBar(message, Color color) {
     snackbar() => SnackBar(
       content: Text(
         message,
@@ -86,8 +86,8 @@ class _LeavePageState extends State<LeavePage> with AutomaticKeepAliveClientMixi
             color: Colors.white,
         ),
       ),
-      backgroundColor: Colors.red,
-      duration: const Duration(milliseconds: 2000),
+      backgroundColor: color,
+      duration: const Duration(milliseconds: 3000),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackbar());
   } 
@@ -166,17 +166,17 @@ class _LeavePageState extends State<LeavePage> with AutomaticKeepAliveClientMixi
           });
           
           showCustomDialog(context, 'Request has been submitted, please check your inbox periodically for confirmation updates');
+          showSnackBar('Leave request created successfully', Colors.green);
       } else if (result.statusCode == 400){
-        print(result);
         String message = "error ${result.statusCode}, contact administrator";
         
-        showSnackBar(message);
+        showSnackBar(message, Colors.red);
       }
     }
 
     validateFormInput() async {
         if(leaveReason.isEmpty) {
-          showSnackBar("Reason field cannot be empty");
+          showSnackBar("Reason field cannot be empty", Colors.red);
         } else {
           await insertLeaveSubmission();
         }
