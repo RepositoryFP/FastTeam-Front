@@ -2,6 +2,7 @@ import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Fast_Team/controller/inbox_controller.dart';
+import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
 class ApprovalLeavePage extends StatefulWidget {
@@ -24,6 +25,8 @@ class _ApprovalLeavePageState extends State<ApprovalLeavePage> {
   }
 
   Future refreshItem() async {
+    
+    leaveList.clear();
     fetchData();
   }
 
@@ -55,6 +58,37 @@ class _ApprovalLeavePageState extends State<ApprovalLeavePage> {
     ScaffoldMessenger.of(context).showSnackBar(snackbar());
   }
 
+  void showImage(BuildContext context, String image) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Proof Picture'),
+          content: Image.network(
+            'http://103.29.214.154:9002/static/bukti/$image',
+            errorBuilder:(context, error, stackTrace) =>  const SizedBox(
+              height: 150.0,
+              child: Column(
+                children: <Widget>[
+                  Icon(Icons.photo, size: 100.0,),
+                  Text('Image Not Found'),
+                ],
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Color getStatusColor(int status) {
     switch (status) {
       case 0:
@@ -81,6 +115,19 @@ class _ApprovalLeavePageState extends State<ApprovalLeavePage> {
     }
   }
 
+  String formatDateString(String dateString) {
+    // Parse the original date string
+    DateTime originalDate = DateTime.parse(dateString);
+
+    // Define the date format
+    DateFormat formatter = DateFormat('dd MMM yyyy HH:mm');
+
+    // Format the date to the desired format
+    String formattedDate = formatter.format(originalDate);
+
+    return formattedDate;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,14 +141,18 @@ class _ApprovalLeavePageState extends State<ApprovalLeavePage> {
       ),
       body: RefreshWidget(
         onRefresh: refreshItem,
-        child: ListView.builder(
-          itemCount: leaveList.length,
-          shrinkWrap: true,
-          physics: const ClampingScrollPhysics(),
-          itemBuilder: (context, index) {
-            final leave = leaveList[index];
-            return _attendanceTile(leave);
-          },
+        child: (leaveList.isNotEmpty)
+        ? ListView.builder(
+            itemCount: leaveList.length,
+            shrinkWrap: true,
+            physics: const ClampingScrollPhysics(),
+            itemBuilder: (context, index) {
+              final leave = leaveList[index];
+              return _attendanceTile(leave);
+            }
+          )
+        : Center(
+          child: const CircularProgressIndicator(),
         ),
       ),
     );
@@ -110,58 +161,120 @@ class _ApprovalLeavePageState extends State<ApprovalLeavePage> {
   Container _attendanceTile(leave) {
     return Container(
       padding: const EdgeInsets.all(9.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: <Widget>[
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start, 
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Container(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start, 
+                children: <Widget>[
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Type',
+                        style: TextStyle(
+                          color: Colors.grey,
+                        )
+                      ),
+                      Text(
+                        'Date',
+                        style: TextStyle(
+                          color: Colors.grey,
+                        )
+                      ),
+                      Text(
+                        'Reason',
+                        style: TextStyle(
+                          color: Colors.grey,
+                        )
+                      ),
+                    ]
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          leave['cuti']['name'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          )
+                        ),
+                        Text(
+                          formatDateString(leave['tanggal']),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),  
+                        ),
+                        Text(
+                          (leave['alasan'] == null || leave['alasan'] == '') ? '-': leave['alasan'],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              (leave['bukti'].toString().isEmpty)
+              ? Container(
+                padding: EdgeInsets.all(15.0),
+                decoration: BoxDecoration(
+                  color: Colors.purple[100],
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(100.0),
+                ),
+                child: const Icon(Icons.photo, color: Colors.white, size: 30,),
+              )
+              : GestureDetector(
+                onTap: () {
+                  showImage(context, leave['bukti']);
+                },
                 child: CircleAvatar(
-                  backgroundImage: NetworkImage("http://103.29.214.154:9002/static/imgUserProfile/${leave['user']['photo']}"),
-                  radius: 30.0,
+                  backgroundImage: NetworkImage('http://103.29.214.154:9002/static/bukti/${leave['bukti']}'),
+                  radius: 30,
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      leave['cuti']['name'], 
-                    ),
-                    Text(
-                      leave['tanggal'],
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey,
-                      ),  
-                    ),
-                    Text(
-                      (leave['alasan'] == null || leave['alasan'] == '') ? '-': leave['alasan'],
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: false,
-                    )
-                  ],
+              Container(
+                padding: EdgeInsets.all(6.0),
+                decoration: BoxDecoration(
+                  color: getStatusColor(leave['status']),
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                child: Text(
+                  getStatusText(leave['status']),
+                  style: TextStyle(color: Colors.white),
                 ),
               )
             ],
           ),
-          Container(
-            padding: EdgeInsets.all(6.0),
-            decoration: BoxDecoration(
-              color: getStatusColor(leave['status']),
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            child: Text(
-              getStatusText(leave['status']),
-              style: TextStyle(color: Colors.white),
-            ),
+          SizedBox(height: 16.0,),
+          Divider(
+            height: 0.5,
+            color: Colors.grey[200],
           )
-        ],
+        ]
+      ),
+    );
+  }
+
+  Widget _pillDecoration(message, Color color) {
+    return Container(
+      padding: EdgeInsets.all(6.0),
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.rectangle,
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      child: Text(
+        message,
+        style: TextStyle(color: Colors.white),
       ),
     );
   }

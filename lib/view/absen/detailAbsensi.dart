@@ -40,26 +40,24 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     id = ModalRoute.of(context)!.settings.arguments as int;
-    print(id);
 
     initializeDateFormatting("id_ID", null).then((_) {
       absentController = Get.put(AbsentController());
       absentController!.retriveDetailAbsenst(id).then((data) {
-        print("test = ${data}");
         setState(() {
-          _latitude = double.parse(data['lat']);
-          _longitude = double.parse(data['long']);
-          aksi = data['aksi'];
+          _latitude = double.parse(data['details']['lat']);
+          _longitude = double.parse(data['details']['long']);
+          aksi = data['details']['aksi'];
 
           try {
-            final utcDateTime = DateTime.parse(data['jam_absen']);
+            final utcDateTime = DateTime.parse(data['details']['jam_absen']);
             final offset = Duration(hours: 7);
             final indonesiaDateTime = utcDateTime.add(offset);
 
             final format = DateFormat('yyyy-MM-dd HH:mm:ss', 'id_ID');
             createdAt = '${format.format(indonesiaDateTime)}';
-            imgbase64 = data['image64'];
-            lokasi = data['lokasi'];
+            imgbase64 = data['details']['image64'];
+            lokasi = data['details']['lokasi'];
           } catch (error) {
             imgbase64 = null;
             imageValid = false;
@@ -69,20 +67,9 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
           _isMapReady = true;
         });
       }).catchError((error) {
-        print('Error: $error');
+        print(error);
       });
     });
-  }
-
-  Future<Map<String, dynamic>> fetchData(int id) async {
-    final response = await http
-        .get(Uri.parse('${globalVariable.baseUrl}/log-absen/detail/$id/'));
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load data');
-    }
   }
 
   @override
@@ -277,22 +264,6 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
         ),
       ),
       body: body(),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 0,
-        onTabTapped: (index) {
-          if (index == 0) {
-            Navigator.of(context).pushNamed('/home');
-          } else if (index == 4) {
-            Navigator.of(context).pushNamed('/profile');
-          } else if (index == 2) {
-            Navigator.of(context).pushNamed('/request');
-          } else if (index == 3) {
-            Navigator.of(context).pushNamed('/inbox');
-          } else if (index == 1) {
-            Navigator.of(context).pushNamed('/employee');
-          }
-        },
-      ),
     );
   }
 
@@ -420,7 +391,8 @@ class ImageFromBase64 extends StatelessWidget {
     try {
       bytes = base64.decode(base64String);
     } catch (e) {
-      print('Error decoding image: $e');
+      // print('Error decoding image: $e');
+      print('Error saja 4');
     }
 
     if (bytes != null) {
