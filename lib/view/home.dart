@@ -16,6 +16,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:Fast_Team/user/controllerApi.dart';
@@ -351,11 +352,6 @@ class _HomePageState extends State<HomePage> {
               ),
               child: Row(
                 children: <Widget>[
-                  Icon(
-                    (name == 'Clock In') ? Icons.input : Icons.output,
-                    color:
-                        status ? ColorsTheme.whiteCream : ColorsTheme.lightGrey,
-                  ),
                   Text(
                     name,
                     style: TextStyle(
