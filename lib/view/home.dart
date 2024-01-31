@@ -10,6 +10,7 @@ import 'package:Fast_Team/widget/header_background_home.dart';
 import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -100,6 +101,19 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     initConstructor();
     initializeState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
   }
 
   initConstructor() {
@@ -338,7 +352,7 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 children: <Widget>[
                   Icon(
-                    Icons.input,
+                    (name == 'Clock In') ? Icons.input : Icons.output,
                     color:
                         status ? ColorsTheme.whiteCream : ColorsTheme.lightGrey,
                   ),
@@ -573,7 +587,7 @@ class _HomePageState extends State<HomePage> {
 
     Widget Menu() {
       return Container(
-        padding: EdgeInsets.only(left: 8.w, top: 50.h, right: 8.w),
+        padding: EdgeInsets.only(top: 50.h),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -612,7 +626,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ));
       return Container(
-          margin: EdgeInsets.only(left: 8.w, right: 8.w, bottom: 5.h),
+          margin: EdgeInsets.only(left: 8.w, bottom: 5.h),
           // height: 100.h,
           decoration: BoxDecoration(
             color: ColorsTheme.white,
@@ -729,7 +743,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.only(left: 8),
               child: Container(
                 padding: EdgeInsets.only(left: 10, right: 10),
                 decoration: BoxDecoration(

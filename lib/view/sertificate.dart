@@ -9,8 +9,10 @@ class SertificatePage extends StatefulWidget {
 
 class _SertificatePageState extends State<SertificatePage> {
   List<Sertificate> sertificateList = [
-    Sertificate(title: 'Fast Print Culture 1', issuer: 'Issuer A', isLocked: false),
-    Sertificate(title: 'Fast Print Culture 2', issuer: 'Issuer B', isLocked: true),
+    Sertificate(
+        title: 'Fast Print Culture 1', issuer: 'Issuer A', isLocked: false),
+    Sertificate(
+        title: 'Fast Print Culture 2', issuer: 'Issuer B', isLocked: true),
     // Tambahkan sertifikat dummy lainnya sesuai kebutuhan
   ];
 
@@ -30,12 +32,6 @@ class _SertificatePageState extends State<SertificatePage> {
                 return CertificateCard(sertificate: sertificateList[index]);
               },
             ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 4,
-        onTabTapped: (index) {
-          // Handle bottom navigation bar taps
-        },
-      ),
     );
   }
 }
@@ -114,9 +110,7 @@ class CertificateCard extends StatelessWidget {
                         Text(
                           sertificate.title,
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16.0
-                          ),
+                              fontWeight: FontWeight.bold, fontSize: 16.0),
                         ),
                         SizedBox(height: 8.0),
                         Row(

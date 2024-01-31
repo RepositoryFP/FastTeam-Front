@@ -126,7 +126,7 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
         children: [
           SizedBox(height: 20.0),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 5.0),
+            margin: EdgeInsets.symmetric(horizontal: 15.w),
             child: TextButton(
               onPressed: () {
                 _selectMonth(context);
@@ -140,19 +140,22 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.calendar_today,
-                        size: 24,
-                      ),
-                      SizedBox(width: 8.0),
-                      Text(
-                        formattedDate,
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.normal),
-                      ),
-                    ],
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5.w),
+                    child: Row(
+                      children: <Widget>[
+                        Icon(
+                          Icons.calendar_today,
+                          size: 24,
+                        ),
+                        SizedBox(width: 8.0),
+                        Text(
+                          formattedDate,
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.normal),
+                        ),
+                      ],
+                    ),
                   ),
                   Icon(
                     Icons.arrow_drop_down,
@@ -208,7 +211,7 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
 
   Widget cardAbsentInfo(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5.0),
+      margin: EdgeInsets.symmetric(horizontal: 10.w),
       constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width),
       child: Card(
         elevation: 2.0,
@@ -281,6 +284,7 @@ class _AbsensiListItemState extends State<AbsensiListItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
       color: widget.isSunday ? Colors.grey[200] : Colors.white,
       child: Column(
         children: <Widget>[
