@@ -12,6 +12,7 @@ class _EmployeePageState extends State<EmployeePage> {
   EmployeeController? employeeController;
   List<Map<String, dynamic>> employees = [];
   List<Map<String, dynamic>> filteredEmployees = [];
+  final searchText = TextEditingController();
 
   @override
   void initState() {
@@ -130,6 +131,7 @@ class _EmployeePageState extends State<EmployeePage> {
     return Padding(
       padding: EdgeInsets.all(16),
       child: TextField(
+        controller: searchText,
         decoration: InputDecoration(
           hintText: 'Search',
           prefixIcon: Icon(Icons.search),
@@ -139,6 +141,7 @@ class _EmployeePageState extends State<EmployeePage> {
             icon: Icon(Icons.clear),
             onPressed: () {
               filterEmployees('');
+              searchText.clear();
             },
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:Fast_Team/style/color_theme.dart';
 import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Fast_Team/controller/inbox_controller.dart';
@@ -19,23 +20,31 @@ class ApprovalAttendancePage extends StatefulWidget {
 class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
   InboxController? inboxController;
   List<Map<String, dynamic>> attendanceList = [];
-  var loading;
-
+  Future? _loadData;
+  TextStyle alertErrorTextStyle = TextStyle(
+    fontFamily: 'Poppins',
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w400,
+    color: ColorsTheme.white,
+  );
   @override
   void initState() {
     super.initState();
 
     inboxController = Get.put(InboxController());
-    initConstructor();
-    fetchData();
+    initData();
   }
 
-  initConstructor() async {
-    loading = false.obs;
+  initData() async {
+    setState(() {
+      _loadData = fetchData();
+    });
   }
 
   Future refreshItem() async {
-    fetchData();
+    setState(() {
+      _loadData = fetchData();
+    });
   }
 
   Future<void> fetchData() async {
@@ -46,10 +55,8 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
       List<dynamic> data = result['details'];
       setState(() {
         attendanceList = List<Map<String, dynamic>>.from(data);
-        loading = true.obs;
       });
     }
-    print(loading);
   }
 
   showSnackBar(message) {
@@ -96,6 +103,7 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
 
   @override
   Widget build(BuildContext context) {
+    print(_loadData);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -105,70 +113,133 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
           ),
         ),
       ),
-      body: RefreshWidget(
-        onRefresh: refreshItem,
-        child: ListView.builder(
-          itemCount: attendanceList.length,
-          shrinkWrap: true,
-          physics: const ClampingScrollPhysics(),
-          itemBuilder: (context, index) {
-            final attendance = attendanceList[index];
-            final date = attendance['tanggal'].toString().split(' ')[0];
-            DateTime parsedDate = DateTime.parse(date);
-            final DateFormat formatter = DateFormat('dd MMM yyyy');
-            final String formattedDate = formatter.format(parsedDate);
-            return _attendanceTile(attendance, formattedDate);
-          },
-        ),
-      ),
+      body: FutureBuilder(
+          future: _loadData,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return _body(false);
+            } else if (snapshot.hasError) {
+              SchedulerBinding.instance!.addPostFrameCallback((_) {
+                var snackbar = SnackBar(
+                  content: Text('Error: ${snapshot.error}',
+                      style: alertErrorTextStyle),
+                  backgroundColor: ColorsTheme.lightRed,
+                  behavior: SnackBarBehavior.floating,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackbar);
+              });
+              return _body(false);
+            } else if (snapshot.hasData) {
+              return _body(true);
+            } else {
+              return _body(true);
+            }
+          }),
+    );
+  }
+
+  Widget _body(loading) {
+    // print(loading);
+    return RefreshWidget(
+      onRefresh: refreshItem,
+      child: (!loading)
+          ? _loadingItems()
+          : ListView.builder(
+              itemCount: attendanceList.length,
+              shrinkWrap: true,
+              physics: const ClampingScrollPhysics(),
+              itemBuilder: (context, index) {
+                final attendance = attendanceList[index];
+                final date = attendance['tanggal'].toString().split(' ')[0];
+                DateTime parsedDate = DateTime.parse(date);
+                final DateFormat formatter = DateFormat('dd MMM yyyy');
+                final String formattedDate = formatter.format(parsedDate);
+                return _attendanceTile(attendance, formattedDate);
+              },
+            ),
     );
   }
 
   Widget _loadingItems() {
     return ListView.builder(
-      itemCount: 8,
+      itemCount: 7,
       shrinkWrap: true,
       itemBuilder: (context, index) => Column(
         children: [
           Container(
+            margin: EdgeInsets.symmetric(horizontal: 10.w),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  child: Column(children: [
-                    Text(
-                      "Date",
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        color: Colors.grey,
+                  child: Row(
+                    children: [
+                      Container(
+                        child: Column(children: [
+                          SizedBox(height: 10.w),
+                          Text(
+                            "Date",
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(height: 10.w),
+                          Text(
+                            "Time",
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(height: 10.w),
+                          Text(
+                            "Type",
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ]),
                       ),
-                    ),
-                    Text(
-                      "Time",
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        color: Colors.grey,
+                      SizedBox(
+                        width: 10.w,
                       ),
-                    ),
-                    Text(
-                      "Type",
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ]),
+                      Container(
+                          child: Column(
+                        children: [
+                          SizedBox(height: 10.w),
+                          loadingData(90.w),
+                          SizedBox(height: 10.w),
+                          loadingData(90.w),
+                          SizedBox(height: 10.w),
+                          loadingData(90.w),
+                          SizedBox(height: 10.w),
+                        ],
+                      )),
+                    ],
+                  ),
                 ),
-                Container(
-                    child: Column(
-                  children: [
-                    loadingData(90.w),
-                    loadingData(90.w),
-                    loadingData(90.w),
-                  ],
-                ))
+                Shimmer.fromColors(
+                  baseColor: ColorsTheme.secondary!,
+                  highlightColor: ColorsTheme.lightGrey2!,
+                  child: Container(
+                    width: 60.w,
+                    height: 30.w,
+                    decoration: BoxDecoration(
+                      color: ColorsTheme.white,
+                      shape: BoxShape.rectangle,
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
+          Divider(
+            height: 0.5,
+            color: Colors.grey[200],
+          )
         ],
       ),
     );
