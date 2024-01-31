@@ -1,5 +1,8 @@
+import 'package:Fast_Team/style/color_theme.dart';
 import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Fast_Team/controller/inbox_controller.dart';
 import 'package:get/get.dart';
@@ -36,22 +39,23 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
       setState(() {
         overtimeList = List<Map<String, dynamic>>.from(data);
       });
+      print(overtimeList);
     }
   }
 
   showSnackBar(message) {
     snackbar() => SnackBar(
-      content: Text(
-        message,
-        style: const TextStyle(
-            fontSize: 12.0,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.red,
-      duration: const Duration(milliseconds: 2000),
-    );
+          content: Text(
+            message,
+            style: const TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(milliseconds: 2000),
+        );
     ScaffoldMessenger.of(context).showSnackBar(snackbar());
   }
 
@@ -107,69 +111,147 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
     );
   }
 
-  Container _attendanceTile(overtime) {
+  Widget _attendanceTile(overtime) {
     return Container(
-      padding: const EdgeInsets.all(9.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start, 
-            children: <Widget>[
-              Container(
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage("http://103.29.214.154:9002/static/imgUserProfile/${overtime['user']['photo']}"),
-                  radius: 30.0,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      overtime['tanggal'],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),  
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Icon(Icons.rotate_right),
-                        Text(
-                          overtime['jam_mulai'], 
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Icon(Icons.rotate_left),
-                        Text(
-                          overtime['jam_selesai'], 
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              )
-            ],
+      padding: EdgeInsets.all(9.w),
+      margin: EdgeInsets.symmetric(vertical: 2.w, horizontal: 10.w),
+      decoration: BoxDecoration(
+        color: ColorsTheme.white,
+        borderRadius: BorderRadius.circular(8.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: Offset(0, 3), // changes position of shadow
           ),
-          Container(
-            padding: EdgeInsets.all(6.0),
-            decoration: BoxDecoration(
-              color: getStatusColor(overtime['status']),
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-            child: Text(
-              getStatusText(overtime['status']),
-              style: TextStyle(color: Colors.white),
-            ),
-          )
         ],
       ),
+      child: Column(children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              DateFormat('dd MMM yyyy')
+                  .format(DateTime.parse(overtime['tanggal'])),
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(6.0),
+              decoration: BoxDecoration(
+                color: getStatusColor(overtime['status']),
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              child: Text(
+                getStatusText(overtime['status']),
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
+              child: Row(
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Start Time',
+                        style: TextStyle(fontSize: 15.sp),
+                      ),
+                      Text(
+                        'End Time',
+                        style: TextStyle(fontSize: 15.sp),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    width: 10.w,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        overtime['jam_mulai'],
+                        style: TextStyle(fontSize: 15.sp),
+                      ),
+                      Text(
+                        overtime['jam_selesai'],
+                        style: TextStyle(fontSize: 15.sp),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ],
+        )
+      ]),
     );
+    // return Container(
+    //   padding: EdgeInsets.all(9.w),
+    //   child: Row(
+    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //     children: <Widget>[
+    //       Row(
+    //         mainAxisAlignment: MainAxisAlignment.start,
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: <Widget>[
+    //           Padding(
+    //             padding: EdgeInsets.only(left: 8.0),
+    //             child: Column(
+    //               crossAxisAlignment: CrossAxisAlignment.start,
+    //               children: <Widget>[
+    // Text(
+    //   overtime['tanggal'],
+    //   style: const TextStyle(
+    //     fontSize: 16,
+    //     color: Colors.grey,
+    //   ),
+    // ),
+    // Row(
+    //   children: <Widget>[
+    //     Icon(Icons.rotate_right),
+    //     Text(
+    //       overtime['jam_mulai'],
+    //     )
+    //   ],
+    // ),
+    // Row(
+    //   children: <Widget>[
+    //     Icon(Icons.rotate_left),
+    //     Text(
+    //       overtime['jam_selesai'],
+    //     )
+    //   ],
+    // )
+    //               ],
+    //             ),
+    //           )
+    //         ],
+    //       ),
+    // Container(
+    //   padding: EdgeInsets.all(6.0),
+    //   decoration: BoxDecoration(
+    //     color: getStatusColor(overtime['status']),
+    //     shape: BoxShape.rectangle,
+    //     borderRadius: BorderRadius.circular(20.0),
+    //   ),
+    //   child: Text(
+    //     getStatusText(overtime['status']),
+    //     style: TextStyle(color: Colors.white),
+    //   ),
+    // )
+    //     ],
+    //   ),
+    // );
   }
 }
