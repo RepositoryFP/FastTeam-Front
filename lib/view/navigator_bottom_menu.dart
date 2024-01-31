@@ -4,6 +4,7 @@ import 'package:Fast_Team/view/employee/employee_page.dart';
 import 'package:Fast_Team/view/inbox/inbox_page.dart';
 import 'package:Fast_Team/view/request/schedule_request_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import 'home.dart';
@@ -64,38 +65,46 @@ class _NavigatorBottomMenuState extends State<NavigatorBottomMenu> {
       );
     }
 
-    Widget itemNavigation() => Container(
-          color: ColorsTheme.primary, // Ganti dengan warna yang sesuai
-          child: BottomNavigationBar(
-            onTap: (index) => setState(() {
+    Widget itemNavigation() => // Ganti dengan warna yang sesuai
+        NavigationBarTheme(
+          data: NavigationBarThemeData(),
+          child: NavigationBar(
+            height: 50.w,
+            backgroundColor: ColorsTheme.white,
+            selectedIndex: selectedIndex.value,
+            onDestinationSelected: (index) => setState(() {
               moveToMenu(index);
             }),
-            currentIndex: selectedIndex.value,
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: ColorsTheme.primary,
-            items: [
-              BottomNavigationBarItem(
+            destinations: [
+              NavigationDestination(
                 icon: Icon(Icons.home),
                 label: 'Home',
               ),
-              BottomNavigationBarItem(
+              NavigationDestination(
                 icon: Icon(Icons.person),
                 label: 'Employee',
               ),
-              BottomNavigationBarItem(
+              NavigationDestination(
                 icon: Icon(Icons.request_page),
                 label: 'Request',
               ),
-              BottomNavigationBarItem(
+              NavigationDestination(
                 icon: Icon(Icons.inbox),
                 label: 'Inbox',
               ),
-              BottomNavigationBarItem(
+              NavigationDestination(
                 icon: Icon(Icons.account_circle),
                 label: 'Account',
               ),
             ],
           ),
+          // onTap: (index) => setState(() {
+          //   moveToMenu(index);
+          // }),
+          // currentIndex: selectedIndex.value,
+          // type: BottomNavigationBarType.fixed,
+          // selectedItemColor: ColorsTheme.primary,
+          // items: [],
         );
 
     return Scaffold(

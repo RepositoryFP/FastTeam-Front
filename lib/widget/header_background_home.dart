@@ -19,7 +19,7 @@ class _HeaderCircle extends State<HeaderCircle> {
       quarterTurns: 2,
       child: CustomPaint(
         painter: CustomCircle(),
-        size: Size(ScreenUtil().screenWidth, 280),
+        size: Size(ScreenUtil().screenWidth, 280.w),
       ),
     );
   }
@@ -32,8 +32,8 @@ class CustomCircle extends CustomPainter {
     canvas.drawArc(
         Rect.fromCenter(
           center: Offset(size.width / 2, 500),
-          width: 1200,
-          height: 900,
+          width: 1200.w,
+          height: 800.w,
         ),
         math.pi,
         math.pi,

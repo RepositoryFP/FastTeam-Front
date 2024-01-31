@@ -5,6 +5,7 @@ import 'package:Fast_Team/model/user_model.dart';
 import 'package:Fast_Team/style/color_theme.dart';
 import 'package:Fast_Team/view/account/personal_info_page.dart';
 import 'package:Fast_Team/view/auth/login_page.dart';
+import 'package:Fast_Team/view/sertificate.dart';
 
 import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -166,7 +167,14 @@ class _AccountPageState extends State<AccountPage> {
               );
             }),
             Divider(),
-            menuItems('Sertificate', Colors.cyan, Icons.badge, () {}),
+            menuItems('Sertificate', Colors.cyan, Icons.badge, () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SertificatePage(),
+                ),
+              );
+            }),
             Divider(),
             menuItems(
                 'Payroll Info', Colors.green, Icons.monetization_on, () {}),
