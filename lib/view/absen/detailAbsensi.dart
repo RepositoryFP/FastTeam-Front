@@ -292,7 +292,7 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
                           width: 80.0,
                           height: 80.0,
                           point: LatLng(_latitude, _longitude),
-                          builder: (ctx) => Container(
+                          child: Container(
                             child: Icon(
                               Icons.location_on,
                               size: 35.0,
@@ -343,7 +343,7 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
                       width: 100.0,
                       height: 100.0,
                       point: LatLng(_latitude, _longitude),
-                      builder: (ctx) => Container(
+                      child: Container(
                         child: Icon(
                           Icons.location_on,
                           size: 35.0,

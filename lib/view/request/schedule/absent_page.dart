@@ -113,7 +113,7 @@ class _AbsentPageState extends State<AbsentPage> with AutomaticKeepAliveClientMi
       };
 
       var result = await scheduleRequestController!.insertAbsentSubmission(requestBody);
-      print(result);
+      
       if (result['status'] == 200 || result['status'] == 201 ) {
           setState(() {
             absenURL = '';

@@ -661,7 +661,7 @@ class _RequestPageState extends State<RequestPage> {
 
   // Method to take a picture from the camera
   Future<void> _takePicture() async {
-    final pickedImage = await ImagePicker().getImage(
+    final pickedImage = await ImagePicker().pickImage(
       source: ImageSource.camera,
     );
     if (pickedImage != null) {

@@ -157,14 +157,13 @@ class _MapPageState extends State<MapPage> {
                 width: 50.0,
                 height: 50.0,
                 point: LatLng(_latitude, _longitude),
-                builder: (ctx) {
-                  return CircleAvatar(
+                child:  CircleAvatar(
                     radius: 20.0,
                     backgroundColor: Colors.transparent,
                     backgroundImage: NetworkImage(
                         '$imgProf'), // Menggunakan imgProf dari SharedPreferences
-                  );
-                },
+                  ),
+                
               ),
             ],
           ),

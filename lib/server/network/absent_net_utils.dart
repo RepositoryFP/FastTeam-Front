@@ -33,4 +33,19 @@ class AbsentNetUtils {
 
     return response;
   }
+
+  retriveUserAbsenOnly() async {
+    var path = '${BaseServer.serverUrl}/api_absensi/user-absen/';
+    var response =
+        await http.get(Uri.parse(path)).timeout(BaseServer.durationlimit);
+    // print("ini response $response");
+    return response;
+  }
+
+  retriveUserAbsenDateDevisi(tanggal, idDivisi) async {
+    var path =
+        '${BaseServer.serverUrl}/api_absensi/user-absen/${tanggal}/${idDivisi}/';
+    var response = http.get(Uri.parse(path)).timeout(BaseServer.durationlimit);
+    return response;
+  }
 }

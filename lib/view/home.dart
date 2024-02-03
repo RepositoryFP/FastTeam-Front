@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:Fast_Team/user/controllerApi.dart';
+// import 'package:Fast_Team/user/controllerApi.dart';
 import 'package:Fast_Team/utils/bottom_navigation_bar.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/standalone.dart' as tz;
@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  initConstructor() {
+  initConstructor() async {
     homeController = Get.put(HomeController());
 
     idUser = 0.obs;
@@ -200,23 +200,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future refreshItem() async {
-    List<Map<String, dynamic>> divisiData = await listDivisi();
-    setState(() {
-      divisiList = divisiData;
-    });
-    print(divisiList);
-  }
-
-  Future<void> loadData() async {
+    homeController = Get.put(HomeController());
     try {
       // Ambil data divisi
-      List<Map<String, dynamic>> divisiData = await listDivisi();
+      var divisiData = await homeController!.listDivisi();
+
       setState(() {
-        divisiList = divisiData;
+        divisiList = List.from(divisiData['details']);
+        ;
       });
 
-      // Ambil data absensi
-      List<Map<String, dynamic>> data = await _fetchData();
       setState(() {
         isLoading = false;
       });
@@ -225,18 +218,43 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> _fetchData() async {
+  Future<void> loadData() async {
+    homeController = Get.put(HomeController());
+    try {
+      // Ambil data divisi
+      var divisiData = await homeController!.listDivisi();
+
+      setState(() {
+        divisiList = List.from(divisiData['details']);
+      });
+
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> _fetchData() async {
+    homeController = Get.put(HomeController());
+    _selectedFilter = '9';
     try {
       if (_selectedFilter == 'All') {
         // Panggil getListBelumAbsen tanpa parameter jika "Semua" dipilih
-        return await getListBelumAbsen('', 0);
+        Map<String, dynamic> result =
+            await homeController!.getListBelumAbsen('', 0);
+        return result['details'];
       } else {
+        print(currentDate);
         // Panggil getListBelumAbsen dengan parameter sesuai pilihan
-        return await getListBelumAbsen(currentDate, int.parse(_selectedFilter));
+        Map<String, dynamic> result =
+            await homeController!.getListBelumAbsen(currentDate, 9);
+        return result['details'];
       }
     } catch (e) {
       print(e);
-      return [];
+      return {};
     }
   }
 
@@ -248,7 +266,7 @@ class _HomePageState extends State<HomePage> {
 
     try {
       // Panggil fungsi untuk memuat ulang data
-      List<Map<String, dynamic>> data = await _fetchData();
+      Map<String, dynamic> data = await _fetchData();
 
       // Hentikan loading indicator dan perbarui tabel dengan data yang baru
       setState(() {
@@ -779,7 +797,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 20.h),
-            FutureBuilder<List<Map<String, dynamic>>>(
+            FutureBuilder<Map<String, dynamic>>(
               future: _fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -792,14 +810,15 @@ class _HomePageState extends State<HomePage> {
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else if (snapshot.hasData) {
-                  List<Map<String, dynamic>> data = snapshot.data!;
-                  return ListView.builder(
-                      itemCount: data.length,
-                      shrinkWrap: true,
-                      physics: const ClampingScrollPhysics(),
-                      itemBuilder: (context, index) =>
-                          ListEmployee(data[index], false));
-                  // return ListEmployee(data);
+                  Map<String, dynamic> data = snapshot.data!;
+
+                  // return ListView.builder(
+                  //     itemCount: data['data'].length,
+                  //     shrinkWrap: true,
+                  //     physics: const ClampingScrollPhysics(),
+                  //     itemBuilder: (context, index) =>
+                  //         ListEmployee(data['data'][index], false));
+                  return Text('No data available');
                 } else {
                   return Text('No data available');
                 }

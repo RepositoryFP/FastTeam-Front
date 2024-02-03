@@ -4,6 +4,9 @@ import 'package:Fast_Team/view/absen/daftarKehadiran.dart';
 import 'package:Fast_Team/view/absen/detailAbsensi.dart';
 import 'package:Fast_Team/view/absen/kamera.dart';
 import 'package:Fast_Team/view/account/account_page.dart';
+import 'package:Fast_Team/view/inbox/detail/detail_attendence_page.dart';
+import 'package:Fast_Team/view/inbox/detail/detail_leave_page.dart';
+import 'package:Fast_Team/view/inbox/detail/detail_overtime_page.dart';
 import 'package:Fast_Team/view/request/schedule_request_page.dart';
 import 'package:Fast_Team/view/inbox/approval.dart';
 import 'package:Fast_Team/view/auth/login_page.dart';
@@ -88,6 +91,9 @@ class _MyAppState extends State<MyApp> {
               '/inbox': (context) => InboxPage(),
               '/approval': (context) => ApprovalPage(),
               '/sertificate': (context) => SertificatePage(),
+              '/attendenceDetail': (context) => AttendanceDetailPage(),
+              '/leaveDetail': (context) => LeaveDetailPage(),
+              '/overtimeDetail': (context) => OvertimeDetailPage(),
             },
           );
         });

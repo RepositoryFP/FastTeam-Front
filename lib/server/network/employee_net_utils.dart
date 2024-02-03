@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class EmployeeNetUtils {
   retriveListEmployee() async {
-    var path = "${BaseServer.serverUrl}/divisi/";
+    var path = "${BaseServer.serverUrl}/api_absensi/divisi/";
     var response =
         await http.get(Uri.parse(path)).timeout(BaseServer.durationlimit);
     return response;

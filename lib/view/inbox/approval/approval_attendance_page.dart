@@ -1,4 +1,5 @@
 import 'package:Fast_Team/style/color_theme.dart';
+import 'package:Fast_Team/view/inbox/detail/detail_attendence_page.dart';
 import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -103,7 +104,6 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(_loadData);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -139,11 +139,10 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
   }
 
   Widget _body(loading) {
-    // print(loading);
     return RefreshWidget(
       onRefresh: refreshItem,
       child: (!loading)
-          ? _loadingItems()
+          ? Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: attendanceList.length,
               shrinkWrap: true,
@@ -176,27 +175,23 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
                     children: [
                       Container(
                         child: Column(children: [
-                          SizedBox(height: 10.w),
                           Text(
                             "Date",
                             style: TextStyle(
-                              fontSize: 15.sp,
                               color: Colors.grey,
                             ),
                           ),
-                          SizedBox(height: 10.w),
+                          SizedBox(height: 2.w),
                           Text(
                             "Time",
                             style: TextStyle(
-                              fontSize: 15.sp,
                               color: Colors.grey,
                             ),
                           ),
-                          SizedBox(height: 10.w),
+                          SizedBox(height: 2.w),
                           Text(
                             "Type",
                             style: TextStyle(
-                              fontSize: 15.sp,
                               color: Colors.grey,
                             ),
                           ),
@@ -208,13 +203,11 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
                       Container(
                           child: Column(
                         children: [
-                          SizedBox(height: 10.w),
                           loadingData(90.w),
-                          SizedBox(height: 10.w),
+                          SizedBox(height: 2.w),
                           loadingData(90.w),
-                          SizedBox(height: 10.w),
+                          SizedBox(height: 2.w),
                           loadingData(90.w),
-                          SizedBox(height: 10.w),
                         ],
                       )),
                     ],
@@ -250,7 +243,7 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
       highlightColor: ColorsTheme.lightGrey2!,
       child: Container(
         width: width,
-        height: 20.h,
+        height: 15.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(3.r),
           color: ColorsTheme.white,
@@ -263,8 +256,18 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
         Container(
           child: InkWell(
             onTap: () async {
-              final Uri url = Uri.parse(attendance['bukti']);
-              await launchUrl(url);
+              // final Uri url = Uri.parse(attendance['bukti']);
+              // await launchUrl(url);
+              Navigator.pushNamed(context, '/attendenceDetail', arguments: {
+                'tanggal': formattedDate,
+                'time': DateFormat.Hms()
+                    .parse("${attendance['tanggal'].toString().split(' ')[1]}"),
+                'status': attendance['status'],
+                'bukti': attendance['bukti'],
+                'jenis': attendance['jenis'],
+                'nama': attendance['user']['name'],
+                'photo': attendance['user']['photo'],
+              });
             },
             child: Container(
               padding: EdgeInsets.all(9.w),
@@ -286,21 +289,18 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
                                 Text(
                                   "Date",
                                   style: TextStyle(
-                                    fontSize: 15.sp,
                                     color: Colors.grey,
                                   ),
                                 ),
                                 Text(
                                   "Time",
                                   style: TextStyle(
-                                    fontSize: 15.sp,
                                     color: Colors.grey,
                                   ),
                                 ),
                                 Text(
                                   "Type",
                                   style: TextStyle(
-                                    fontSize: 15.sp,
                                     color: Colors.grey,
                                   ),
                                 ),
@@ -316,7 +316,6 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
                                 Text(
                                   formattedDate,
                                   style: TextStyle(
-                                    fontSize: 15.sp,
                                     color: Colors.grey,
                                   ),
                                 ),
@@ -325,14 +324,12 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
                                       .toString()
                                       .split(' ')[1],
                                   style: TextStyle(
-                                    fontSize: 15.sp,
                                     color: Colors.grey,
                                   ),
                                 ),
                                 Text(
                                   attendance['jenis'].toString().toUpperCase(),
                                   style: TextStyle(
-                                    fontSize: 15.sp,
                                     fontWeight: FontWeight.w400,
                                     color: (attendance['jenis'] == 'in')
                                         ? ColorsTheme.lightGreen
@@ -346,17 +343,29 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
                       )
                     ],
                   ),
-                  Container(
-                    padding: EdgeInsets.all(6.0),
-                    decoration: BoxDecoration(
-                      color: getStatusColor(attendance['status']),
-                      shape: BoxShape.rectangle,
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: Text(
-                      getStatusText(attendance['status']),
-                      style: TextStyle(color: Colors.white),
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(6.0),
+                        decoration: BoxDecoration(
+                          color: getStatusColor(attendance['status']),
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: Text(
+                          getStatusText(attendance['status']),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.w,
+                      ),
+                      Text(
+                        "Tap for more details",
+                        style: TextStyle(fontSize: 10.sp),
+                      )
+                    ],
                   ),
                 ],
               ),
