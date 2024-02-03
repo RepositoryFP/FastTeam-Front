@@ -207,7 +207,6 @@ class _HomePageState extends State<HomePage> {
 
       setState(() {
         divisiList = List.from(divisiData['details']);
-        ;
       });
 
       setState(() {
@@ -238,7 +237,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<Map<String, dynamic>> _fetchData() async {
     homeController = Get.put(HomeController());
-    _selectedFilter = '9';
+
     try {
       if (_selectedFilter == 'All') {
         // Panggil getListBelumAbsen tanpa parameter jika "Semua" dipilih
