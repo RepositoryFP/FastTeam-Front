@@ -44,7 +44,7 @@ class AbsentNetUtils {
 
   retriveUserAbsenDateDevisi(tanggal, idDivisi) async {
     var path =
-        '${BaseServer.serverUrl}/api_absensi/user-absen/${tanggal}/${idDivisi}/';
+        '${BaseServer.serverUrl}/api_absensi/user-absen/${tanggal}/${idDivisi}';
     var response = http.get(Uri.parse(path)).timeout(BaseServer.durationlimit);
     return response;
   }
