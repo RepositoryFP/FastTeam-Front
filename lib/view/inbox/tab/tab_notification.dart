@@ -1,6 +1,9 @@
 import 'package:Fast_Team/controller/inbox_controller.dart';
+import 'package:Fast_Team/style/color_theme.dart';
 import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
@@ -30,9 +33,16 @@ class TabNotificationPage extends StatefulWidget {
 class _TabNotificationPageState extends State<TabNotificationPage>
     with AutomaticKeepAliveClientMixin {
   int userId = 0;
+  Future? _loadData;
   InboxController? inboxController;
   List<Map<String, dynamic>> notificationList = [];
   List<Map<String, dynamic>> filteredNotifications = [];
+  TextStyle alertErrorTextStyle = TextStyle(
+    fontFamily: 'Poppins',
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w400,
+    color: ColorsTheme.white,
+  );
 
   @override
   bool get wantKeepAlive => true;
@@ -41,7 +51,19 @@ class _TabNotificationPageState extends State<TabNotificationPage>
   void initState() {
     super.initState();
     inboxController = Get.put(InboxController());
-    fetchData();
+    initData();
+  }
+
+  initData() async {
+    setState(() {
+      _loadData = fetchData();
+    });
+  }
+
+  Future refreshItem() async {
+    setState(() {
+      _loadData = fetchData();
+    });
   }
 
   Future fetchData() async {
@@ -123,19 +145,43 @@ class _TabNotificationPageState extends State<TabNotificationPage>
     super.build(context);
 
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: RefreshWidget(
-          onRefresh: fetchData,
-          child: (notificationList.isNotEmpty)
+      resizeToAvoidBottomInset: false,
+      body: FutureBuilder(
+          future: _loadData,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return _body(false);
+            } else if (snapshot.hasError) {
+              SchedulerBinding.instance!.addPostFrameCallback((_) {
+                var snackbar = SnackBar(
+                  content: Text('Error: ${snapshot.error}',
+                      style: alertErrorTextStyle),
+                  backgroundColor: ColorsTheme.lightRed,
+                  behavior: SnackBarBehavior.floating,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackbar);
+              });
+              return _body(false);
+            } else if (snapshot.hasData) {
+              return _body(true);
+            } else {
+              return _body(true);
+            }
+          }),
+    );
+  }
+
+  Widget _body(isLoading) {
+    return RefreshWidget(
+      onRefresh: refreshItem,
+      child: (!isLoading)
+          ? Center(child: CircularProgressIndicator())
+          : (notificationList.isNotEmpty)
               ? ListView(
                   children: [_notificationList()],
                 )
               : _noNotifications(),
-        )
-        // child: (notificationList.isNotEmpty)
-        //     ? _notificationList()
-        //     : _noNotifications()),
-        );
+    );
   }
 
   SingleChildScrollView _notificationList() {

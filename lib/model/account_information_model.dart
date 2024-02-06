@@ -8,6 +8,8 @@ AccountInformationModel accountInformationModelFromJson(String str) =>
 class AccountInformationModel {
   int? id;
   int? id_employee;
+  int? id_divisi;
+  int? id_level;
   String? namaAwal;
   String? fullName;
   String? namaAkhir;
@@ -41,6 +43,8 @@ class AccountInformationModel {
   AccountInformationModel({
     this.id,
     this.id_employee,
+    this.id_divisi,
+    this.id_level,
     this.fullName,
     this.namaAwal,
     this.namaAkhir,
@@ -77,6 +81,7 @@ class AccountInformationModel {
         id: json['user']['id'],
         id_employee: json['id'],
         divisi: json['divisi']['name'],
+        id_divisi: json['divisi']['id'],
         email: json['email'],
         fullName: "${json['nama_awal']} ${json['nama_akhir']}",
         imgProfUrl: json['img_prof_url'],
@@ -90,6 +95,7 @@ class AccountInformationModel {
         alamatKtp: json['alamat_ktp'],
         alamatTinggal: json['alamat_tinggal'],
         cabang: json['cabang']['name'],
+        id_level: json['level_pekerjaan']['id'],
         shift:
             "${json['shift']['clock_in_time']} - ${json['shift']['clock_out_time']}",
         masukAkhir: json['clock_in']['max'],

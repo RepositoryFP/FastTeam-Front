@@ -1,6 +1,7 @@
 import 'package:Fast_Team/style/color_theme.dart';
 import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,29 +18,44 @@ class ApprovalOvertimePage extends StatefulWidget {
 class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
   InboxController? inboxController;
   List<Map<String, dynamic>> overtimeList = [];
+  Future? _loadData;
+  TextStyle alertErrorTextStyle = TextStyle(
+    fontFamily: 'Poppins',
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w400,
+    color: ColorsTheme.white,
+  );
 
   @override
   void initState() {
     super.initState();
 
     inboxController = Get.put(InboxController());
-    fetchData();
+    initData();
+  }
+
+  initData() async {
+    setState(() {
+      _loadData = fetchData();
+    });
   }
 
   Future refreshItem() async {
-    fetchData();
+    setState(() {
+      _loadData = fetchData();
+    });
   }
 
   Future<void> fetchData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     int userId = sharedPreferences.getInt('user-id_user') ?? 0;
     var result = await inboxController!.retrieveOvertimeList(userId);
+    print(result);
     if (result['status'] == 200) {
       List<dynamic> data = result['details'];
       setState(() {
         overtimeList = List<Map<String, dynamic>>.from(data);
       });
-      print(overtimeList);
     }
   }
 
@@ -96,162 +112,160 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
           ),
         ),
       ),
-      body: RefreshWidget(
-        onRefresh: refreshItem,
-        child: ListView.builder(
-          itemCount: overtimeList.length,
-          shrinkWrap: true,
-          physics: const ClampingScrollPhysics(),
-          itemBuilder: (context, index) {
-            final overtime = overtimeList[index];
-            return _attendanceTile(overtime);
-          },
-        ),
-      ),
+      body: FutureBuilder(
+          future: _loadData,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return _body(false);
+            } else if (snapshot.hasError) {
+              SchedulerBinding.instance!.addPostFrameCallback((_) {
+                var snackbar = SnackBar(
+                  content: Text('Error: ${snapshot.error}',
+                      style: alertErrorTextStyle),
+                  backgroundColor: ColorsTheme.lightRed,
+                  behavior: SnackBarBehavior.floating,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackbar);
+              });
+              return _body(false);
+            } else if (snapshot.hasData) {
+              return _body(true);
+            } else {
+              return _body(true);
+            }
+          }),
+    );
+  }
+
+  Widget _body(isLoading) {
+    return RefreshWidget(
+      onRefresh: refreshItem,
+      child: (!isLoading)
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: overtimeList.length,
+              shrinkWrap: true,
+              physics: const ClampingScrollPhysics(),
+              itemBuilder: (context, index) {
+                final overtime = overtimeList[index];
+                return _attendanceTile(overtime);
+              },
+            ),
     );
   }
 
   Widget _attendanceTile(overtime) {
-    return Container(
-      padding: EdgeInsets.all(9.w),
-      margin: EdgeInsets.symmetric(vertical: 2.w, horizontal: 10.w),
-      decoration: BoxDecoration(
-        color: ColorsTheme.white,
-        borderRadius: BorderRadius.circular(8.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 5,
-            blurRadius: 7,
-            offset: Offset(0, 3), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Column(children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return InkWell(
+      onTap: () {
+        Navigator.pushNamed(context, '/overtimeDetail', arguments: {
+          'tanggal': overtime['tanggal'],
+          'start_time': overtime['jam_mulai'],
+          'end_time': overtime['jam_selesai'],
+          'status': overtime['status'],
+          'nama': overtime['user']['name'],
+          'photo': overtime['user']['photo'],
+        });
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 9.w),
+        child: Column(
           children: [
-            Text(
-              DateFormat('dd MMM yyyy')
-                  .format(DateTime.parse(overtime['tanggal'])),
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black,
-                fontWeight: FontWeight.w700,
-              ),
+            SizedBox(
+              height: 10.w,
             ),
-            Container(
-              padding: EdgeInsets.all(6.0),
-              decoration: BoxDecoration(
-                color: getStatusColor(overtime['status']),
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: Text(
-                getStatusText(overtime['status']),
-                style: TextStyle(color: Colors.white),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "Tanggal",
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              Text("Start Time",
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                  )),
+                              Text("End Time",
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                  ))
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                overtime['tanggal'],
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              Text(overtime['jam_mulai'],
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                  )),
+                              Text(overtime['jam_selesai'],
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(6.0),
+                      decoration: BoxDecoration(
+                        color: getStatusColor(overtime['status']),
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: Text(
+                        getStatusText(overtime['status']),
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10.w,
+                    ),
+                    Text(
+                      "Tap for more details",
+                      style: TextStyle(fontSize: 10.sp),
+                    )
+                  ],
+                ),
+              ],
             ),
+            SizedBox(
+              height: 10.w,
+            ),
+            Divider(
+              height: 0.5,
+              color: Colors.grey[200],
+            )
           ],
         ),
-        Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
-              child: Row(
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Start Time',
-                        style: TextStyle(fontSize: 15.sp),
-                      ),
-                      Text(
-                        'End Time',
-                        style: TextStyle(fontSize: 15.sp),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: 10.w,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        overtime['jam_mulai'],
-                        style: TextStyle(fontSize: 15.sp),
-                      ),
-                      Text(
-                        overtime['jam_selesai'],
-                        style: TextStyle(fontSize: 15.sp),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ],
-        )
-      ]),
+      ),
     );
-    // return Container(
-    //   padding: EdgeInsets.all(9.w),
-    //   child: Row(
-    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //     children: <Widget>[
-    //       Row(
-    //         mainAxisAlignment: MainAxisAlignment.start,
-    //         crossAxisAlignment: CrossAxisAlignment.start,
-    //         children: <Widget>[
-    //           Padding(
-    //             padding: EdgeInsets.only(left: 8.0),
-    //             child: Column(
-    //               crossAxisAlignment: CrossAxisAlignment.start,
-    //               children: <Widget>[
-    // Text(
-    //   overtime['tanggal'],
-    //   style: const TextStyle(
-    //     fontSize: 16,
-    //     color: Colors.grey,
-    //   ),
-    // ),
-    // Row(
-    //   children: <Widget>[
-    //     Icon(Icons.rotate_right),
-    //     Text(
-    //       overtime['jam_mulai'],
-    //     )
-    //   ],
-    // ),
-    // Row(
-    //   children: <Widget>[
-    //     Icon(Icons.rotate_left),
-    //     Text(
-    //       overtime['jam_selesai'],
-    //     )
-    //   ],
-    // )
-    //               ],
-    //             ),
-    //           )
-    //         ],
-    //       ),
-    // Container(
-    //   padding: EdgeInsets.all(6.0),
-    //   decoration: BoxDecoration(
-    //     color: getStatusColor(overtime['status']),
-    //     shape: BoxShape.rectangle,
-    //     borderRadius: BorderRadius.circular(20.0),
-    //   ),
-    //   child: Text(
-    //     getStatusText(overtime['status']),
-    //     style: TextStyle(color: Colors.white),
-    //   ),
-    // )
-    //     ],
-    //   ),
-    // );
   }
 }

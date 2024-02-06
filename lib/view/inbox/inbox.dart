@@ -100,7 +100,6 @@ class _InboxPageState extends State<InboxPage> {
             buildTab2Content(),
           ],
         ),
-        
       ),
     );
   }
@@ -165,10 +164,10 @@ class _InboxPageState extends State<InboxPage> {
               ),
             ],
           ),
-          Divider(
-            height: 1,
-            color: Colors.black,
-          ),
+          // Divider(
+          //   height: 1,
+          //   color: Colors.black,
+          // ),
           Divider(
             height: 1,
             color: Colors.black,

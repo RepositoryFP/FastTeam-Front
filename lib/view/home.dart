@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:Fast_Team/user/controllerApi.dart';
+// import 'package:Fast_Team/user/controllerApi.dart';
 import 'package:Fast_Team/utils/bottom_navigation_bar.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/standalone.dart' as tz;
@@ -38,7 +38,8 @@ class _HomePageState extends State<HomePage> {
   late SharedPreferences sharedPreferences;
   var idUser;
   var email;
-  var idDivisi;
+  int? idDivisi;
+  int? id_level;
   var nama;
   var fullNama;
   var divisi;
@@ -54,6 +55,8 @@ class _HomePageState extends State<HomePage> {
   var keluarAwal;
   var keluarAkhir;
   var avatarImageUrl;
+  int endList = 5;
+  int startList = 0;
 
   TextStyle alertErrorTextStyle = TextStyle(
     fontFamily: 'Poppins',
@@ -94,22 +97,37 @@ class _HomePageState extends State<HomePage> {
   DateTime? keluarAwalDateTime;
   DateTime? keluarAkhirDateTime;
   List<Map<String, dynamic>> divisiList = [];
+  List<dynamic> ListDataMember = [];
 
   HomeController? homeController;
-
+  final listViewController = ScrollController();
   @override
   void initState() {
     super.initState();
     initConstructor();
     initializeState();
+    listViewController.addListener(() {
+      if (listViewController.position.maxScrollExtent ==
+          listViewController.offset) {
+        setEndList();
+      }
+    });
+
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
   }
 
+  Future setEndList() async {
+    setState(() {
+      endList = endList + 5;
+    });
+  }
+
   @override
   void dispose() {
+    listViewController.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -117,12 +135,13 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  initConstructor() {
+  initConstructor() async {
     homeController = Get.put(HomeController());
 
     idUser = 0.obs;
     email = ''.obs;
-    idDivisi = 0.obs;
+    idDivisi = 0;
+    id_level = 0;
     nama = ''.obs;
     fullNama = ''.obs;
     divisi = ''.obs;
@@ -185,12 +204,16 @@ class _HomePageState extends State<HomePage> {
     idUser = accountModel.id;
     nama = accountModel.fullName;
     divisi = accountModel.divisi;
+    idDivisi = accountModel.id_divisi;
+    id_level = accountModel.id_level;
     imgUrl = accountModel.imgProfUrl;
     kantor = accountModel.cabang;
     masukAwal = accountModel.masukAwal;
     masukAkhir = accountModel.masukAkhir;
     keluarAwal = accountModel.keluarAwal;
     keluarAkhir = accountModel.keluarAkhir;
+    ListDataMember = await _fetchMemberData();
+    print(id_level);
     tz.initializeTimeZones();
     if (accountModel.id != null) {
       setState(() {
@@ -200,23 +223,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future refreshItem() async {
-    List<Map<String, dynamic>> divisiData = await listDivisi();
-    setState(() {
-      divisiList = divisiData;
-    });
-    print(divisiList);
-  }
-
-  Future<void> loadData() async {
+    homeController = Get.put(HomeController());
     try {
       // Ambil data divisi
-      List<Map<String, dynamic>> divisiData = await listDivisi();
+      var divisiData = await homeController!.listDivisi();
+
       setState(() {
-        divisiList = divisiData;
+        divisiList = List.from(divisiData['details']);
       });
 
-      // Ambil data absensi
-      List<Map<String, dynamic>> data = await _fetchData();
       setState(() {
         isLoading = false;
       });
@@ -225,14 +240,59 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> _fetchData() async {
+  Future<void> loadData() async {
+    homeController = Get.put(HomeController());
+    try {
+      // Ambil data divisi
+      var divisiData = await homeController!.listDivisi();
+
+      setState(() {
+        divisiList = List.from(divisiData['details']);
+      });
+
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<List<dynamic>> _fetchMemberData() async {
+    Map<String, dynamic> result =
+        await homeController!.getListBelumAbsen(currentDate, idDivisi!);
+    List<dynamic> listMemberData = result['details']['data'];
+    return listMemberData;
+  }
+
+  Future<List<dynamic>> _fetchData() async {
+    homeController = Get.put(HomeController());
+
     try {
       if (_selectedFilter == 'All') {
         // Panggil getListBelumAbsen tanpa parameter jika "Semua" dipilih
-        return await getListBelumAbsen('', 0);
+        Map<String, dynamic> result =
+            await homeController!.getListBelumAbsen('', 0);
+        List<dynamic> listData = result['details']['data'];
+        // print(listData.sublist(75, listData.length));
+        // if (listData != null && listData.length > 5) {
+        //   listData = listData.sublist(startList, endList);
+        // } else {
+        //   listData = listData.sublist(startList, listData.length);
+        // }
+        return listData;
       } else {
+        // print(currentDate);
         // Panggil getListBelumAbsen dengan parameter sesuai pilihan
-        return await getListBelumAbsen(currentDate, int.parse(_selectedFilter));
+        Map<String, dynamic> result = await homeController!
+            .getListBelumAbsen(currentDate, int.parse(_selectedFilter));
+        List<dynamic> listData = result['details']['data'];
+        // if (listData != null && listData.length > 5) {
+        //   listData = listData.sublist(startList, endList);
+        // } else {
+        //   listData = listData.sublist(startList, listData.length);
+        // }
+        return listData;
       }
     } catch (e) {
       print(e);
@@ -248,7 +308,7 @@ class _HomePageState extends State<HomePage> {
 
     try {
       // Panggil fungsi untuk memuat ulang data
-      List<Map<String, dynamic>> data = await _fetchData();
+      List<dynamic> data = await _fetchData();
 
       // Hentikan loading indicator dan perbarui tabel dengan data yang baru
       setState(() {
@@ -307,6 +367,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // print(ListDataMember[1]);
     Widget headerBackground() => const HeaderCircle(diameter: 500);
     Widget Headers() {
       return headerBackground();
@@ -573,12 +634,14 @@ class _HomePageState extends State<HomePage> {
             ? {}
             : (status == "Attendance")
                 ? Navigator.pushNamed(context, '/daftarAbsensi')
-                : ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text("Menu masih belum tersedia",
-                        style: alertErrorTextStyle),
-                    backgroundColor: ColorsTheme.lightRed,
-                    behavior: SnackBarBehavior.floating,
-                  )),
+                : (status == "Payslip")
+                    ? Navigator.pushNamed(context, '/payslip')
+                    : ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Menu masih belum tersedia",
+                            style: alertErrorTextStyle),
+                        backgroundColor: ColorsTheme.lightRed,
+                        behavior: SnackBarBehavior.floating,
+                      )),
         child: contentIcon(status));
 
     Widget Menu() {
@@ -779,7 +842,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 20.h),
-            FutureBuilder<List<Map<String, dynamic>>>(
+            FutureBuilder<List<dynamic>>(
               future: _fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -792,14 +855,25 @@ class _HomePageState extends State<HomePage> {
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else if (snapshot.hasData) {
-                  List<Map<String, dynamic>> data = snapshot.data!;
+                  List<dynamic> data = snapshot.data!;
+                  // List<dynamic> listData = data['data'];
+                  // if (listData != null && listData.length > 5) {
+                  //   listData = listData.sublist(0, endList);
+                  // }
                   return ListView.builder(
-                      itemCount: data.length,
+                      controller: listViewController,
+                      itemCount: data.length + 1,
                       shrinkWrap: true,
                       physics: const ClampingScrollPhysics(),
-                      itemBuilder: (context, index) =>
-                          ListEmployee(data[index], false));
-                  // return ListEmployee(data);
+                      itemBuilder: (context, index) => (index < data.length)
+                          ? ListEmployee(data[index], false)
+                          : Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10.w),
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ));
+                  // return Text('No data available');
                 } else {
                   return Text('No data available');
                 }
@@ -860,6 +934,128 @@ class _HomePageState extends State<HomePage> {
           });
     }
 
+    Widget ListMemberAbsens() {
+      return Container(
+        margin: EdgeInsets.symmetric(horizontal: 10.w),
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                            color: Color.fromARGB(255, 2, 65, 128), width: 3.0),
+                      ),
+                    ),
+                    padding: EdgeInsets.all(8),
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'List',
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: Color.fromARGB(255, 2, 65, 128),
+                          fontWeight: FontWeight.bold,
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: ' Member Division',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 8),
+              child: InkWell(
+                onTap: () async {
+                  Navigator.pushNamed(context, '/listMember',
+                      arguments: await _fetchMemberData());
+                },
+                child: Container(
+                  child: FutureBuilder<List<dynamic>>(
+                    future: _fetchMemberData(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          height: 70.w,
+                          decoration: BoxDecoration(
+                            color: ColorsTheme.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset:
+                                    Offset(0, 3), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (snapshot.hasData) {
+                        List<dynamic> data = snapshot.data!;
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: ColorsTheme.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset:
+                                    Offset(0, 3), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 20.w, vertical: 10.w),
+                                child: Row(children: [
+                                  for (int i = 0; i < data.length; i++)
+                                    Align(
+                                      widthFactor: 0.5,
+                                      child: CircleAvatar(
+                                          radius: 25.r,
+                                          backgroundImage:
+                                              NetworkImage(data[i]['image'])),
+                                    )
+                                ]),
+                              ),
+                              Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 20.w, vertical: 10.w),
+                                  child: Icon(Icons.arrow_forward_ios)),
+                            ],
+                          ),
+                        );
+                      } else {
+                        return Text('No data available');
+                      }
+                    },
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      );
+    }
+
     return WillPopScope(
       onWillPop: () async {
         return Future.value(false);
@@ -874,6 +1070,9 @@ class _HomePageState extends State<HomePage> {
                 // Wrap the sticky part with StickyHeader widget
                 body(),
                 Menu(),
+                (id_level == 1 || id_level == 2)
+                    ? ListMemberAbsens()
+                    : Container(),
                 ListAbsens(),
               ],
             ),

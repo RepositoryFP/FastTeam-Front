@@ -144,7 +144,7 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
       if (date != null) {
         setState(() {
           _selectedDate = date;
-          print(date);
+          
         });
         await _loadDataForSelectedMonth();
       }
