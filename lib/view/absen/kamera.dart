@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'package:Fast_Team/server/base_server.dart';
 import 'package:Fast_Team/style/color_theme.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:Fast_Team/user/controllerApi.dart';
 import 'dart:convert';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -266,7 +266,7 @@ class KameraPageState extends State<KameraPage> {
   Future<http.MultipartRequest> storeImageAbsent(File imageFile) async {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('${globalVariable.baseUrl}/compare-image/'),
+      Uri.parse('${BaseServer.serverUrl}/api_absensi/compare-image/'),
     );
     request.files
         .add(await http.MultipartFile.fromPath('image', imageFile.path));

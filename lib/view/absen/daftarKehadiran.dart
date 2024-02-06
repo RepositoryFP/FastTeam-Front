@@ -34,8 +34,8 @@ class _DaftarKehadiranPageState extends State<DaftarKehadiranPage> {
 
     final response = await http.get(Uri.parse(
         '${globalVariable.baseUrl}/user-absen/${date.toString().substring(0, 10)}/'));
-    print(
-        '${globalVariable.baseUrl}/user-absen/${date.toString().substring(0, 10)}/');
+    // print(
+    //     '${globalVariable.baseUrl}/user-absen/${date.toString().substring(0, 10)}/');
     if (response.statusCode == 200) {
       setState(() {
         final data = json.decode(response.body);

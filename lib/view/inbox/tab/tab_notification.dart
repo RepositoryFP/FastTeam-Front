@@ -51,7 +51,7 @@ class _TabNotificationPageState extends State<TabNotificationPage>
   void initState() {
     super.initState();
     inboxController = Get.put(InboxController());
-    fetchData();
+    initData();
   }
 
   initData() async {

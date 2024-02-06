@@ -5,6 +5,7 @@ import 'package:Fast_Team/model/user_model.dart';
 import 'package:Fast_Team/style/color_theme.dart';
 import 'package:Fast_Team/view/account/personal_info_page.dart';
 import 'package:Fast_Team/view/auth/login_page.dart';
+import 'package:Fast_Team/view/auth/reset_password_page.dart';
 import 'package:Fast_Team/view/sertificate.dart';
 
 import 'package:Fast_Team/widget/refresh_widget.dart';
@@ -127,10 +128,14 @@ class _AccountPageState extends State<AccountPage> {
                     height: 5.h,
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    margin: EdgeInsets.symmetric(horizontal: 60.w),
                     child: (isLoading)
                         ? loadingData(150.w)
-                        : Text('$fullNama', style: headerStyle(false)),
+                        : Text(
+                            '$fullNama',
+                            style: headerStyle(false),
+                            textAlign: TextAlign.center,
+                          ),
                   ),
                   SizedBox(
                     height: 5.h,
@@ -143,9 +148,6 @@ class _AccountPageState extends State<AccountPage> {
                   ),
                 ],
               ),
-            ),
-            SizedBox(
-              height: 20.h,
             ),
           ],
         ),
@@ -179,7 +181,14 @@ class _AccountPageState extends State<AccountPage> {
             menuItems(
                 'Payroll Info', Colors.green, Icons.monetization_on, () {}),
             Divider(),
-            menuItems('Change Password', Colors.orange, Icons.lock, () {}),
+            menuItems('Change Password', Colors.orange, Icons.lock, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ResetPasswordPage(),
+                ),
+              );
+            }),
             Divider(),
             menuItems(
               'Logout',
