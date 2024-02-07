@@ -190,11 +190,23 @@ class _PersonalInfoState extends State<PersonalInfo> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Personal Info'),
-        actions: <Widget>[
-          IconButton(icon: Icon(Icons.edit_square), onPressed: () {}),
-        ],
-      ),
+          title: const Text(
+            'Personal Info',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Custom back button action
+              Navigator.pop(context, 'true');
+            },
+          )),
       body: RefreshWidget(
         onRefresh: refreshItem,
         child: body(),

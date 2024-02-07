@@ -327,7 +327,24 @@ class ResultScreen extends StatelessWidget {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Result')),
+        appBar: AppBar(
+            title: const Text(
+              'Result',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                // Custom back button action
+                Navigator.pop(context, 'true');
+              },
+            )),
         body: Container(
           color: Colors.white,
           child: SingleChildScrollView(

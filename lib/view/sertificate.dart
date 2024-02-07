@@ -20,8 +20,23 @@ class _SertificatePageState extends State<SertificatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Certificates'),
-      ),
+          title: const Text(
+            'Certificate',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Custom back button action
+              Navigator.pop(context, 'true');
+            },
+          )),
       body: sertificateList.isEmpty
           ? Center(
               child: CircularProgressIndicator(),

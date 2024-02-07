@@ -9,7 +9,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 void main() {
   runApp(MyApp());
 }
@@ -120,8 +119,23 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
         DateTime(_selectedDate.year, _selectedDate.month + 1, 0).day;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Daftar Absensi'),
-      ),
+          title: const Text(
+            'Daftar Absensi',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Custom back button action
+              Navigator.pop(context, 'true');
+            },
+          )),
       body: Column(
         children: [
           SizedBox(height: 20.0),

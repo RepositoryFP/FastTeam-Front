@@ -1,8 +1,13 @@
+import 'package:Fast_Team/controller/account_controller.dart';
+import 'package:Fast_Team/model/account_information_model.dart';
 import 'package:Fast_Team/style/color_theme.dart';
 import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:accordion/accordion.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:getwidget/components/accordion/gf_accordion.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -16,11 +21,51 @@ class PayslipPage extends StatefulWidget {
 }
 
 class _PayslipPageState extends State<PayslipPage> {
+  var nama;
+  var posisi;
+  var imgUrl;
+  Future? _fetchData;
   bool isOpen = false;
   DateTime _selectedDate = DateTime.now();
   bool showSalary = false;
+
+  TextStyle alertErrorTextStyle = TextStyle(
+    fontFamily: 'Poppins',
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w400,
+    color: ColorsTheme.white,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    initConstructor();
+  }
+
   Future refreshItem() async {
     setState(() {});
+  }
+
+  initConstructor() async {
+    nama = "".obs;
+    posisi = "".obs;
+    imgUrl = "".obs;
+
+    setState(() {
+      _fetchData = initData();
+    });
+  }
+
+  Future<void> initData() async {
+    AccountController accountController = Get.put(AccountController());
+    var result = await accountController.retriveAccountInformation();
+    AccountInformationModel accountModel =
+        AccountInformationModel.fromJson(result['details']['data']);
+    setState(() {
+      nama = accountModel.fullName;
+      posisi = accountModel.posisiPekerjaan;
+      imgUrl = accountModel.imgProfUrl;
+    });
   }
 
   Future<void> _selectMonth(BuildContext context) async {
@@ -44,7 +89,59 @@ class _PayslipPageState extends State<PayslipPage> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat.yMMMM().format(_selectedDate);
     Widget _body() {
-      return Column(
+      return FutureBuilder(
+          future: _fetchData,
+          builder: (context, AsyncSnapshot snapshot) {
+            print(snapshot);
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              SchedulerBinding.instance!.addPostFrameCallback((_) {
+                var snackbar = SnackBar(
+                  content: Text('Error: ${snapshot.error}',
+                      style: alertErrorTextStyle),
+                  backgroundColor: ColorsTheme.lightRed,
+                  behavior: SnackBarBehavior.floating,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackbar);
+              });
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasData) {
+              return _bodyContent(context, formattedDate);
+            } else {
+              return _bodyContent(context, formattedDate);
+            }
+          });
+    }
+
+    return Scaffold(
+        appBar: AppBar(
+            title: const Text(
+              'My Payslip',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                // Custom back button action
+                Navigator.pop(context, 'true');
+              },
+            )),
+        body: RefreshWidget(
+          onRefresh: refreshItem,
+          child: _body(),
+        ));
+  }
+
+  Widget _bodyContent(BuildContext context, String formattedDate) {
+    return Container(
+      child: Column(
         children: [
           Container(
             margin: EdgeInsets.symmetric(horizontal: 15.w),
@@ -114,17 +211,8 @@ class _PayslipPageState extends State<PayslipPage> {
             ),
           )
         ],
-      );
-    }
-
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('My Payslip'),
-        ),
-        body: RefreshWidget(
-          onRefresh: refreshItem,
-          child: _body(),
-        ));
+      ),
+    );
   }
 
   Widget _salarySlipCard(BuildContext context) {
@@ -204,42 +292,39 @@ class _PayslipPageState extends State<PayslipPage> {
               margin: EdgeInsets.only(bottom: 10.w),
               child: Row(
                 children: [
-                  Shimmer.fromColors(
-                    child: CircleAvatar(
-                        backgroundColor: ColorsTheme.black, radius: 30.r),
-                    baseColor: ColorsTheme.secondary!,
-                    highlightColor: ColorsTheme.lightGrey2!,
+                  CachedNetworkImage(
+                    imageUrl: '$imgUrl',
+                    imageBuilder: (context, imageProvider) => ClipRRect(
+                      borderRadius: BorderRadius.circular(30.r),
+                      child: CircleAvatar(
+                        radius: 30.r,
+                        backgroundImage: imageProvider,
+                      ),
+                    ),
                   ),
                   SizedBox(
                     width: 10.w,
                   ),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Shimmer.fromColors(
-                        baseColor: ColorsTheme.secondary!,
-                        highlightColor: ColorsTheme.lightGrey2!,
-                        child: Container(
-                          width: 120.w,
-                          height: 15.h,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(3.r),
-                            color: ColorsTheme.white,
-                          ),
+                      Text(
+                        "$nama",
+                        style: TextStyle(
+                          color: ColorsTheme.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18.sp,
                         ),
                       ),
                       SizedBox(
-                        height: 10.w,
+                        height: 2.w,
                       ),
-                      Shimmer.fromColors(
-                        baseColor: ColorsTheme.secondary!,
-                        highlightColor: ColorsTheme.lightGrey2!,
-                        child: Container(
-                          width: 120.w,
-                          height: 15.h,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(3.r),
-                            color: ColorsTheme.white,
-                          ),
+                      Text(
+                        "$posisi",
+                        style: TextStyle(
+                          color: ColorsTheme.white,
+                          fontWeight: FontWeight.w300,
+                          fontSize: 12.sp,
                         ),
                       ),
                     ],

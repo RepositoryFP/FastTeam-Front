@@ -10,6 +10,7 @@ import 'package:Fast_Team/view/inbox/detail/detail_leave_page.dart';
 import 'package:Fast_Team/view/inbox/detail/detail_overtime_page.dart';
 import 'package:Fast_Team/view/milestone/milestone_page.dart';
 import 'package:Fast_Team/view/payslip/payslip_page.dart';
+import 'package:Fast_Team/view/payslip/verification_payslip_page.dart';
 import 'package:Fast_Team/view/request/schedule_request_page.dart';
 import 'package:Fast_Team/view/inbox/approval.dart';
 import 'package:Fast_Team/view/auth/login_page.dart';
@@ -98,7 +99,9 @@ class _MyAppState extends State<MyApp> {
               '/leaveDetail': (context) => LeaveDetailPage(),
               '/overtimeDetail': (context) => OvertimeDetailPage(),
               '/payslip': (context) => PayslipPage(),
+              '/verifPayslip': (context) => VerifPayslipPage(),
               '/listMember': (context) => ListAbsentPage(),
+              '/milestone': (context) => MilestonePage(),
             },
           );
         });

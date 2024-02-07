@@ -55,6 +55,8 @@ class _HomePageState extends State<HomePage> {
   var keluarAwal;
   var keluarAkhir;
   var avatarImageUrl;
+  var shift;
+
   int endList = 5;
   int startList = 0;
 
@@ -157,6 +159,8 @@ class _HomePageState extends State<HomePage> {
     keluarAwal = ''.obs;
     keluarAkhir = ''.obs;
     avatarImageUrl = ''.obs;
+    shift = ''.obs;
+
     now = Rxn<DateTime>();
   }
 
@@ -212,8 +216,10 @@ class _HomePageState extends State<HomePage> {
     masukAkhir = accountModel.masukAkhir;
     keluarAwal = accountModel.keluarAwal;
     keluarAkhir = accountModel.keluarAkhir;
+    shift = accountModel.shift;
+
     ListDataMember = await _fetchMemberData();
-    print(id_level);
+
     tz.initializeTimeZones();
     if (accountModel.id != null) {
       setState(() {
@@ -472,7 +478,14 @@ class _HomePageState extends State<HomePage> {
                               size: 20.sp,
                             ),
                             Text(
-                              ' ${DateFormat('d MMM yyyy (HH:mm)').format(DateTime.now())}',
+                              ' ${DateFormat('d MMM yyyy').format(DateTime.now())}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.sp,
+                              ),
+                            ),
+                            Text(
+                              ' ($shift)',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16.sp,
@@ -635,13 +648,15 @@ class _HomePageState extends State<HomePage> {
             : (status == "Attendance")
                 ? Navigator.pushNamed(context, '/daftarAbsensi')
                 : (status == "Payslip")
-                    ? Navigator.pushNamed(context, '/payslip')
-                    : ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Menu masih belum tersedia",
-                            style: alertErrorTextStyle),
-                        backgroundColor: ColorsTheme.lightRed,
-                        behavior: SnackBarBehavior.floating,
-                      )),
+                    ? Navigator.pushNamed(context, '/verifPayslip')
+                    : (status == "Milestone")
+                        ? Navigator.pushNamed(context, '/milestone')
+                        : ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text("Menu masih belum tersedia",
+                                style: alertErrorTextStyle),
+                            backgroundColor: ColorsTheme.lightRed,
+                            behavior: SnackBarBehavior.floating,
+                          )),
         child: contentIcon(status));
 
     Widget Menu() {
@@ -794,10 +809,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  // ElevatedButton(
-                  //   onPressed: _reloadData,
-                  //   child: Icon(Icons.refresh),
-                  // ),
                 ],
               ),
             ),
@@ -862,17 +873,11 @@ class _HomePageState extends State<HomePage> {
                   // }
                   return ListView.builder(
                       controller: listViewController,
-                      itemCount: data.length + 1,
+                      itemCount: data.length,
                       shrinkWrap: true,
                       physics: const ClampingScrollPhysics(),
-                      itemBuilder: (context, index) => (index < data.length)
-                          ? ListEmployee(data[index], false)
-                          : Padding(
-                              padding: EdgeInsets.symmetric(vertical: 10.w),
-                              child: Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            ));
+                      itemBuilder: (context, index) =>
+                          ListEmployee(data[index], false));
                   // return Text('No data available');
                 } else {
                   return Text('No data available');
@@ -1023,19 +1028,48 @@ class _HomePageState extends State<HomePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 20.w, vertical: 10.w),
-                                child: Row(children: [
-                                  for (int i = 0; i < data.length; i++)
-                                    Align(
-                                      widthFactor: 0.5,
-                                      child: CircleAvatar(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 20.w, vertical: 10.w),
+                                  child: Row(
+                                    children: List.generate(
+                                      (data.length <= 3) ? data.length : 3,
+                                      (index) => Align(
+                                        child: CircleAvatar(
                                           radius: 25.r,
-                                          backgroundImage:
-                                              NetworkImage(data[i]['image'])),
-                                    )
-                                ]),
-                              ),
+                                          backgroundColor:
+                                              ColorsTheme.lightGrey2,
+                                          child: CircleAvatar(
+                                            radius: 23.r,
+                                            backgroundImage: NetworkImage(
+                                                data[index]['image']),
+                                          ),
+                                        ),
+                                      ),
+                                    )..addAll(
+                                        (data.length > 3)
+                                            ? [
+                                                Align(
+                                                  child: CircleAvatar(
+                                                    radius: 25.r,
+                                                    backgroundColor:
+                                                        ColorsTheme.lightGrey2,
+                                                    child: CircleAvatar(
+                                                      radius: 23.r,
+                                                      backgroundColor: ColorsTheme
+                                                          .white, // Set grey background
+                                                      child: Text(
+                                                        '+${data.length - 3}',
+                                                        style: TextStyle(
+                                                            color: ColorsTheme
+                                                                .black),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ]
+                                            : [],
+                                      ),
+                                  )),
                               Container(
                                   margin: EdgeInsets.symmetric(
                                       horizontal: 20.w, vertical: 10.w),
@@ -1070,7 +1104,7 @@ class _HomePageState extends State<HomePage> {
                 // Wrap the sticky part with StickyHeader widget
                 body(),
                 Menu(),
-                (id_level == 1 || id_level == 2)
+                (id_level != 1 || id_level != 2 || id_level != 3)
                     ? ListMemberAbsens()
                     : Container(),
                 ListAbsens(),

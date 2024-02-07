@@ -65,7 +65,7 @@ class _NavigatorBottomMenuState extends State<NavigatorBottomMenu> {
       );
     }
 
-    Widget itemNavigation() => // Ganti dengan warna yang sesuai
+    Widget itemNavigation() => 
         NavigationBarTheme(
           data: NavigationBarThemeData(),
           child: NavigationBar(

@@ -1,6 +1,9 @@
+import 'package:Fast_Team/style/color_theme.dart';
 import 'package:Fast_Team/widget/refresh_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:Fast_Team/controller/employee_controller.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class EmployeePage extends StatefulWidget {
@@ -14,11 +17,32 @@ class _EmployeePageState extends State<EmployeePage> {
   List<Map<String, dynamic>> filteredEmployees = [];
   final searchText = TextEditingController();
 
+  Future? _fetchData;
+
+  TextStyle alertErrorTextStyle = TextStyle(
+    fontFamily: 'Poppins',
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w400,
+    color: ColorsTheme.white,
+  );
+
   @override
   void initState() {
     super.initState();
     employeeController = Get.put(EmployeeController());
-    fetchData();
+    initConstructor();
+  }
+
+  initConstructor() async {
+    setState(() {
+      _fetchData = fetchData();
+    });
+  }
+
+  Future _refreshItem() async {
+    setState(() {
+      _fetchData = fetchData();
+    });
   }
 
   Future<void> fetchData() async {
@@ -56,18 +80,44 @@ class _EmployeePageState extends State<EmployeePage> {
           _searchBar(),
           Expanded(
             child: RefreshWidget(
-              onRefresh: fetchData,
-              child: ListView.builder(
-                itemCount: filteredEmployees.length,
-                itemBuilder: (context, index) {
-                  final employee = filteredEmployees[index];
-                  return _employeeList(employee);
-                },
-              ),
+              onRefresh: _refreshItem,
+              child: FutureBuilder(
+                  future: _fetchData,
+                  builder: (context, AsyncSnapshot snapshot) {
+                    print(snapshot);
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      SchedulerBinding.instance!.addPostFrameCallback((_) {
+                        var snackbar = SnackBar(
+                          content: Text('Error: ${snapshot.error}',
+                              style: alertErrorTextStyle),
+                          backgroundColor: ColorsTheme.lightRed,
+                          behavior: SnackBarBehavior.floating,
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      });
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasData) {
+                      return _body();
+                    } else {
+                      return _body();
+                    }
+                  }),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _body() {
+    return ListView.builder(
+      itemCount: filteredEmployees.length,
+      itemBuilder: (context, index) {
+        final employee = filteredEmployees[index];
+        return _employeeList(employee);
+      },
     );
   }
 

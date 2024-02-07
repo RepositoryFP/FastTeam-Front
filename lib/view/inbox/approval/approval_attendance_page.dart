@@ -106,13 +106,23 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Attendance List',
-          style: TextStyle(
-            fontSize: 20,
+          title: const Text(
+            'Attendence List',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      ),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Custom back button action
+              Navigator.pop(context, 'true');
+            },
+          )),
       body: FutureBuilder(
           future: _loadData,
           builder: (context, snapshot) {
@@ -316,7 +326,7 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
                                 Text(
                                   formattedDate,
                                   style: TextStyle(
-                                    color: Colors.grey,
+                                    color: Colors.black,
                                   ),
                                 ),
                                 Text(
@@ -324,13 +334,13 @@ class _ApprovalAttendancePageState extends State<ApprovalAttendancePage> {
                                       .toString()
                                       .split(' ')[1],
                                   style: TextStyle(
-                                    color: Colors.grey,
+                                    color: Colors.black,
                                   ),
                                 ),
                                 Text(
                                   attendance['jenis'].toString().toUpperCase(),
                                   style: TextStyle(
-                                    fontWeight: FontWeight.w400,
+                                    fontWeight: FontWeight.w600,
                                     color: (attendance['jenis'] == 'in')
                                         ? ColorsTheme.lightGreen
                                         : ColorsTheme.lightRed,

@@ -117,19 +117,22 @@ class _MapPageState extends State<MapPage> {
     aksi = ModalRoute.of(context)!.settings.arguments as String;
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Title(
-          color: Colors.white,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[Text(aksi == 'in' ? 'Clock In' : 'Clock Out')],
+        title: Text(
+          aksi == 'in' ? 'Clock In' : 'Clock Out',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Custom back button action
+            Navigator.pop(context, 'true');
+          },
         ),
         actions: [
           IconButton(
@@ -157,13 +160,12 @@ class _MapPageState extends State<MapPage> {
                 width: 50.0,
                 height: 50.0,
                 point: LatLng(_latitude, _longitude),
-                child:  CircleAvatar(
-                    radius: 20.0,
-                    backgroundColor: Colors.transparent,
-                    backgroundImage: NetworkImage(
-                        '$imgProf'), // Menggunakan imgProf dari SharedPreferences
-                  ),
-                
+                child: CircleAvatar(
+                  radius: 20.0,
+                  backgroundColor: Colors.transparent,
+                  backgroundImage: NetworkImage(
+                      '$imgProf'), // Menggunakan imgProf dari SharedPreferences
+                ),
               ),
             ],
           ),

@@ -105,13 +105,23 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Overtime List',
-          style: TextStyle(
-            fontSize: 20,
+          title: const Text(
+            'Overtime List',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      ),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Custom back button action
+              Navigator.pop(context, 'true');
+            },
+          )),
       body: FutureBuilder(
           future: _loadData,
           builder: (context, snapshot) {
@@ -190,16 +200,16 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
                               Text(
                                 "Tanggal",
                                 style: const TextStyle(
-                                  color: Colors.grey,
+                                  color: Colors.black,
                                 ),
                               ),
                               Text("Start Time",
                                   style: const TextStyle(
-                                    color: Colors.grey,
+                                    color: Colors.black,
                                   )),
                               Text("End Time",
                                   style: const TextStyle(
-                                    color: Colors.grey,
+                                    color: Colors.black,
                                   ))
                             ],
                           ),

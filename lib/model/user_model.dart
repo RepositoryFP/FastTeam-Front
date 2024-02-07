@@ -23,6 +23,7 @@ class DataAccountModel {
   String? keluarAwal;
   String? keluarAkhir;
   String? shift;
+  
 
   //personal info
 
@@ -47,6 +48,7 @@ class DataAccountModel {
     this.divisiName,
     this.namaLokasi,
     this.shift,
+    
     this.shiftName,
     this.masukAkhir,
     this.masukAwal,
@@ -75,11 +77,11 @@ class DataAccountModel {
         imgProf: json['img_prof'],
         imgUrl: json['img_url'],
         namaLokasi: json['nama_lokasi'],
-        shiftName: json['shift']['name']??'',
-        masukAkhir: json['clock_in']['max']??'',
-        masukAwal: json['clock_in']['min']??'',
-        keluarAkhir: json['clock_out']['max']??'',
-        keluarAwal: json['clock_out']['min']??'',
+        shiftName: json['shift']['name'] ?? '',
+        masukAkhir: json['clock_in']['max'] ?? '',
+        masukAwal: json['clock_in']['min'] ?? '',
+        keluarAkhir: json['clock_out']['max'] ?? '',
+        keluarAwal: json['clock_out']['min'] ?? '',
 
         //personal info
         jenisKelamin: json['gender']['name'],

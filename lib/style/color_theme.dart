@@ -11,6 +11,7 @@ class ColorsTheme {
   static Color? lightGrey2 = const Color(0xffF6F6F6);
   static Color? lightGrey3 = const Color(0xffE2E2E2);
   static Color? lightRed = const Color(0xffEC1D2F);
+  static Color? semiGreen = Color.fromARGB(255, 209, 243, 129);
   static Color? lightYellow = const Color(0xffECB83F);
   static Color? neutralDark = const Color(0xff223263);
   static Color? lightDark = const Color.fromARGB(255, 92, 97, 244);

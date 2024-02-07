@@ -55,7 +55,6 @@ class _ApprovalLeavePageState extends State<ApprovalLeavePage> {
       setState(() {
         leaveList = List<Map<String, dynamic>>.from(data);
       });
-      print(leaveList);
     }
   }
 
@@ -74,8 +73,6 @@ class _ApprovalLeavePageState extends State<ApprovalLeavePage> {
         );
     ScaffoldMessenger.of(context).showSnackBar(snackbar());
   }
-
-  
 
   Color getStatusColor(int status) {
     switch (status) {
@@ -120,13 +117,23 @@ class _ApprovalLeavePageState extends State<ApprovalLeavePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Leave List',
-          style: TextStyle(
-            fontSize: 20,
+          title: const Text(
+            'Leave List',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      ),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Custom back button action
+              Navigator.pop(context, 'true');
+            },
+          )),
       body: FutureBuilder(
           future: _loadData,
           builder: (context, snapshot) {
@@ -193,7 +200,7 @@ class _ApprovalLeavePageState extends State<ApprovalLeavePage> {
           });
         },
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.w),
+          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -229,7 +236,7 @@ class _ApprovalLeavePageState extends State<ApprovalLeavePage> {
                         Text(
                           formatDateString(leave['tanggal']),
                           style: const TextStyle(
-                            color: Colors.grey,
+                            color: Colors.black,
                           ),
                         ),
                         Text(
@@ -291,9 +298,6 @@ class _ApprovalLeavePageState extends State<ApprovalLeavePage> {
             ],
           ),
         ),
-      ),
-      SizedBox(
-        height: 16.0,
       ),
       Divider(
         height: 0.5,

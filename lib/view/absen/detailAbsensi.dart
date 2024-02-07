@@ -11,7 +11,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/gestures.dart';
 import 'package:Fast_Team/utils/bottom_navigation_bar.dart';
 
-
 class DetailAbsensiPage extends StatefulWidget {
   @override
   _DetailAbsensiPageState createState() => _DetailAbsensiPageState();
@@ -247,22 +246,23 @@ class _DetailAbsensiPageState extends State<DetailAbsensiPage> {
 
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Title(
-          color: Colors.white,
-          child: Row(
-            children: <Widget>[
-              Text('Detail Absensi'),
-            ],
+          title: const Text(
+            'Detail Absensi',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      ),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Custom back button action
+              Navigator.pop(context, 'true');
+            },
+          )),
       body: body(),
     );
   }

@@ -17,7 +17,6 @@ class HomeController extends GetxController {
   }
 
   getListBelumAbsen(String tanggal, int idDivisi) async {
-    print(tanggal);
     final response;
     if (idDivisi > 0) {
       response =

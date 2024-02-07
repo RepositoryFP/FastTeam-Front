@@ -52,22 +52,27 @@ class _OvertimeDetailPageState extends State<OvertimeDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Detail Overtime',
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blue[900],
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            // Custom back button action
-            Navigator.pop(context, 'true');
-          },
-          color: Colors.white,
-        ),
-      ),
+          title: const Text(
+            'Detail Overtime',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Colors.blue[900],
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              // Custom back button action
+              Navigator.pop(context, 'true');
+            },
+          )),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 10.w),
         child: Column(
