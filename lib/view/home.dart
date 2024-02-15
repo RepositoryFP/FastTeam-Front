@@ -103,17 +103,22 @@ class _HomePageState extends State<HomePage> {
 
   HomeController? homeController;
   final listViewController = ScrollController();
+
   @override
   void initState() {
     super.initState();
-    initConstructor();
-    initializeState();
+    // listViewController.addListener(() {
+    //   print(listViewController.position.pixels);
+    // });
     listViewController.addListener(() {
-      if (listViewController.position.maxScrollExtent ==
-          listViewController.offset) {
+      if (listViewController.position.pixels ==
+          listViewController.position.maxScrollExtent) {
+        // print('end');
         setEndList();
       }
     });
+    initConstructor();
+    initializeState();
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -125,6 +130,11 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       endList = endList + 5;
     });
+    // print(endList);
+  }
+
+  void _scrollListener() {
+    print('scrolled');
   }
 
   @override
@@ -273,19 +283,18 @@ class _HomePageState extends State<HomePage> {
 
   Future<List<dynamic>> _fetchData() async {
     homeController = Get.put(HomeController());
-
     try {
       if (_selectedFilter == 'All') {
         // Panggil getListBelumAbsen tanpa parameter jika "Semua" dipilih
         Map<String, dynamic> result =
             await homeController!.getListBelumAbsen('', 0);
         List<dynamic> listData = result['details']['data'];
-        // print(listData.sublist(75, listData.length));
-        // if (listData != null && listData.length > 5) {
-        //   listData = listData.sublist(startList, endList);
-        // } else {
-        //   listData = listData.sublist(startList, listData.length);
-        // }
+        print(listData.sublist(75, listData.length));
+        if (listData.length > 5) {
+          listData = listData.sublist(startList, endList);
+        } else {
+          listData = listData.sublist(startList, listData.length);
+        }
         return listData;
       } else {
         // print(currentDate);
@@ -293,11 +302,11 @@ class _HomePageState extends State<HomePage> {
         Map<String, dynamic> result = await homeController!
             .getListBelumAbsen(currentDate, int.parse(_selectedFilter));
         List<dynamic> listData = result['details']['data'];
-        // if (listData != null && listData.length > 5) {
-        //   listData = listData.sublist(startList, endList);
-        // } else {
-        //   listData = listData.sublist(startList, listData.length);
-        // }
+        if (listData != null && listData.length > 5) {
+          listData = listData.sublist(startList, endList);
+        } else {
+          listData = listData.sublist(startList, listData.length);
+        }
         return listData;
       }
     } catch (e) {
@@ -867,17 +876,28 @@ class _HomePageState extends State<HomePage> {
                   return Text('Error: ${snapshot.error}');
                 } else if (snapshot.hasData) {
                   List<dynamic> data = snapshot.data!;
+                  // print(data.length);
                   // List<dynamic> listData = data['data'];
                   // if (listData != null && listData.length > 5) {
                   //   listData = listData.sublist(0, endList);
                   // }
                   return ListView.builder(
-                      controller: listViewController,
+                      padding: EdgeInsets.symmetric(vertical: 10.w),
                       itemCount: data.length,
                       shrinkWrap: true,
                       physics: const ClampingScrollPhysics(),
-                      itemBuilder: (context, index) =>
-                          ListEmployee(data[index], false));
+                      itemBuilder: (context, index) {
+                        if (index < data.length) {
+                          return ListEmployee(data[index], false);
+                        } else {
+                          // print(listViewController.position);
+                          return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10.w),
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ));
+                        }
+                      });
                   // return Text('No data available');
                 } else {
                   return Text('No data available');
@@ -1099,6 +1119,7 @@ class _HomePageState extends State<HomePage> {
           body: RefreshWidget(
             onRefresh: refreshItem,
             child: ListView(
+              controller: listViewController,
               scrollDirection: Axis.vertical,
               children: <Widget>[
                 // Wrap the sticky part with StickyHeader widget

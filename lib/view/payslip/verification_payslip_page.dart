@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:Fast_Team/controller/login_controller.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VerifPayslipPage extends StatefulWidget {
   const VerifPayslipPage({Key? key}) : super(key: key);
@@ -13,12 +14,12 @@ class _VerifPayslipPage extends State<VerifPayslipPage> {
   bool isLoading = false;
 
   LoginController? loginController;
-  TextEditingController? emailInput;
+  TextEditingController? passwordInput;
 
   @override
   void initState() {
     super.initState();
-    emailInput = TextEditingController();
+    passwordInput = TextEditingController();
     loginController = Get.put(LoginController());
   }
 
@@ -93,7 +94,7 @@ class _VerifPayslipPage extends State<VerifPayslipPage> {
                 const SizedBox(height: 40.0),
                 _passwordField(),
                 const SizedBox(height: 16.0),
-                _buildButton(context, emailInput!, loginController!)
+                _buildButton(context, passwordInput!, loginController!)
               ]),
         ),
       ),
@@ -101,19 +102,36 @@ class _VerifPayslipPage extends State<VerifPayslipPage> {
   }
 
   ElevatedButton _buildButton(BuildContext context,
-      TextEditingController emailInput, LoginController controller) {
+      TextEditingController passwordInput, LoginController controller) {
+    requestLogin() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      var userEmail = prefs.getString('user-email');
+      var userResult =
+          await controller.requestLoginUser(userEmail, passwordInput.text);
+
+      if (userResult['status'] == 200) {
+        if (userResult['details']['status'] == 'success') {
+          Navigator.pushReplacementNamed(context, '/payslip');
+        } else {
+          showSnackBar('Wrong password', Colors.red);
+        }
+      } else {
+        showSnackBar('Server dalam gangguan', Colors.red);
+      }
+    }
+
     validateFromInput() async {
-      if (emailInput.text.isEmpty) {
+      if (passwordInput.text.isEmpty) {
         showSnackBar("password cannot be empty", Colors.red);
-      } else {}
-      setState(() {
-        isLoading = false;
-      });
+      } else {
+        await requestLogin();
+      }
     }
 
     return ElevatedButton(
       onPressed: () async {
-        Navigator.pushReplacementNamed(context, '/payslip');
+        await validateFromInput();
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue[900],
@@ -141,13 +159,14 @@ class _VerifPayslipPage extends State<VerifPayslipPage> {
 
   TextFormField _passwordField() {
     return TextFormField(
-      controller: emailInput,
+      controller: passwordInput,
       decoration: const InputDecoration(
         border: OutlineInputBorder(),
         prefixIcon: Icon(Icons.lock),
         hintText: "Password",
         labelText: "Password",
       ),
+      obscureText: true,
       keyboardType: TextInputType.emailAddress,
     );
   }

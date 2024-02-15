@@ -34,13 +34,26 @@ class _OvertimeDetailPageState extends State<OvertimeDetailPage> {
     }
   }
 
+  String formatDateString(String dateString) {
+    // Parse the original date string
+    DateTime originalDate = DateTime.parse(dateString);
+
+    // Define the date format
+    DateFormat formatter = DateFormat('dd MMMM yyyy');
+
+    // Format the date to the desired format
+    String formattedDate = formatter.format(originalDate);
+
+    return formattedDate;
+  }
+
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic>? routeArguments =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
     if (routeArguments != null) {
-      tanggal = routeArguments['tanggal'];
+      tanggal = formatDateString(routeArguments['tanggal']);
       status = routeArguments['status'];
       nama = routeArguments['nama'];
       start_time = DateFormat('HH:mm')

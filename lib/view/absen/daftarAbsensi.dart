@@ -120,7 +120,7 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
     return Scaffold(
       appBar: AppBar(
           title: const Text(
-            'Daftar Absensi',
+            'Attendence Log',
             style: TextStyle(
               color: Colors.black,
               fontSize: 18,

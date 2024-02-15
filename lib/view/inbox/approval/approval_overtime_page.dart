@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Fast_Team/controller/inbox_controller.dart';
 import 'package:get/get.dart';
@@ -26,6 +27,8 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
     color: ColorsTheme.white,
   );
 
+  int? selectedFilter;
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +40,7 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
   initData() async {
     setState(() {
       _loadData = fetchData();
+      selectedFilter = 4;
     });
   }
 
@@ -46,16 +50,29 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
     });
   }
 
-  Future<void> fetchData() async {
+  Future<void> setFilter(value) async {
+    setState(() {
+      selectedFilter = value;
+    });
+    _loadData = fetchData();
+  }
+
+  Future fetchData() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     int userId = sharedPreferences.getInt('user-id_user') ?? 0;
     var result = await inboxController!.retrieveOvertimeList(userId);
-    print(result);
     if (result['status'] == 200) {
       List<dynamic> data = result['details'];
       setState(() {
-        overtimeList = List<Map<String, dynamic>>.from(data);
+        if (selectedFilter == 4) {
+          overtimeList = List<Map<String, dynamic>>.from(data);
+        } else {
+          overtimeList = List<Map<String, dynamic>>.from(data)
+              .where((element) => element['status'] == selectedFilter)
+              .toList();
+        }
       });
+      // print(overtimeList);
     }
   }
 
@@ -75,10 +92,36 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
     ScaffoldMessenger.of(context).showSnackBar(snackbar());
   }
 
+  String formatDateString(String dateString) {
+    // Parse the original date string
+    DateTime originalDate = DateTime.parse(dateString);
+
+    // Define the date format
+    DateFormat formatter = DateFormat('EEEE, dd MMMM yyyy');
+
+    // Format the date to the desired format
+    String formattedDate = formatter.format(originalDate);
+
+    return formattedDate;
+  }
+
+  String formatTimeString(String timeString) {
+    // Parse the original date string
+    DateTime originalTime = DateTime.parse(timeString);
+
+    // Define the date format
+    DateFormat formatter = DateFormat('HH:mm');
+
+    // Format the date to the desired format
+    String formattedTime = formatter.format(originalTime);
+
+    return formattedTime;
+  }
+
   Color getStatusColor(int status) {
     switch (status) {
       case 0:
-        return Colors.blue;
+        return Colors.yellow;
       case 1:
         return Colors.green;
       case 2:
@@ -121,7 +164,18 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
               // Custom back button action
               Navigator.pop(context, 'true');
             },
-          )),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(MdiIcons.filter),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => _buildFilter(),
+                );
+              },
+            ),
+          ]),
       body: FutureBuilder(
           future: _loadData,
           builder: (context, snapshot) {
@@ -164,6 +218,181 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
     );
   }
 
+  Widget _buildFilter() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 10.w, bottom: 20.w),
+            child: Center(
+              child: Text(
+                "Filter",
+                style: TextStyle(
+                  color: ColorsTheme.black,
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Text(
+              "Status",
+              style: TextStyle(
+                color: ColorsTheme.black,
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(height: 20.w),
+          Column(
+            children: [
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 5.w),
+                child: ListTile(
+                  onTap: () {
+                    setState(() {
+                      setFilter(4);
+                    });
+                    Navigator.pop(context);
+                  },
+                  title: Text(
+                    "All Status",
+                    style: TextStyle(
+                      color: ColorsTheme.black,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  trailing: Radio(
+                    value: 4,
+                    groupValue: selectedFilter,
+                    activeColor: Color(0xFF6200EE),
+                    onChanged: (value) {
+                      setState(() {
+                        setFilter(value);
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+              Divider(),
+            ],
+          ),
+          Column(
+            children: [
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 5.w),
+                child: ListTile(
+                  onTap: () {
+                    setState(() {
+                      setFilter(0);
+                    });
+                    Navigator.pop(context);
+                  },
+                  title: Text(
+                    "Pending",
+                    style: TextStyle(
+                      color: ColorsTheme.black,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  trailing: Radio(
+                    value: 0,
+                    groupValue: selectedFilter,
+                    activeColor: Color(0xFF6200EE),
+                    onChanged: (value) {
+                      setState(() {
+                        setFilter(value);
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+              Divider(),
+            ],
+          ),
+          Column(
+            children: [
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 5.w),
+                child: ListTile(
+                  onTap: () {
+                    setState(() {
+                      setFilter(1);
+                    });
+                    Navigator.pop(context);
+                  },
+                  title: Text(
+                    "Approved",
+                    style: TextStyle(
+                      color: ColorsTheme.black,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  trailing: Radio(
+                    value: 1,
+                    groupValue: selectedFilter,
+                    activeColor: Color(0xFF6200EE),
+                    onChanged: (value) {
+                      setState(() {
+                        setFilter(value);
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+              Divider(),
+            ],
+          ),
+          Column(
+            children: [
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 5.w),
+                child: ListTile(
+                  onTap: () {
+                    setState(() {
+                      setFilter(2);
+                    });
+                    Navigator.pop(context);
+                  },
+                  title: Text(
+                    "Rejected",
+                    style: TextStyle(
+                      color: ColorsTheme.black,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  trailing: Radio(
+                    value: 2,
+                    groupValue: selectedFilter,
+                    activeColor: Color(0xFF6200EE),
+                    onChanged: (value) {
+                      setState(() {
+                        setFilter(value);
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ),
+              Divider(),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _attendanceTile(overtime) {
     return InkWell(
       onTap: () {
@@ -190,79 +419,84 @@ class _ApprovalOvertimePageState extends State<ApprovalOvertimePage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "Tanggal",
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Icon(
+                                    MdiIcons.calendarMonth,
+                                    size: 25.sp,
+                                  ),
+                                  SizedBox(
+                                    height: 5.w,
+                                  ),
+                                  Icon(
+                                    MdiIcons.clockOutline,
+                                    size: 25.sp,
+                                  ),
+                                ],
                               ),
-                              Text("Start Time",
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                  )),
-                              Text("End Time",
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                  ))
-                            ],
-                          ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    formatDateString(overtime['tanggal']),
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14.sp,
+                                    ),
+                                  ),
+                                  SizedBox(height: 12.h),
+                                  Text("Start ${overtime['jam_mulai']}",
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                overtime['tanggal'],
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 40.w,
+                            ),
+                            Text("End   ${overtime['jam_selesai']}",
                                 style: const TextStyle(
                                   color: Colors.grey,
-                                ),
-                              ),
-                              Text(overtime['jam_mulai'],
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                  )),
-                              Text(overtime['jam_selesai'],
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                  )),
-                            ],
-                          ),
+                                )),
+                          ],
                         ),
                       ],
                     )
                   ],
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(6.0),
-                      decoration: BoxDecoration(
-                        color: getStatusColor(overtime['status']),
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      child: Text(
-                        getStatusText(overtime['status']),
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10.w,
-                    ),
-                    Text(
-                      "Tap for more details",
-                      style: TextStyle(fontSize: 10.sp),
-                    )
-                  ],
+                Container(
+                  width: 80.w,
+                  padding: EdgeInsets.all(6.w),
+                  decoration: BoxDecoration(
+                    color: getStatusColor(overtime['status']),
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: Text(
+                    getStatusText(overtime['status']),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: (overtime['status'] == 0)
+                            ? ColorsTheme.black
+                            : ColorsTheme.white),
+                  ),
                 ),
               ],
             ),

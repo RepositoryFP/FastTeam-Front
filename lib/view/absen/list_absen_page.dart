@@ -41,172 +41,314 @@ class _ListAbsentPageState extends State<ListAbsentPage> {
   Widget build(BuildContext context) {
     print(selectedDate);
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Member Division'),
-        ),
-        body: Container(
-          // margin: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Column(
-            children: [
-              _calendar(),
-              _listMember(),
-            ],
+      appBar: AppBar(
+          title: const Text(
+            'Member Division',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ));
-  }
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // Custom back button action
+              Navigator.pop(context, 'true');
+            },
+          )),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          _calendar(),
+          _listMember(),
 
-  Widget _calendar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Color.fromARGB(255, 54, 165, 255),
-        borderRadius: BorderRadius.circular(20.r),
-      ),
-      margin: EdgeInsets.symmetric(horizontal: 16.w),
-      padding: EdgeInsets.symmetric(horizontal: 10.w),
-      child: CalendarCarousel(
-        onDayPressed: (DateTime date, List events) {
-          this.setState(() => selectedDate = date);
-        },
-        locale: 'id_ID',
-        prevDaysTextStyle: TextStyle(
-          color: ColorsTheme.lightGrey3,
-        ),
-        daysTextStyle: TextStyle(
-          color: ColorsTheme.white,
-        ),
-        nextDaysTextStyle: TextStyle(
-          color: ColorsTheme.lightGrey3,
-        ),
-        weekendTextStyle: TextStyle(
-          color: ColorsTheme.white,
-        ),
-        weekdayTextStyle: TextStyle(
-          color: ColorsTheme.whiteCream,
-          fontSize: 15.sp,
-        ),
-        headerTextStyle: TextStyle(
-          color: ColorsTheme.white,
-          fontSize: 18.sp,
-        ),
-        selectedDayTextStyle: TextStyle(
-          color: ColorsTheme.primary,
-        ),
-        todayTextStyle: TextStyle(
-          color: ColorsTheme.primary,
-        ),
-        todayBorderColor: ColorsTheme.white!,
-        todayButtonColor: ColorsTheme.white!,
-        selectedDayButtonColor: ColorsTheme.semiGreen!,
-        iconColor: ColorsTheme.white!,
-        thisMonthDayBorderColor: ColorsTheme.whiteCream!,
-        weekFormat: false,
-        height: 380.w,
-        selectedDateTime: selectedDate,
-        daysHaveCircularBorder: true,
+          // showBottomSheet(context: context, builder: (builder)),
+          // _listMember(),
+        ],
       ),
     );
   }
 
   Widget _listMember() {
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.only(top: 10.h),
-        // decoration: BoxDecoration(
-        //   gradient: LinearGradient(
-        //     colors: [Color(0xFF42A5F5), Color(0xFF1976D2), Color(0xFF0D47A1)],
-        //     begin: Alignment.centerLeft,
-        //     end: Alignment.centerRight,
-        //   ),
-        //   borderRadius: BorderRadius.only(
-        //       topLeft: Radius.circular(20.r), topRight: Radius.circular(20.r)),
-        // ),
-        child: RefreshWidget(
-          onRefresh: () => initData(),
-          child: ListView.builder(
-            itemCount: routeArguments!.length,
-            itemBuilder: (context, index) {
-              final employee = routeArguments![index];
-              return Column(
+    return DraggableScrollableSheet(
+      initialChildSize: 0.3,
+      minChildSize: 0.3,
+      maxChildSize: 0.8,
+      builder: (context, ScrollController scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(25.r),
+          topRight: Radius.circular(25.r),
+        ),
+        child: Container(
+          color: ColorsTheme.whiteCream,
+          child: ListView(
+            controller: scrollController,
+            children: [
+              Column(
                 children: [
                   Container(
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.w),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(vertical: 8.w),
-                      leading: CachedNetworkImage(
-                        imageUrl: employee['image'],
-                        imageBuilder: (context, imageProvider) => ClipRRect(
-                          borderRadius: BorderRadius.circular(10.r),
-                          child: CircleAvatar(
-                            radius: 30.r,
-                            backgroundImage: imageProvider,
+                    margin: EdgeInsets.only(top: 10.w),
+                    height: 3.w,
+                    width: 50.w,
+                    color: ColorsTheme.darkGrey,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 20.w, left: 15.w, right: 15.w),
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      value: "All Activity",
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: 'All Activity',
+                          child: Text(
+                            'All Activity | 4',
+                            style: TextStyle(fontSize: 16),
                           ),
                         ),
-                      ),
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            employee['nama'],
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16.sp,
-                            ),
+                        DropdownMenuItem<String>(
+                          value: 'Not Clock In',
+                          child: Text(
+                            'Not Clock In | 0',
+                            style: TextStyle(fontSize: 16),
                           ),
-                          Text(
-                            employee['divisi'],
-                            style: TextStyle(
-                              fontWeight: FontWeight.w300,
-                              fontSize: 12.sp,
-                            ),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: 'All Leave',
+                          child: Text(
+                            'All Leave | 0',
+                            style: TextStyle(fontSize: 16),
                           ),
-                          Row(
+                        ),
+                      ],
+                      onChanged: (newValue) {},
+                    ),
+                  ),
+                ],
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: routeArguments!.length,
+                itemBuilder: (context, index) {
+                  final employee = routeArguments![index];
+                  return Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 5.w),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(vertical: 8.w),
+                          leading: CircleAvatar(
+                            radius: 23.r,
+                            backgroundImage: NetworkImage(employee['image']),
+                          ),
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    MdiIcons.clockTimeSevenOutline,
-                                    size: 18.sp,
-                                    color: ColorsTheme.lightGreen,
-                                  ),
-                                  Text(
-                                    '${employee['clock_in']}',
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                    ),
-                                  ),
-                                ],
+                              Text(
+                                employee['nama'],
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16.sp,
+                                ),
                               ),
-                              SizedBox(width: 4.w),
+                              Text(
+                                employee['divisi'],
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 12.sp,
+                                ),
+                              ),
                               Row(
                                 children: [
-                                  Icon(
-                                    MdiIcons.clockTimeFourOutline,
-                                    size: 18.sp,
-                                    color: ColorsTheme.lightYellow,
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        MdiIcons.clockTimeSevenOutline,
+                                        size: 18.sp,
+                                        color: ColorsTheme.lightGreen,
+                                      ),
+                                      Text(
+                                        '${employee['clock_in']}',
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    '${employee['clock_out']}',
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                    ),
+                                  SizedBox(width: 40.w),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        MdiIcons.clockTimeFourOutline,
+                                        size: 18.sp,
+                                        color: ColorsTheme.lightYellow,
+                                      ),
+                                      Text(
+                                        '${employee['clock_out']}',
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                  Divider(
-                    height: 1.w,
-                  )
-                ],
-              );
-            },
+                      Divider(
+                        height: 1.w,
+                      )
+                    ],
+                  );
+                },
+              ),
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _calendar() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      padding: EdgeInsets.symmetric(horizontal: 10.w),
+      child: Column(
+        children: [
+          Stack(
+            fit: StackFit.loose,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    height: 70.w,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 54, 165, 255),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.r),
+                          topRight: Radius.circular(20.r)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    // margin: EdgeInsets.only(top: 20.w),
+                    height: 365.w,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: ColorsTheme.white,
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20.r),
+                          bottomRight: Radius.circular(20.r)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5.w),
+                    child: CalendarCarousel(
+                      onDayPressed: (DateTime date, List events) {
+                        this.setState(() => selectedDate = date);
+                      },
+                      locale: 'id_ID',
+                      targetDateTime: selectedDate,
+                      prevDaysTextStyle: TextStyle(
+                        color: ColorsTheme.lightGrey3,
+                      ),
+                      daysTextStyle: TextStyle(
+                        color: ColorsTheme.black,
+                      ),
+                      nextDaysTextStyle: TextStyle(
+                        color: ColorsTheme.lightGrey3,
+                      ),
+                      weekendTextStyle: TextStyle(
+                        color: ColorsTheme.black,
+                      ),
+                      weekdayTextStyle: TextStyle(
+                        color: ColorsTheme.black,
+                        fontSize: 15.sp,
+                      ),
+                      headerTextStyle: TextStyle(
+                        color: ColorsTheme.white,
+                        fontSize: 18.sp,
+                      ),
+                      selectedDayTextStyle: TextStyle(
+                        color: ColorsTheme.primary,
+                      ),
+                      todayTextStyle: TextStyle(
+                        color: ColorsTheme.white,
+                      ),
+                      todayBorderColor: Color.fromARGB(255, 54, 165, 255),
+                      todayButtonColor: Color.fromARGB(255, 54, 165, 255),
+                      selectedDayButtonColor: ColorsTheme.semiGreen!,
+                      iconColor: ColorsTheme.white!,
+                      thisMonthDayBorderColor: ColorsTheme.lightGrey!,
+                      dayPadding: 3.w,
+                      weekFormat: false,
+                      height: 380.w,
+                      headerTitleTouchable: true,
+                      selectedDateTime: selectedDate,
+                      daysHaveCircularBorder: true,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 5.w),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              selectedDate = DateTime.now();
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Color.fromARGB(255, 54, 165, 255)),
+                          child: Text(
+                            'Today',
+                            style: TextStyle(color: ColorsTheme.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

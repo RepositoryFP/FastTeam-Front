@@ -5,6 +5,7 @@ import 'package:Fast_Team/controller/employee_controller.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EmployeePage extends StatefulWidget {
   @override
@@ -69,6 +70,43 @@ class _EmployeePageState extends State<EmployeePage> {
     });
   }
 
+  _launchWhatsapp(phone) async {
+    var whatsapp = phone;
+    var whatsappAndroid =
+        Uri.parse("https://api.whatsapp.com/send?phone=+62$whatsapp");
+    if (!await launchUrl(whatsappAndroid)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("WhatsApp is not installed on the device"),
+        ),
+      );
+    }
+  }
+
+  _launchPhone(phone) async {
+    var phoneNumber = phone;
+    print(phoneNumber);
+    var phoneAndroid = Uri.parse("tel:+62$phoneNumber");
+    if (!await launchUrl(phoneAndroid)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Phone can't open on the device"),
+        ),
+      );
+    }
+  }
+
+  _launchMail(var email) async {
+    var mailAndroid = Uri.parse("mailto:$email");
+    if (!await launchUrl(mailAndroid)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Email is not installed on the device"),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,7 +122,6 @@ class _EmployeePageState extends State<EmployeePage> {
               child: FutureBuilder(
                   future: _fetchData,
                   builder: (context, AsyncSnapshot snapshot) {
-                    print(snapshot);
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
@@ -136,35 +173,34 @@ class _EmployeePageState extends State<EmployeePage> {
               fontSize: 16,
             ),
           ),
-          // subtitle: Text(
-          //   employee['email'],
-          //   style: TextStyle(fontSize: 14),
-          // ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
                 icon: Icon(Icons.phone, size: 24, color: Colors.blue),
                 onPressed: () {
-                  // Implement phone call functionality
+                  _launchPhone(employee['wa'].toString().substring(1));
                 },
               ),
               SizedBox(width: 10),
               IconButton(
                 icon: Icon(Icons.email, size: 24, color: Colors.blue),
                 onPressed: () {
-                  // Implement email functionality
+                  _launchMail(employee['email']);
                 },
               ),
               SizedBox(width: 10),
-              Container(
-                padding: EdgeInsets.all(5),
-                child: Image.asset(
-                  'assets/img/whatsapp.png',
-                  width: 20,
-                  height: 20,
-                  color: Colors.green,
+              IconButton(
+                icon: ImageIcon(
+                  AssetImage(
+                    'assets/img/whatsapp.png',
+                  ),
+                  color: ColorsTheme.lightGreen,
+                  size: 24,
                 ),
+                onPressed: () {
+                  _launchWhatsapp(employee['wa'].toString().substring(1));
+                },
               ),
             ],
           ),

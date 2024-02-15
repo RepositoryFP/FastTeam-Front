@@ -1,5 +1,6 @@
 import 'package:Fast_Team/controller/milestone_controller.dart';
 import 'package:Fast_Team/server/network/job_net_utils.dart';
+import 'package:Fast_Team/style/color_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:stepper_list_view/stepper_list_view.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MilestonePage extends StatefulWidget {
@@ -19,7 +21,7 @@ class MilestonePage extends StatefulWidget {
 class _MilestonePageState extends State<MilestonePage> {
   MilestoneController? milestoneController;
   List<dynamic> arrayData = [];
-  List<StepperItemData> _stepperData = [];
+
   @override
   void initState() {
     super.initState();
@@ -30,37 +32,16 @@ class _MilestonePageState extends State<MilestonePage> {
     milestoneController = Get.put(MilestoneController());
     var result = await milestoneController!.retrieveJobHistory(1);
 
-    arrayData = result['details'];
     setState(() {
-      _stepperData = _stepperDataFromDynamicList(arrayData);
+      arrayData = result['details'];
     });
-    // print(_stepperData);
   }
 
-  List<StepperItemData> _stepperDataFromDynamicList(List<dynamic> arrayData) {
-    return arrayData.map((data) {
-      DateTime dateTime = DateTime.parse(data['start_date'].toString());
-      DateFormat formatter = DateFormat('MMMM yyyy');
-      String formattedMonthYear = formatter.format(dateTime);
-
-      return StepperItemData(
-        id: data['id'].toString(), // Assuming 'id' is present in data
-        content: {
-          'name': data['pegawai']['nama_lengkap'].toString(),
-          'title': data['title'].toString(),
-          'job_level': data['job_level']['name'].toString(),
-          'position': data['position']['name'].toString(),
-          'salary': data['salary'].toString(),
-          'start_date': formattedMonthYear.replaceAll(' ', '\n'),
-        },
-      );
-    }).toList(); // Convert Iterable to List
-  }
-
+  List<Color> colors = [Colors.purple, Colors.red, Colors.yellow, Colors.green];
+  int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
     String getMonthYear(DateTime dateTime) {
-      // Format tanggal sesuai yang Anda inginkan
       final DateFormat formatter = DateFormat('MMMM yyyy');
       return formatter.format(dateTime);
     }
@@ -86,157 +67,244 @@ class _MilestonePageState extends State<MilestonePage> {
             },
           )),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: StepperListView(
-          showStepperInLast: true,
-          stepperData: _stepperData,
-          stepAvatar: (_, data) {
-            final stepData = data as StepperItemData;
-            return PreferredSize(
-              preferredSize: Size.fromRadius(15.r),
-              child: Container(
-                child: CircleAvatar(
-                  backgroundColor: Colors.blue,
-                  radius: 15.r,
-                ),
-              ),
-            );
-          },
-          stepWidget: (_, data) {
-            final stepData = data as StepperItemData;
-            return PreferredSize(
-              preferredSize: const Size.fromWidth(30),
-              child: Text(
-                stepData.content['start_date'] ?? '',
-                style: TextStyle(
-                  color: theme.primaryColor,
-                  fontSize: 13,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            );
-          },
-          stepContentWidget: (_, data) {
-            final stepData = data as StepperItemData;
-            return Container(
-              margin: EdgeInsets.only(
-                top: 5.w,
-              ),
-              padding: EdgeInsets.all(
-                5.w,
-              ),
-              child: ListTile(
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      stepData.content['name'] ?? '',
-                      style: TextStyle(
-                          fontSize: 15.sp, fontWeight: FontWeight.w600),
+        padding: EdgeInsets.symmetric(horizontal: 0.w),
+        child: ListView.builder(
+            shrinkWrap: true,
+            // physics: NeverScrollableScrollPhysics(),
+            itemCount: arrayData.length,
+            itemBuilder: (context, index) {
+              DateTime dateTime =
+                  DateTime.parse(arrayData[index]['start_date'].toString());
+              DateFormat formatter = DateFormat('dd MMMM yyyy');
+              String formattedMonthYear = formatter.format(dateTime);
+              Color color = colors[index % colors.length];
+              return Column(
+                children: [
+                  (index % 2 == 0)
+                      ? _leftMilestone(
+                          (index == arrayData.length - 1) ? true : false,
+                          (index == 0) ? true : false,
+                          formattedMonthYear,
+                          arrayData[index]['pegawai']['nama_lengkap'],
+                          arrayData[index]['title'],
+                          arrayData[index]['job_level']['name'],
+                          arrayData[index]['position']['name'],
+                          arrayData[index]['salary'],
+                          color)
+                      : _rightMilestone(
+                          (index == arrayData.length) ? true : false,
+                          formattedMonthYear,
+                          arrayData[index]['pegawai']['nama_lengkap'],
+                          arrayData[index]['title'],
+                          arrayData[index]['job_level']['name'],
+                          arrayData[index]['position']['name'],
+                          arrayData[index]['salary'],
+                          color),
+                ],
+              );
+            }),
+      ),
+    );
+  }
+
+  Widget _rightMilestone(
+      last, date, name, title, job, position, salary, Color colors) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 180.w,
+          child: TimelineTile(
+            alignment: TimelineAlign.manual,
+            lineXY: 0.9,
+            beforeLineStyle: LineStyle(
+              color: colors,
+              thickness: 6,
+            ),
+            isLast: last,
+            startChild: Container(
+                margin: EdgeInsets.only(
+                    top: 10.w, bottom: 10.w, left: 10.w, right: 5.w),
+                decoration: BoxDecoration(
+                  color: ColorsTheme.white,
+                  borderRadius: BorderRadius.all(Radius.circular(10.r)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
                     ),
-                    Text(
-                      stepData.content['title'] ?? '',
-                      style: TextStyle(
-                          fontSize: 12.sp, fontWeight: FontWeight.w300),
-                    )
                   ],
                 ),
-                subtitle: Row(children: [
-                  Container(
-                    child: Column(
-                      children: [
-                        Icon(Icons.work),
-                        SizedBox(height: 2.w),
-                        Icon(MdiIcons.sitemap),
-                        SizedBox(height: 2.w),
-                        Icon(MdiIcons.cashMultiple),
-                      ],
-                    ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5.w, horizontal: 8.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Text(
+                          date,
+                        ),
+                      ),
+                      SizedBox(height: 5.w),
+                      Text(
+                        name,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        title ?? 'null',
+                      ),
+                      SizedBox(
+                        height: 10.w,
+                      ),
+                      Row(children: [
+                        Container(
+                          child: Column(
+                            children: [
+                              Icon(Icons.work),
+                              SizedBox(height: 2.w),
+                              Icon(MdiIcons.sitemap),
+                              SizedBox(height: 2.w),
+                              Icon(MdiIcons.cashMultiple),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: 5.w,
+                        ),
+                        Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            // mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(job),
+                              SizedBox(height: 5.w),
+                              Text(position),
+                              SizedBox(height: 5.w),
+                              Text(salary),
+                            ],
+                          ),
+                        ),
+                      ]),
+                    ],
                   ),
-                  SizedBox(
-                    width: 5.w,
-                  ),
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      // mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(stepData.content['job_level'] ?? ''),
-                        SizedBox(height: 5.w),
-                        Text(stepData.content['position'] ?? ''),
-                        SizedBox(height: 5.w),
-                        Text(stepData.content['salary'] ?? ''),
-                      ],
-                    ),
-                  ),
-                ]),
-                // subtitle: Column(
-                //   mainAxisSize: MainAxisSize.min,
-                //   crossAxisAlignment: CrossAxisAlignment.start,
-                //   children: [
-                //     const SizedBox(
-                //       height: 10,
-                //     ),
-                //     Row(
-                //       children: [
-                //         const Expanded(
-                //           child: Icon(Icons.work),
-                //         ),
-                //         Expanded(
-                //           flex: 5,
-                //           child: Text(stepData.content['job_level'] ?? ''),
-                //         ),
-                //       ],
-                //     ),
-                //     const SizedBox(
-                //       height: 10,
-                //     ),
-                //     Row(
-                //       children: [
-                //         Expanded(
-                //           flex: 3,
-                //           child: Icon(MdiIcons.sitemap),
-                //         ),
-                //         Expanded(
-                //           flex: 7,
-                //           child: Text(stepData.content['position'] ?? ''),
-                //         ),
-                //       ],
-                //     ),
-                //     const SizedBox(
-                //       height: 10,
-                //     ),
-                //     Row(
-                //       children: [
-                //         Expanded(
-                //           flex: 3,
-                //           child: Icon(MdiIcons.cashMultiple),
-                //         ),
-                //         Expanded(
-                //           flex: 7,
-                //           child: Text(stepData.content['salary'] ?? ''),
-                //         ),
-                //       ],
-                //     ),
-                //   ],
-                // ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(
-                    color: theme.dividerColor,
-                    width: 0.8,
-                  ),
-                ),
-              ),
-            );
-          },
-          stepperThemeData: StepperThemeData(
-            lineColor: theme.primaryColor,
-            lineWidth: 5,
+                )),
+            indicatorStyle: IndicatorStyle(
+              width: 20.w,
+              color: colors,
+            ),
           ),
-          physics: const BouncingScrollPhysics(),
         ),
-      ),
+        (!last)
+            ? TimelineDivider(
+                begin: 0.1,
+                end: 0.9,
+                thickness: 6,
+                color: colors,
+              )
+            : Container(),
+      ],
+    );
+  }
+
+  Widget _leftMilestone(
+      last, first, date, name, title, job, position, salary, Color colors) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 180.w,
+          child: TimelineTile(
+            alignment: TimelineAlign.manual,
+            lineXY: 0.1,
+            isFirst: first,
+            isLast: last,
+            indicatorStyle: IndicatorStyle(
+              width: 20.w,
+              color: colors,
+            ),
+            endChild: Container(
+                margin: EdgeInsets.only(
+                    top: 10.w, bottom: 10.w, right: 10.w, left: 5.w),
+                decoration: BoxDecoration(
+                  color: ColorsTheme.white,
+                  borderRadius: BorderRadius.all(Radius.circular(10.r)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5.w, horizontal: 8.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Text(
+                          date,
+                        ),
+                      ),
+                      SizedBox(height: 5.w),
+                      Text(
+                        name,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        title ?? 'null',
+                      ),
+                      SizedBox(
+                        height: 10.w,
+                      ),
+                      Row(children: [
+                        Container(
+                          child: Column(
+                            children: [
+                              Icon(Icons.work),
+                              SizedBox(height: 2.w),
+                              Icon(MdiIcons.sitemap),
+                              SizedBox(height: 2.w),
+                              Icon(MdiIcons.cashMultiple),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: 5.w,
+                        ),
+                        Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            // mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(job),
+                              SizedBox(height: 5.w),
+                              Text(position),
+                              SizedBox(height: 5.w),
+                              Text(salary),
+                            ],
+                          ),
+                        ),
+                      ]),
+                    ],
+                  ),
+                )),
+            beforeLineStyle: LineStyle(
+              color: colors,
+              thickness: 6,
+            ),
+          ),
+        ),
+        (!last)
+            ? TimelineDivider(
+                begin: 0.1,
+                end: 0.9,
+                thickness: 6,
+                color: colors,
+              )
+            : Container(),
+      ],
     );
   }
 }
