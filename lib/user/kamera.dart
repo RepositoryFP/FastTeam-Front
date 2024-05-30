@@ -234,7 +234,7 @@ class KameraPageState extends State<KameraPage> {
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context)
+                    backgroundColor: Theme.of(context)
                         .primaryColor, // Gunakan warna utama dari tema aplikasi Anda
                     minimumSize:
                         Size(double.infinity, 50), // Atur lebar tombol ke penuh
@@ -406,7 +406,7 @@ class ResultScreen extends StatelessWidget {
                           Navigator.pushNamed(context, '/daftarAbsensi');
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.transparent,
+                          backgroundColor: Colors.transparent,
                           elevation: 0,
                           side: BorderSide(
                             color: Colors.grey,

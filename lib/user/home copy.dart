@@ -71,6 +71,8 @@ class _HomePageState extends State<HomePage> {
     }
 
     permission = await Geolocator.checkPermission();
+    
+    permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission != LocationPermission.whileInUse &&
@@ -326,7 +328,7 @@ class _HomePageState extends State<HomePage> {
                                   ElevatedButton(
                                     onPressed: canClockIn ? _clockIn : null,
                                     style: ElevatedButton.styleFrom(
-                                      primary: canClockIn
+                                      backgroundColor: canClockIn
                                           ? Color.fromARGB(255, 2, 65, 128)
                                           : Colors.grey,
                                     ),
@@ -340,7 +342,7 @@ class _HomePageState extends State<HomePage> {
                                   ElevatedButton(
                                     onPressed: canClockOut ? _clockOut : null,
                                     style: ElevatedButton.styleFrom(
-                                      primary: canClockOut
+                                      backgroundColor: canClockOut
                                           ? Color.fromARGB(255, 2, 65, 128)
                                           : Colors.grey,
                                     ),

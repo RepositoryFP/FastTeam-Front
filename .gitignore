@@ -20,6 +20,16 @@ migrate_working_dir/
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
 #.vscode/
+# Ignore platform-specific directories
+# /android/
+/ios/
+/linux/
+/windows/
+/macos/
+/web/
+
+# Ignore test directory
+/test/
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -39,6 +49,6 @@ app.*.symbols
 app.*.map.json
 
 # Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# /android/app/debug
+# /android/app/profile
+# /android/app/release

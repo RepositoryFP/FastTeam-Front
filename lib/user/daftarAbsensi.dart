@@ -144,7 +144,7 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
       if (date != null) {
         setState(() {
           _selectedDate = date;
-          print(date);
+          
         });
         await _loadDataForSelectedMonth();
       }
@@ -196,7 +196,6 @@ class _DaftarAbsensiPageState extends State<DaftarAbsensiPage> {
               style: TextButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 5.0),
                 backgroundColor: Colors.transparent,
-                primary: Colors.black,
                 side: BorderSide(color: Colors.black, width: 1.0),
               ),
               child: Row(
