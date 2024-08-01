@@ -1,6 +1,6 @@
 {
-    "name": "fastteam_new",
-    "short_name": "fastteam_new",
+    "name": "fastteam_app",
+    "short_name": "fastteam_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
