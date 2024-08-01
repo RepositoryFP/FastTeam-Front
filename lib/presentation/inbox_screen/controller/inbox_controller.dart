@@ -1,10 +1,17 @@
+import 'dart:convert';
+
 import 'package:fastteam_app/core/app_export.dart';
 import 'package:fastteam_app/core/network/base_url.dart';
+import 'package:fastteam_app/presentation/inbox_screen/models/inbox_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InboxController extends GetxController {
   String serchingText = "";
+
+  var notifications = <NotificationModel>[].obs;
+  var isLoading = false.obs;
+
   @override
   void onReady() {
     super.onReady();
@@ -20,7 +27,8 @@ class InboxController extends GetxController {
     update();
   }
 
-  retrieveNotificationList(userId, token) async {
+  Future<http.Response> retrieveNotificationList(
+      int userId, String token) async {
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -29,17 +37,29 @@ class InboxController extends GetxController {
         .get(Uri.parse("${BaseServer.serverUrl}/notification/$userId/"),
             headers: headers)
         .timeout(BaseServer.durationlimit);
-
     return response;
   }
 
   getNotificationList() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
-    var userId = prefs.getInt('user-id_user');
-    var result = await retrieveNotificationList(userId, token);
+    try {
+      isLoading.value = true;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var token = prefs.getString('token');
+      var userId = prefs.getInt('user-id_user');
 
-    var response =  Constants().jsonResponse(result);
-    // print(response);
+      if (token != null && userId != null) {
+        var result = await retrieveNotificationList(userId, token);
+        var response = Constants().jsonResponse(result);
+        
+        var notificationsList = (response['details'] as List)
+            .map((data) => NotificationModel.fromJson(data))
+            .toList();
+        notifications.assignAll(notificationsList);
+      }
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

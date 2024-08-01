@@ -1,6 +1,7 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:fastteam_app/presentation/employee_screen/controller/employee_controller.dart';
 import 'package:fastteam_app/presentation/inbox_screen/controller/inbox_controller.dart';
+import 'package:fastteam_app/presentation/inbox_screen/models/inbox_model.dart';
 import 'package:fastteam_app/widgets/custom_button.dart';
 import 'package:fastteam_app/widgets/custom_floating_edit_text.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +20,7 @@ class InboxScreen extends StatefulWidget {
 }
 
 class _InboxScreenState extends State<InboxScreen> {
-  InboxController controller = Get.put(InboxController());
+  final InboxController controller = Get.find();
   List<DateTime?> _dates = [];
   List<String> day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   String absenType = 'Clock In';
@@ -33,6 +34,17 @@ class _InboxScreenState extends State<InboxScreen> {
     super.initState();
     controller.getNotificationList();
   }
+
+  // Future markAllAsRead() async {
+  //   var result =
+  //       await inboxController!.requestReadAllNotification(userId.toString());
+  //   if (result['status'] == 200) {
+  //     await fetchData();
+  //     showSnackBar('All notification is read', Colors.green);
+  //   } else {
+  //     showSnackBar('Failed to perform mark all as read', Colors.red);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -173,158 +185,78 @@ class _InboxScreenState extends State<InboxScreen> {
 
   Widget notification_tab() {
     return Obx(() {
+      if (controller.isLoading.value) {
+        return Center(child: CircularProgressIndicator());
+      }
+
+      if (controller.notifications.isEmpty) {
+        return _noNotifications();
+      }
       return Padding(
         padding: getPadding(right: 10, left: 10),
-        child: ListView(
+        child: ListView.builder(
           padding: getPadding(top: 16),
-          children: [],
+          itemCount: controller.notifications.length,
+          itemBuilder: (context, index) {
+            return _buildNotificationItem(controller.notifications[index]);
+          },
         ),
       );
     });
   }
 
-  Widget _absentTypeRadio() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Radio(
-              value: 'Clock In',
-              groupValue: absenType,
-              onChanged: (value) {
-                setState(() {});
-              },
-            ),
-            Text('Clock In', style: AppStyle.txtSFProTextRegular16),
-            Radio(
-              value: 'Clock Out',
-              groupValue: absenType,
-              onChanged: (value) {
-                setState(() {});
-              },
-            ),
-            Text('Clock Out', style: AppStyle.txtSFProTextRegular16),
-          ],
-        ),
-      ],
+  Widget _buildNotificationItem(NotificationModel notification) {
+    print(notification.sender?.photo);
+    return Container(
+      height: getVerticalSize(40),
+      width: getHorizontalSize(double.infinity),
+      color: ColorConstant.amber700,
     );
+    // return ListTile(
+    //   onTap: () {},
+    //   leading: CustomImageView(
+    //     url: notification.sender?.photo,
+    //     height: getSize(50),
+    //     width: getSize(50),
+    //     radius: BorderRadius.circular(getHorizontalSize(60)),
+    //     alignment: Alignment.center,
+    //   ),
+    //   title: Text(notification.sender?.name ?? ''),
+    // );
   }
 
-  Widget _agendaTypeRadio() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Radio(
-              value: 'Leave',
-              groupValue: absenType,
-              onChanged: (value) {
-                setState(() {});
-              },
+  Widget _noNotifications() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            width: 200, // Adjust width as needed
+            height: 200, // Adjust height as needed
+            decoration: BoxDecoration(
+              color: Colors.blue[100], // Adjust color as needed
+              borderRadius: BorderRadius.circular(
+                  100), // Half the height for an oval shape
             ),
-            Text('Leave', style: AppStyle.txtSFProTextRegular16),
-            Radio(
-              value: 'Sick',
-              groupValue: absenType,
-              onChanged: (value) {
-                setState(() {});
-              },
-            ),
-            Text('Sick', style: AppStyle.txtSFProTextRegular16),
-            Radio(
-              value: 'Off',
-              groupValue: absenType,
-              onChanged: (value) {
-                setState(() {});
-              },
-            ),
-            Text('Out of Town Dutty', style: AppStyle.txtSFProTextRegular16),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _employee_list() {
-    return Column(
-      children: [
-        Container(
-          margin: getMargin(top: 15),
-          decoration: BoxDecoration(
-            color: ColorConstant.whiteA700,
-          ),
-          child: Padding(
-            padding: getPadding(bottom: 10, left: 10, right: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    CustomImageView(
-                      imagePath: ImageConstant.avatarPict,
-                      height: getVerticalSize(60),
-                      width: getHorizontalSize(60),
-                      radius: BorderRadius.circular(getHorizontalSize(60)),
-                      alignment: Alignment.center,
-                    ),
-                    Padding(
-                      padding: getPadding(left: 15, top: 5, right: 5),
-                      child: Container(
-                        width:
-                            getHorizontalSize(150), // Adjust width as necessary
-                        child: Text(
-                          'Febriansyah Dwi Kurnia Wicaksono',
-                          overflow: TextOverflow.visible,
-                          textAlign: TextAlign.left,
-                          style: AppStyle.txtOutfitBold20,
-                          softWrap: true,
-                          maxLines: 2,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(children: [
-                  Container(
-                    child: Row(
-                      children: [
-                        // Text('${datalist['clock_in']}')
-                        IconButton(
-                          icon: Icon(Icons.phone,
-                              size: getFontSize(24),
-                              color: ColorConstant.indigo800),
-                          onPressed: () {},
-                        ),
-                        SizedBox(width: getHorizontalSize(5)),
-                        IconButton(
-                          icon: Icon(Icons.email,
-                              size: getFontSize(24),
-                              color: ColorConstant.indigo800),
-                          onPressed: () {},
-                        ),
-                        SizedBox(width: getHorizontalSize(5)),
-                        IconButton(
-                          icon: ImageIcon(
-                            const AssetImage(
-                              'assets/fastteam_image/whatsapp.png',
-                            ),
-                            color: ColorConstant.green600,
-                            size: getFontSize(24),
-                          ),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                  ),
-                ])
-              ],
+            child: const Center(
+              child: Icon(
+                Icons.update,
+                size: 100.0,
+                color: Colors.blue,
+              ),
             ),
           ),
-        ),
-        Divider()
-      ],
+          const SizedBox(
+            height: 16.0,
+          ),
+          const Text(
+            'There is no notification',
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          )
+        ],
+      ),
     );
   }
 
