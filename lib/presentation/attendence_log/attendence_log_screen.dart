@@ -24,7 +24,7 @@ class AttendenceLogScreen extends StatefulWidget {
 class _AttendenceLogScreenState extends State<AttendenceLogScreen> {
   DateTime _selectedDate = DateTime.now();
   AttendenceLogController controller = Get.put(AttendenceLogController());
-
+  
   List<DateTime?> _dates = [];
   List<String> day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   @override
@@ -39,7 +39,7 @@ class _AttendenceLogScreenState extends State<AttendenceLogScreen> {
   }
 
   Future refreshItem() async {
-    setState(() {});
+    controller.loadDataForSelectedMonth(_selectedDate);
   }
 
   Future<void> _selectMonth(BuildContext context) async {
@@ -56,6 +56,7 @@ class _AttendenceLogScreenState extends State<AttendenceLogScreen> {
         controller.loadDataForSelectedMonth(_selectedDate);
       }
     });
+    print(_selectedDate);
   }
 
   @override

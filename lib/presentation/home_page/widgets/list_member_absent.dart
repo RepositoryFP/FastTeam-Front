@@ -1,27 +1,34 @@
 import 'package:fastteam_app/core/app_export.dart';
+import 'package:fastteam_app/presentation/home_page/controller/home_controller.dart';
+import 'package:fastteam_app/presentation/home_page/models/home_model.dart';
 import 'package:fastteam_app/presentation/home_page/models/list_employee_absent_model.dart';
 import 'package:fastteam_app/presentation/home_page/models/member_division_model.dart';
 import 'package:fastteam_app/widgets/custom_drop_down.dart';
 import 'package:fastteam_app/widgets/custom_image_view.dart';
 import 'package:flutter/material.dart';
 
-Widget listMemberAbsent(BuildContext context,
-    List<MemberDivisionData> memberData, List<EmployeeAbsent> employees) {
+Widget listMemberAbsent(
+    BuildContext context,
+    List<MemberDivisionData> memberData,
+    List<EmployeeAbsent> employees,
+    Function(String) onSelected,
+    int initialValue) {
+  HomeController controller = Get.put(HomeController(HomeModel().obs));
   List<SelectionPopupModel> dropdownItemList1 = [
     SelectionPopupModel(
-      id: 1,
+      id: 0,
       title: "All",
       isSelected: true,
     ),
-    SelectionPopupModel(
-      id: 2,
-      title: "IT",
-    ),
-    SelectionPopupModel(
-      id: 3,
-      title: "Sales",
-    )
+    ...controller.departments.map((division) => SelectionPopupModel(
+          id: division.id,
+          title: division.name,
+        )),
   ];
+
+  String selectedValue = dropdownItemList1
+    .firstWhere((element) => element.id == initialValue)
+    .id.toString();
 
   return Container(
     width: double.maxFinite,
@@ -44,25 +51,42 @@ Widget listMemberAbsent(BuildContext context,
         ),
         Padding(
           padding: getPadding(left: 20, bottom: 10, right: 20),
-          child: CustomDropDown(
-            focusNode: FocusNode(),
-            autofocus: true,
-            icon: Container(
-              margin: getMargin(left: 30, right: 16),
-              child: CustomImageView(
-                svgPath: ImageConstant.imgArrowdown,
-              ),
+          child: Container(
+            margin: getMargin(top: 20),
+            padding: getPadding(left: 10, right: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(getHorizontalSize(8)),
+              border: Border.all(color: ColorConstant.gray300),
             ),
-            hintText: "Filter Divisi".tr,
-            margin: getMargin(left: 1, top: 15),
-            items: dropdownItemList1,
-            onChanged: (value) {
-              // Implement the logic for filtering based on division
-            },
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setState) {
+                return DropdownButton<String>(
+                  isExpanded: true,
+                  value: selectedValue,
+                  items: dropdownItemList1.map((SelectionPopupModel item) {
+                    
+                    return DropdownMenuItem<String>(
+                      value: item.id.toString(),
+                      child: Text(
+                        item.title,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedValue = newValue!; // Update selectedValue
+                    });
+                    onSelected(
+                        newValue!); // Panggil onSelected dengan nilai baru
+                  },
+                );
+              },
+            ),
           ),
         ),
         Padding(
-          padding: getPadding(left: 20,  bottom: 10, right: 20),
+          padding: getPadding(left: 20, bottom: 10, right: 20),
           child: ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
@@ -74,6 +98,8 @@ Widget listMemberAbsent(BuildContext context,
                 employee.image,
                 employee.nama,
                 employee.divisi,
+                employee.clockIn,
+                employee.clockOut,
               );
             },
           ),
@@ -83,7 +109,7 @@ Widget listMemberAbsent(BuildContext context,
   );
 }
 
-Widget _listEmployee(String? image, String name, String divisi) {
+Widget _listEmployee(String? image, String name, String divisi, int clock_in, int clock_out){
   return Container(
     margin: getMargin(top: 15),
     decoration: BoxDecoration(
@@ -138,9 +164,9 @@ Widget _listEmployee(String? image, String name, String divisi) {
           ),
           Row(
             children: [
-              Icon(Icons.input, color: ColorConstant.gray300),
+              Icon(Icons.input, color: clock_in == 1 ? ColorConstant.green600 : ColorConstant.gray300),
               SizedBox(width: 8),
-              Icon(Icons.output, color: ColorConstant.gray300),
+              Icon(Icons.output, color: clock_out == 1 ? ColorConstant.green600 : ColorConstant.gray300),
             ],
           ),
         ],

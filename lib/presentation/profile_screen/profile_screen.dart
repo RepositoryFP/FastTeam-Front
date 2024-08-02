@@ -149,10 +149,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             }, ImageConstant.imgUser, "lbl_profile".tr),
                             profileOption(() {
                               // controller.setPamentMethodNavigation(true);
-                              Get.toNamed(AppRoutes.profileDetailsScreen);
+                              Get.toNamed(AppRoutes.sertificate);
                             }, ImageConstant.imgSave, "Sertificate"),
                             profileOption(() {
-                              Get.toNamed(AppRoutes.profileDetailsScreen);
+                              Get.toNamed(AppRoutes.payrollInfo);
                             }, ImageConstant.imgpayroll, "Payroll Info".tr),
                             profileOption(() {
                               Get.toNamed(AppRoutes.resetPasswordScreen);

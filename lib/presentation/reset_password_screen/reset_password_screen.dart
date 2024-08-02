@@ -11,9 +11,6 @@ import 'package:fastteam_app/widgets/app_bar/custom_app_bar.dart';
 import 'package:fastteam_app/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
-
-
-
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({Key? key}) : super(key: key);
 
@@ -27,15 +24,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-          statusBarColor:ColorConstant.whiteA700,
+          statusBarColor: ColorConstant.whiteA700,
           statusBarIconBrightness: Brightness.dark),
     );
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ()async{
+      onWillPop: () async {
         Get.back();
         return true;
       },
@@ -61,35 +59,29 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               child: Form(
                 child: Container(
                     width: double.maxFinite,
-                    padding: getPadding(left: 16, top: 10, right: 16, bottom: 10),
+                    padding:
+                        getPadding(left: 16, top: 10, right: 16, bottom: 10),
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Container(
-                              width: getHorizontalSize(318),
-                              margin: getMargin(left: 39, right: 38),
-                              child: Text("msg_please_enter_the".tr,
-                                  maxLines: null,
-                                  textAlign: TextAlign.center,
-                                  style: AppStyle.txtBody)),
+                          // Container(
+                          //     width: getHorizontalSize(318),
+                          //     margin: getMargin(left: 39, right: 38),
+                          //     child: Text("msg_please_enter_the".tr,
+                          //         maxLines: null,
+                          //         textAlign: TextAlign.center,
+                          //         style: AppStyle.txtBody)),
                           Obx(() => CustomFloatingEditText(
-                            /*
-                            labelText: "lbl_password".tr,
-                                hintText: "lbl_password".tr,
-                                margin: getMargin(top: 16),
-                                textInputAction: TextInputAction.done,
-                                textInputType: TextInputType.emailAddress,
-                             */
-                              controller: controller.newpasswordController,
+                              controller: controller.passwordController,
                               labelText: "lbl_password".tr,
                               hintText: "lbl_password".tr,
-                              margin: getMargin(top: 52),
+                              margin: getMargin(top: 16),
                               textInputAction: TextInputAction.done,
                               textInputType: TextInputType.visiblePassword,
                               suffix: InkWell(
                                   onTap: () {
-                                    controller.isShowPassword.value =
-                                    !controller.isShowPassword.value;
+                                    controller.isShowPassword2.value =
+                                        !controller.isShowPassword2.value;
                                   },
                                   child: Container(
                                       margin: getMargin(
@@ -98,14 +90,46 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                           right: 16,
                                           bottom: 16),
                                       child: CustomImageView(
-                                          svgPath: controller.isShowPassword.value
+                                          svgPath: controller
+                                                  .isShowPassword2.value
                                               ? ImageConstant.imgAirplane
                                               : ImageConstant.imgAirplane))),
-                              suffixConstraints:
-                              BoxConstraints(maxHeight: getVerticalSize(56)),
+                              suffixConstraints: BoxConstraints(
+                                  maxHeight: getVerticalSize(56)),
                               validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty) {
+                                if (value == null || value.isEmpty) {
+                                  return "Please enter valid password";
+                                }
+                                return null;
+                              },
+                              isObscureText: controller.isShowPassword2.value)),
+                          Obx(() => CustomFloatingEditText(
+                              controller: controller.newpasswordController,
+                              labelText: "lbl_change_password".tr,
+                              hintText: "lbl_change_password".tr,
+                              margin: getMargin(top: 16),
+                              textInputAction: TextInputAction.done,
+                              textInputType: TextInputType.visiblePassword,
+                              suffix: InkWell(
+                                  onTap: () {
+                                    controller.isShowPassword.value =
+                                        !controller.isShowPassword.value;
+                                  },
+                                  child: Container(
+                                      margin: getMargin(
+                                          left: 30,
+                                          top: 16,
+                                          right: 16,
+                                          bottom: 16),
+                                      child: CustomImageView(
+                                          svgPath: controller
+                                                  .isShowPassword.value
+                                              ? ImageConstant.imgAirplane
+                                              : ImageConstant.imgAirplane))),
+                              suffixConstraints: BoxConstraints(
+                                  maxHeight: getVerticalSize(56)),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
                                   return "Please enter valid password";
                                 }
                                 return null;
@@ -121,7 +145,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               suffix: InkWell(
                                   onTap: () {
                                     controller.isShowPassword1.value =
-                                    !controller.isShowPassword1.value;
+                                        !controller.isShowPassword1.value;
                                   },
                                   child: Container(
                                       margin: getMargin(
@@ -130,14 +154,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                           right: 16,
                                           bottom: 16),
                                       child: CustomImageView(
-                                          svgPath:
-                                          controller.isShowPassword1.value
+                                          svgPath: controller
+                                                  .isShowPassword1.value
                                               ? ImageConstant.imgAirplane
                                               : ImageConstant.imgAirplane))),
-                              suffixConstraints:
-                              BoxConstraints(maxHeight: getVerticalSize(56)),
+                              suffixConstraints: BoxConstraints(
+                                  maxHeight: getVerticalSize(56)),
                               validator: (value) {
-                                if (value == null ||value.isEmpty) {
+                                if (value == null || value.isEmpty) {
                                   return "Please enter valid password";
                                 }
                                 return null;
@@ -158,29 +182,27 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   onTapResetpasword(context) {
-
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-
-      builder: (context) {
-        return AlertDialog(
-          insetPadding: EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          contentPadding:
-          EdgeInsets.zero,
-          content: ResetPasswordOneDialog(),
-        );
-      },
-    );
-
+    if (controller.confirmpasswordController.text.isEmpty ||
+        controller.passwordController.text.isEmpty ||
+        controller.newpasswordController.text.isEmpty) {
+      controller.showCustomSnackBar(
+        context: context,
+        msg: "Please enter valid password and confirm password",
+        status: "ERROR",
+      );
+    } else if (controller.newpasswordController.text !=
+        controller.confirmpasswordController.text) {
+      controller.showCustomSnackBar(
+        context: context,
+        msg: "Password and confirm password should be same",
+        status: "ERROR",
+      );
+    } else {
+      controller.requestLogin(context);
+    }
   }
 
   onTapArrowleft3() {
     Get.back();
   }
 }
-
-
-
-

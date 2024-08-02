@@ -120,20 +120,20 @@ class _payslipScreenState extends State<payslipScreen> {
                                   SizedBox(
                                     height: getVerticalSize(10),
                                   ),
-                                  ElevatedButton(
-                                      onPressed: () {
-                                        // download().then((_) {
-                                        //   print('Payslip is downloaded !');
-                                        // });
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.blue[900],
-                                        splashFactory: InkSplash.splashFactory,
-                                      ),
-                                      child: const Text(
-                                        'Download Salary Slip',
-                                        style: TextStyle(color: Colors.white),
-                                      ))
+                                  // ElevatedButton(
+                                  //     onPressed: () {
+                                  //       // download().then((_) {
+                                  //       //   print('Payslip is downloaded !');
+                                  //       // });
+                                  //     },
+                                  //     style: ElevatedButton.styleFrom(
+                                  //       backgroundColor: Colors.blue[900],
+                                  //       splashFactory: InkSplash.splashFactory,
+                                  //     ),
+                                  //     child: const Text(
+                                  //       'Download Salary Slip',
+                                  //       style: TextStyle(color: Colors.white),
+                                  //     ))
                                 ],
                               ),
                             ),

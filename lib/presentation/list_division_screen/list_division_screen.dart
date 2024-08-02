@@ -23,8 +23,7 @@ class _ListDivisionScreenState extends State<ListDivisionScreen> {
   int? routeArguments;
   DateTime selectedDate = DateTime.now();
   List<String> day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-  List<DateTime?> _dates = [];
-  List<DateTime?> _dates_absent = [];
+  List<DateTime?> _dates_absent = [DateTime.now()];
   ListDivisionController controller = Get.put(ListDivisionController());
 
   List<dynamic>? dataMember;
@@ -34,100 +33,79 @@ class _ListDivisionScreenState extends State<ListDivisionScreen> {
     controller.getListBelumAbsen(DateTime.now().toString());
   }
 
-  // initData() async {
-  //   setState(() {
-  //     routeArguments = ModalRoute.of(context)?.settings.arguments as int?;
-  //   });
-  // print(routeArguments);
-
-  //   var result = await _fetchMemberData();
-  //   setState(() {
-  //     dataMember = result;
-  //   });
-  //   // print(dataMember);
-  // }
-
-  // Future<List<dynamic>> _fetchMemberData() async {
-  //   homeController = Get.put(HomeController());
-  //   String dateTimeString = '$selectedDate';
-  //   int lastIndex = dateTimeString.lastIndexOf(" ");
-  //   String formatedDate = dateTimeString.substring(0, lastIndex);
-
-  //   Map<String, dynamic> result =
-  //       await homeController!.getListBelumAbsen(formatedDate, routeArguments!);
-  //   List<dynamic> listMemberData = result['details']['data'];
-  //   // print(listMemberData);
-  //   return listMemberData;
-  // }
 
   @override
   Widget build(BuildContext context) {
     // print(selectedDate);
     return SafeArea(
-      child: Scaffold(
-          appBar: CustomAppBar(
-            height: getVerticalSize(81),
-            leadingWidth: 40,
-            leading: AppbarImage(
-                height: getSize(24),
-                width: getSize(24),
-                svgPath: ImageConstant.imgArrowleft,
-                margin: getMargin(left: 16, top: 29, bottom: 28),
-                onTap: () {
-                  onTapArrowleft11();
-                }),
-            centerTitle: true,
-            title: AppbarTitle(text: "Attendence Log".tr),
-          ),
-          body: Stack(
-            fit: StackFit.expand,
-            children: [
-              _calendar(),
-              _listMember(),
-            ],
-          )),
-    );
+        child: Scaffold(
+      appBar: CustomAppBar(
+        height: getVerticalSize(81),
+        leadingWidth: 40,
+        leading: AppbarImage(
+            height: getSize(24),
+            width: getSize(24),
+            svgPath: ImageConstant.imgArrowleft,
+            margin: getMargin(left: 16, top: 29, bottom: 28),
+            onTap: () {
+              onTapArrowleft11();
+            }),
+        centerTitle: true,
+        title: AppbarTitle(text: "Employee Division".tr),
+      ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return Center(child: CircularProgressIndicator());
+        }
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            _calendar(),
+            _listMember(),
+          ],
+        );
+      }),
+    ));
   }
 
   Widget _listMember() {
-  return Container(
-    margin: getMargin(left: 10, right: 10),
-    child: DraggableScrollableSheet(
-      initialChildSize: 0.3,
-      minChildSize: 0.3,
-      maxChildSize: 0.8,
-      builder: (context, ScrollController scrollController) => ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(getHorizontalSize(25)),
-          topRight: Radius.circular(getHorizontalSize(25)),
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            color: ColorConstant.whiteA700,
-            border: Border.all(
-              color: ColorConstant.gray300, // Border color
-              width: 2.0, // Border width
-            ),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(getHorizontalSize(25)),
-              topRight: Radius.circular(getHorizontalSize(25)),
-            ),
+    return Container(
+      margin: getMargin(left: 10, right: 10),
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.3,
+        minChildSize: 0.3,
+        maxChildSize: 0.8,
+        builder: (context, ScrollController scrollController) => ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(getHorizontalSize(25)),
+            topRight: Radius.circular(getHorizontalSize(25)),
           ),
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (ScrollNotification notification) {
-              if (notification is ScrollUpdateNotification &&
-                  scrollController.position.pixels <=
-                      scrollController.position.minScrollExtent) {
-                scrollController.position
-                    .jumpTo(scrollController.position.minScrollExtent);
-                return true;
-              }
-              return false;
-            },
-            child: ListView(
-              controller: scrollController,
-              children: [
-                Column(
+          child: Container(
+            decoration: BoxDecoration(
+              color: ColorConstant.whiteA700,
+              border: Border.all(
+                color: ColorConstant.gray300, // Border color
+                width: 2.0, // Border width
+              ),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(getHorizontalSize(25)),
+                topRight: Radius.circular(getHorizontalSize(25)),
+              ),
+            ),
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification notification) {
+                if (notification is ScrollUpdateNotification &&
+                    scrollController.position.pixels <=
+                        scrollController.position.minScrollExtent) {
+                  scrollController.position
+                      .jumpTo(scrollController.position.minScrollExtent);
+                  return true;
+                }
+                return false;
+              },
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
                   children: [
                     Container(
                       margin: getPadding(top: 10),
@@ -136,162 +114,165 @@ class _ListDivisionScreenState extends State<ListDivisionScreen> {
                       color: ColorConstant.gray300,
                     ),
                     Container(
-                      margin: getMargin(top: 20, left: 15, right: 15),
+                      margin: getMargin(top: 20, left: 15, right: 15, bottom: 10),
                       padding: getPadding(left: 10, right: 10),
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(getHorizontalSize(8)),
-                        border: Border.all(color: ColorConstant.gray300),
-                      ),
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-                        value: "All Activity",
-                        items: [
-                          DropdownMenuItem<String>(
-                            value: 'All Activity',
-                            child: Text(
-                              'All Activity | 4',
-                              style: TextStyle(fontSize: getFontSize(16)),
-                            ),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: 'Not Clock In',
-                            child: Text(
-                              'Not Clock In | 0',
-                              style: TextStyle(fontSize: getFontSize(16)),
-                            ),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: 'All Leave',
-                            child: Text(
-                              'All Leave | 0',
-                              style: TextStyle(fontSize: getFontSize(16)),
-                            ),
-                          ),
-                        ],
-                        onChanged: (newValue) {},
+                      child:Text('List Member',style:AppStyle.txtSFProTextSemibold17)
+                      
+                      // child: DropdownButton<String>(
+                      //   isExpanded: true,
+                      //   value: "All Activity",
+                      //   items: [
+                      //     DropdownMenuItem<String>(
+                      //       value: 'All Activity',
+                      //       child: Text(
+                      //         'All Activity | 4',
+                      //         style: TextStyle(fontSize: getFontSize(16)),
+                      //       ),
+                      //     ),
+                      //     DropdownMenuItem<String>(
+                      //       value: 'Not Clock In',
+                      //       child: Text(
+                      //         'Not Clock In | 0',
+                      //         style: TextStyle(fontSize: getFontSize(16)),
+                      //       ),
+                      //     ),
+                      //     DropdownMenuItem<String>(
+                      //       value: 'All Leave',
+                      //       child: Text(
+                      //         'All Leave | 0',
+                      //         style: TextStyle(fontSize: getFontSize(16)),
+                      //       ),
+                      //     ),
+                      //   ],
+                      //   onChanged: (newValue) {},
+                      // ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      height: getVerticalSize(550),
+                      child: ListView.builder(
+                       
+                        itemCount: controller.filteredEmployees.length,
+                        itemBuilder: (context, index) {
+                          final employee = controller.filteredEmployees[index];
+                          final clockOut = !employee.jamKeluar.isEmpty
+                              ? employee.jamKeluar.last.jamAbsen
+                              : '00:00';
+                          final clockIn = !employee.jamMasuk.isEmpty
+                              ? employee.jamMasuk[0].jamAbsen
+                              : '00:00';
+
+                          String jamClockIn = '00:00';
+                          if (clockIn != '00:00') {
+                            DateTime dateTimeMasuk =
+                                DateTime.parse(clockIn).toLocal();
+                            jamClockIn = DateFormat.Hm()
+                                .format(dateTimeMasuk)
+                                .toString();
+                          }
+
+                          String jamClockOut = '00:00';
+                          if (clockOut != '00:00') {
+                            DateTime dateTimeKeluar =
+                                DateTime.parse(clockOut).toLocal();
+                            jamClockOut = DateFormat.Hm()
+                                .format(dateTimeKeluar)
+                                .toString();
+                          }
+
+                          return Column(
+                            children: [
+                              Container(
+                                margin: getPadding(
+                                    left: 16, right: 16, top: 5, bottom: 5),
+                                child: ListTile(
+                                  contentPadding: getPadding(top: 8, bottom: 8),
+                                  leading: CircleAvatar(
+                                    radius: getHorizontalSize(23),
+                                    backgroundImage:
+                                        NetworkImage(employee.image),
+                                  ),
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        employee.nama,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: getFontSize(16),
+                                        ),
+                                      ),
+                                      Text(
+                                        employee.divisi,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: getFontSize(12),
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                MdiIcons.clockTimeSevenOutline,
+                                                size: getFontSize(18),
+                                                color: ColorConstant.green600,
+                                              ),
+                                              Text(
+                                                ' $jamClockIn',
+                                                style: TextStyle(
+                                                  fontSize: getFontSize(15),
+                                                  color: jamClockIn == '00:00'
+                                                      ? ColorConstant.red
+                                                      : ColorConstant.black900,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                              width: getHorizontalSize(40)),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                MdiIcons.clockTimeFourOutline,
+                                                size: getFontSize(18),
+                                                color: ColorConstant.yellow50,
+                                              ),
+                                              Text(
+                                                ' $jamClockOut',
+                                                style: TextStyle(
+                                                  fontSize: getFontSize(15),
+                                                  color: jamClockOut == '00:00'
+                                                      ? ColorConstant.red
+                                                      : ColorConstant.black900,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                height: getVerticalSize(1),
+                              )
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ],
                 ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: controller.filteredEmployees.length,
-                  itemBuilder: (context, index) {
-                    final employee = controller.filteredEmployees[index];
-                    final clockOut = !employee.jamKeluar.isEmpty
-                        ? employee.jamKeluar.last.jamAbsen
-                        : '00:00';
-                    final clockIn = !employee.jamMasuk.isEmpty
-                        ? employee.jamMasuk[0].jamAbsen
-                        : '00:00';
-                   
-
-                    String jamClockIn = '00:00';
-                    if (clockIn != '00:00') {
-                      DateTime dateTimeMasuk =
-                          DateTime.parse(clockIn).toLocal();
-                      jamClockIn =
-                          DateFormat.Hm().format(dateTimeMasuk).toString();
-                    }
-
-                    String jamClockOut = '00:00';
-                    if (clockOut != '00:00') {
-                      DateTime dateTimeKeluar =
-                          DateTime.parse(clockOut).toLocal();
-                      jamClockOut =
-                          DateFormat.Hm().format(dateTimeKeluar).toString();
-                    }
-
-                    return Column(
-                      children: [
-                        Container(
-                          margin: getPadding(
-                              left: 16, right: 16, top: 5, bottom: 5),
-                          child: ListTile(
-                            contentPadding: getPadding(top: 8, bottom: 8),
-                            leading: CircleAvatar(
-                              radius: getHorizontalSize(23),
-                              backgroundImage: NetworkImage(employee.image),
-                            ),
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  employee.nama,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: getFontSize(16),
-                                  ),
-                                ),
-                                Text(
-                                  employee.divisi,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: getFontSize(12),
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          MdiIcons.clockTimeSevenOutline,
-                                          size: getFontSize(18),
-                                          color: ColorConstant.green600,
-                                        ),
-                                        Text(
-                                          ' $jamClockIn',
-                                          style: TextStyle(
-                                            fontSize: getFontSize(15),
-                                            color: jamClockIn == '00:00'
-                                                ? ColorConstant.red
-                                                : ColorConstant.black900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(width: getHorizontalSize(40)),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          MdiIcons.clockTimeFourOutline,
-                                          size: getFontSize(18),
-                                          color: ColorConstant.yellow50,
-                                        ),
-                                        Text(
-                                          ' $jamClockOut',
-                                          style: TextStyle(
-                                            fontSize: getFontSize(15),
-                                            color: jamClockOut == '00:00'
-                                                ? ColorConstant.red
-                                                : ColorConstant.black900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Divider(
-                          height: getVerticalSize(1),
-                        )
-                      ],
-                    );
-                  },
-                ),
-              ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _calendar() {
     return Container(
@@ -383,7 +364,7 @@ class _ListDivisionScreenState extends State<ListDivisionScreen> {
                         selectedDayTextStyle: AppStyle.txtSFProDisplaySemibold20
                             .copyWith(letterSpacing: getHorizontalSize(0.38)),
                       ),
-                      value: _dates,
+                      value: _dates_absent,
                       onValueChanged: (dates) {
                         _dates_absent = dates;
                         controller

@@ -33,6 +33,74 @@ class _FotgotPasswordScreenState extends State<FotgotPasswordScreen> {
     super.initState();
   }
 
+  bool isLoading = false;
+
+  requestResetPassword() async {
+    var result = await controller.sendResetPassword(controller.emailController.text);
+    print(result);
+    if (result['status'] == 200) {
+      showCustomDialog(
+          context, 'Password reset instructions sent to your email.');
+    } else if (result['status'] == 400) {
+      String message = '';
+
+      if (result['details']['email'] is List) {
+        message = result['details']['email'][0];
+      } else {
+        message = result['details']['email'];
+      }
+
+      showSnackBar(message, Colors.red);
+    }
+  }
+
+  validateFromInput() async {
+    if (controller.emailController.text.isEmpty) {
+      showSnackBar("Email cannot be empty", Colors.red);
+    } else {
+      await requestResetPassword();
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  showSnackBar(String message, Color color) {
+    snackbar() => SnackBar(
+          content: Text(
+            message,
+            style: const TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: color,
+          duration: const Duration(milliseconds: 2000),
+        );
+    ScaffoldMessenger.of(context).showSnackBar(snackbar());
+  }
+
+  void showCustomDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Success'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -101,8 +169,12 @@ class _FotgotPasswordScreenState extends State<FotgotPasswordScreen> {
                                 text: "lbl_send".tr,
                                 margin: getMargin(top: 28, bottom: 5),
                                 onTap: () {
-                                  if (_formKey.currentState!.validate()) {
-                                    onTapSend();
+                                  if (!isLoading) {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+
+                                    validateFromInput();
                                   }
                                 })
                           ]))),

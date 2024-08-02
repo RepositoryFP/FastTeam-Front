@@ -73,6 +73,18 @@ class InboxController extends GetxController {
     }
   }
 
+  void changeStatusInbox(id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token');
+    await http.patch(
+      Uri.parse("${BaseServer.serverUrl}/notification/read-one/$id/"),
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": "Bearer $token",
+      },
+    ).timeout(BaseServer.durationlimit);
+  }
+
   void displayNotification(int id) {
     NotificationModel? notification = getNotificationById(id);
     notificationDetail.clear();
@@ -83,6 +95,4 @@ class InboxController extends GetxController {
       print('No notification found');
     }
   }
-
-  
 }

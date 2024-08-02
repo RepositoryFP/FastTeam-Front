@@ -1,12 +1,11 @@
 import 'package:fastteam_app/core/app_export.dart';
+import 'package:fastteam_app/widgets/app_bar/custum_bottom_bar_controller.dart';
 import 'package:fastteam_app/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 // ignore_for_file: must_be_immutable
 class ResetPasswordOneDialog extends StatelessWidget {
-
-
-
+   CustomBottomBarController controller = Get.put(CustomBottomBarController());
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +41,9 @@ class ResetPasswordOneDialog extends StatelessWidget {
                   text: "lbl_go_to_log_in".tr,
                   margin: getMargin(left: 35, top: 20, right: 35),
                   onTap: () {
-                    onTapGotologin();
+                     PrefUtils.setIsSignIn(true);
+                              controller.getIndex(0);
+                              Get.offAllNamed(AppRoutes.logInScreen);
                   })
             ]));
   }

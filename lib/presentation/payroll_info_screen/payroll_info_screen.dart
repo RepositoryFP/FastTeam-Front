@@ -8,30 +8,21 @@ import 'package:fastteam_app/widgets/app_bar/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class ProfileDetailsScreen extends StatefulWidget {
-  const ProfileDetailsScreen({Key? key}) : super(key: key);
+class PayrollInfoScreen extends StatefulWidget {
+  const PayrollInfoScreen({Key? key}) : super(key: key);
 
   @override
-  State<ProfileDetailsScreen> createState() => _ProfileDetailsScreenState();
+  State<PayrollInfoScreen> createState() => _PayrollInfoScreenState();
 }
 
-class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
+class _PayrollInfoScreenState extends State<PayrollInfoScreen> {
   ProfileDetailsController controller = Get.put(ProfileDetailsController());
 
-  var email;
-  var nama;
   var fullname;
-  var divisiName;
-  var namaLokasi;
-  var jenisKelamin;
-  var tempatLahir;
-  var tanggalLahir;
-  var noHp;
-  var statusPerinkahan;
-  var agama;
-  var nomorID;
-  var alamatIdentitas;
+  var rekening;
+  var bank;
   var alamatTinggal;
+
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(
@@ -75,25 +66,17 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                 //     })
               ],
               centerTitle: true,
-              title: AppbarTitle(text: "lbl_profile_details".tr),
+              title: AppbarTitle(text: "Payroll Info".tr),
             ),
             body: Obx(() {
               if (controller.isLoading.value) {
                 return Center(child: CircularProgressIndicator());
               }
 
-              email = controller.accountModel.email;
               fullname = controller.accountModel.fullName;
-              divisiName = controller.accountModel.divisi;
-              jenisKelamin = controller.accountModel.gender;
-              tempatLahir = controller.accountModel.tempatLahir;
-              tanggalLahir = controller.accountModel.tanggalLahir;
-              noHp = controller.accountModel.nomorHp;
-              statusPerinkahan = controller.accountModel.statusKawin;
-              agama = controller.accountModel.agama;
-              nomorID = controller.accountModel.nomorKtp;
-              alamatIdentitas = controller.accountModel.alamatKtp;
               alamatTinggal = controller.accountModel.alamatTinggal;
+              rekening = controller.accountModel.nomorRekening;
+              bank = controller.accountModel.bank;
 
               return Container(
                 width: double.maxFinite,
@@ -112,107 +95,27 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                         endIndent: getHorizontalSize(22),
                       ),
                     ),
-                    profile_detail_option("Email", email),
-                    Padding(
-                      padding: getPadding(top: 14, bottom: 21),
-                      child: Divider(
-                        height: getVerticalSize(1),
-                        thickness: getVerticalSize(1),
-                        color: ColorConstant.gray5001,
-                        endIndent: getHorizontalSize(22),
-                      ),
-                    ),
-                    profile_detail_option("Phone Number", noHp),
-                    Padding(
-                      padding: getPadding(top: 14, bottom: 21),
-                      child: Divider(
-                        height: getVerticalSize(1),
-                        thickness: getVerticalSize(1),
-                        color: ColorConstant.gray5001,
-                        endIndent: getHorizontalSize(22),
-                      ),
-                    ),
-                    profile_detail_option("Division", divisiName),
-                    Padding(
-                      padding: getPadding(top: 14, bottom: 21),
-                      child: Divider(
-                        height: getVerticalSize(1),
-                        thickness: getVerticalSize(1),
-                        color: ColorConstant.gray5001,
-                        endIndent: getHorizontalSize(22),
-                      ),
-                    ),
-                    profile_detail_option("Gender", jenisKelamin),
-                    Padding(
-                      padding: getPadding(top: 14, bottom: 21),
-                      child: Divider(
-                        height: getVerticalSize(1),
-                        thickness: getVerticalSize(1),
-                        color: ColorConstant.gray5001,
-                        endIndent: getHorizontalSize(22),
-                      ),
-                    ),
-                    profile_detail_option("Place of Birth", tempatLahir),
-                    Padding(
-                      padding: getPadding(top: 14, bottom: 21),
-                      child: Divider(
-                        height: getVerticalSize(1),
-                        thickness: getVerticalSize(1),
-                        color: ColorConstant.gray5001,
-                        endIndent: getHorizontalSize(22),
-                      ),
-                    ),
-                    profile_detail_option("Date of Birth", tanggalLahir),
-                    Padding(
-                      padding: getPadding(top: 14, bottom: 21),
-                      child: Divider(
-                        height: getVerticalSize(1),
-                        thickness: getVerticalSize(1),
-                        color: ColorConstant.gray5001,
-                        endIndent: getHorizontalSize(22),
-                      ),
-                    ),
-                    profile_detail_option("Marital Status", statusPerinkahan),
-                    Padding(
-                      padding: getPadding(top: 14, bottom: 21),
-                      child: Divider(
-                        height: getVerticalSize(1),
-                        thickness: getVerticalSize(1),
-                        color: ColorConstant.gray5001,
-                        endIndent: getHorizontalSize(22),
-                      ),
-                    ),
-                    profile_detail_option("Religion", agama),
-                    Padding(
-                      padding: getPadding(top: 14, bottom: 21),
-                      child: Divider(
-                        height: getVerticalSize(1),
-                        thickness: getVerticalSize(1),
-                        color: ColorConstant.gray5001,
-                        endIndent: getHorizontalSize(22),
-                      ),
-                    ),
-                    profile_detail_option("ID Number", nomorID.toString()),
-                    Padding(
-                      padding: getPadding(top: 14, bottom: 21),
-                      child: Divider(
-                        height: getVerticalSize(1),
-                        thickness: getVerticalSize(1),
-                        color: ColorConstant.gray5001,
-                        endIndent: getHorizontalSize(22),
-                      ),
-                    ),
-                    profile_detail_option("Identity Address", alamatIdentitas),
-                    Padding(
-                      padding: getPadding(top: 14, bottom: 21),
-                      child: Divider(
-                        height: getVerticalSize(1),
-                        thickness: getVerticalSize(1),
-                        color: ColorConstant.gray5001,
-                        endIndent: getHorizontalSize(22),
-                      ),
-                    ),
                     profile_detail_option("Residential Address", alamatTinggal),
+                    Padding(
+                      padding: getPadding(top: 14, bottom: 21),
+                      child: Divider(
+                        height: getVerticalSize(1),
+                        thickness: getVerticalSize(1),
+                        color: ColorConstant.gray5001,
+                        endIndent: getHorizontalSize(22),
+                      ),
+                    ),
+                    profile_detail_option("Residential Address", bank),
+                    Padding(
+                      padding: getPadding(top: 14, bottom: 21),
+                      child: Divider(
+                        height: getVerticalSize(1),
+                        thickness: getVerticalSize(1),
+                        color: ColorConstant.gray5001,
+                        endIndent: getHorizontalSize(22),
+                      ),
+                    ),
+                    profile_detail_option("Residential Address", rekening),
                   ],
                 ),
               );

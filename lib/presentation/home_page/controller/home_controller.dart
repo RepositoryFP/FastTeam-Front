@@ -4,6 +4,7 @@ import 'package:fastteam_app/core/app_export.dart';
 import 'package:fastteam_app/core/network/base_url.dart';
 import 'package:fastteam_app/presentation/home_page/models/account_model.dart';
 import 'package:fastteam_app/presentation/home_page/models/home_model.dart';
+import 'package:fastteam_app/presentation/home_page/models/list_divisi_model.dart';
 import 'package:fastteam_app/presentation/home_page/models/list_employee_absent_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -19,6 +20,8 @@ class HomeController extends GetxController {
   Rx<int> silderIndex = 0.obs;
   var isLoading = false.obs;
   var isDataLoaded = false.obs;
+  var isFilter = false.obs;
+  var valueDivisi = 0.obs;
   AccountInformationModel? accountInfo;
 
   DateTime? masukAwalDateTime;
@@ -34,6 +37,7 @@ class HomeController extends GetxController {
 
   var filteredEmployees = <EmployeeAbsent>[].obs;
   var memberEmployees = <EmployeeAbsent>[].obs;
+  var departments = <Department>[].obs;
 
   @override
   void onReady() {
@@ -46,7 +50,6 @@ class HomeController extends GetxController {
   }
 
   void getAccountInformation() async {
-    
     if (isDataLoaded.value) return;
 
     try {
@@ -156,6 +159,7 @@ class HomeController extends GetxController {
   Future<http.Response> retrieveUserAbsenDateDivisi(
       String? token, String tanggal, int idDivisi) async {
     var path = '${BaseServer.serverUrl}/user-absen/${tanggal}/${idDivisi}/';
+    print(path);
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -181,7 +185,7 @@ class HomeController extends GetxController {
   void getListBelumAbsen(String tanggal, int idDivisi) async {
     // Early return if data is already loaded
     if (isDataLoaded.value) return;
-    print(idDivisi);
+
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var token = prefs.getString('token');
@@ -193,6 +197,47 @@ class HomeController extends GetxController {
       } else {
         response = await retrieveUserAbsenOnly(token);
       }
+
+      valueDivisi.value = 0;
+      // Check the status code of the response
+      if (response.statusCode == 200) {
+        // Parse JSON from the response body
+        var result = jsonDecode(response.body);
+        if (result['status'] == 'success') {
+          responseModel.value = EmployeeAbsentResponse.fromJson(result);
+          filteredEmployees.value = responseModel.value.details.data;
+
+          // Set isDataLoaded to true after successfully fetching the data
+          isDataLoaded.value = true; // Add this line
+        } else {
+          // Handle error response
+          print('Error: ${result['details']}');
+        }
+      } else {
+        // Handle non-200 status code
+        print('Error: Server returned status code ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      throw Exception('Failed to load employee data');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void getFilterBelumAbsen(String tanggal, int idDivisi) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var token = prefs.getString('token');
+      isLoading.value = true;
+
+      http.Response response;
+      if (idDivisi > 0) {
+        response = await retrieveUserAbsenDateDivisi(token, tanggal, idDivisi);
+      } else {
+        response = await retrieveUserAbsenOnly(token);
+      }
+        valueDivisi.value = idDivisi;
 
       // Check the status code of the response
       if (response.statusCode == 200) {
@@ -247,5 +292,47 @@ class HomeController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  retriveListEmployee(token) async {
+    var path = "${BaseServer.serverUrl}/divisi/";
+    var response = await http.get(Uri.parse(path), headers: {
+      "Accept": "*/*",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $token"
+    }).timeout(BaseServer.durationlimit);
+    return response;
+  }
+
+  void listDivisi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token');
+
+    if (token == null) {
+      print('Token not found!');
+      return;
+    }
+
+    try {
+      final response = await retriveListEmployee(token);
+      var result = Constants().jsonResponse(response);
+
+      if (result['status'] == 200) {
+        var details = result['details'] as List;
+        var departmentList =
+            details.map((i) => Department.fromJson(i)).toList();
+        departments.value = departmentList;
+        print('Departments loaded successfully');
+      } else {
+        print('Failed to fetch data: ${result['status']}');
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      throw Exception('Failed to load department data');
+    }
+  }
+
+  loadFilter(status) {
+    isFilter.value = status;
   }
 }
