@@ -27,6 +27,8 @@ class LogInController extends GetxController {
           body: bodyParams,
         )
         .timeout(BaseServer.durationlimit);
+        usernameController.text = '';
+        passwordController.text = '';
     return Constants().jsonResponse(response);
   }
 

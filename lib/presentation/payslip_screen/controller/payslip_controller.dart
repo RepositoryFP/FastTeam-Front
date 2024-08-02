@@ -119,6 +119,33 @@ class PayslipController extends GetxController {
     }
   }
 
+  requestLinkDownloadPayslip(token, payroll_id) async{
+    print(payroll_id);
+    var path = "${BaseServer.serverUrl}/generate-slip-gaji/";
+    Map<String, dynamic> bodyParams = {
+      "payroll_id": '${payroll_id}',
+    };
+    var body = json.encode(bodyParams);
+
+    var response = await http.post(
+      Uri.parse(path),
+      body: body,
+      headers: {
+        "content-type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+    
+    return response;
+  }
+
+  retriveLinkDownloadPayslip()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token');
+    var result = await requestLinkDownloadPayslip(token, id_payroll.value);
+    return Constants().jsonResponse(result);
+  }
+
   double calculateTotalDeductionAmount(
       List<dynamic> detail_payroll, String type) {
     double total = 0.0;
