@@ -124,7 +124,10 @@ class CameraScreenState extends State<CameraScreen> {
                     if (snapshot.connectionState == ConnectionState.done) {
                       return Transform.scale(
                         scale: size.aspectRatio * 2.1,
-                        child: CameraPreview(_controller),
+                        // child: CameraPreview(_controller),
+                        child: Center(
+                            child: CameraPreview(_controller),
+                          ),
                       );
                     } else {
                       return const Center(
