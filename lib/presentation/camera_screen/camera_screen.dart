@@ -82,138 +82,158 @@ class CameraScreenState extends State<CameraScreen> {
       shift = routeArguments['shift'] ?? '';
     }
     return WillPopScope(
-      onWillPop: () async {
-        Get.back();
-        return true;
-      },
-      child: SafeArea(
-        child: Scaffold(
-          backgroundColor: ColorConstant.gray5001,
-          appBar: CustomAppBar(
-            height: getVerticalSize(81),
-            leadingWidth: 40,
-            leading: AppbarImage(
-              height: getSize(24),
-              width: getSize(24),
-              svgPath: ImageConstant.imgArrowleft,
-              margin: getMargin(left: 16, top: 29, bottom: 28),
-              onTap: onTapArrowleft11,
-            ),
-            centerTitle: true,
-            title: Column(
-              children: [
-                Text(
-                  'Office: $kantor',
-                  style: AppStyle.txtSFProTextbold20,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Shift: $shift',
-                  style: AppStyle.txtBody,
-                ),
-              ],
-            ),
-          ),
-          resizeToAvoidBottomInset: true,
-          body: SafeArea(
-            child: Stack(
-              children: <Widget>[
-                FutureBuilder<void>(
-                  future: _initializeControllerFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      return Transform.scale(
-                        scale: size.aspectRatio * 2.1,
-                        child: CameraPreview(_controller),
-                      );
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    padding: getPadding(left: 10, right: 10, bottom: 10),
-                    color: Colors.white,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                          padding: getPadding(left: 10, right: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Icon(Icons.wb_sunny,
-                                  color: ColorConstant.indigo800),
-                              Expanded(
-                                child: Slider(
-                                  value: brightnessValue,
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      brightnessValue = newValue;
-                                      _controller.setExposureOffset(newValue);
-                                    });
-                                  },
-                                  min: -1.0,
-                                  max: 1.0,
-                                  activeColor: ColorConstant.indigo800,
-                                  inactiveColor: ColorConstant.gray200,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          width: double.infinity,
-                          padding: getPadding(left: 10, right: 10, top: 10),
-                          child: TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: 'Note',
-                              border: OutlineInputBorder(),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                note = value;
-                              });
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: getPadding(left: 10, right: 10, top: 10),
-                          child: ElevatedButton(
-                            onPressed: cekGambar,
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  ColorConstant.indigo800),
-                              minimumSize: MaterialStateProperty.all<Size>(
-                                  Size(double.infinity, 50)),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      getHorizontalSize(16)),
-                                ),
-                              ),
-                            ),
-                            child: Text(
-                              'Take Picture',
-                              style: AppStyle.txtBodyWhite20,
-                            ),
-                          ),
-                        ),
-                      ],
+        onWillPop: () async {
+          Get.back();
+          return true;
+        },
+        child: SafeArea(
+          child: Scaffold(
+              backgroundColor: ColorConstant.gray5001,
+              appBar: CustomAppBar(
+                height: getVerticalSize(81),
+                leadingWidth: 40,
+                leading: AppbarImage(
+                    height: getSize(24),
+                    width: getSize(24),
+                    svgPath: ImageConstant.imgArrowleft,
+                    margin: getMargin(left: 16, top: 29, bottom: 28),
+                    onTap: () {
+                      onTapArrowleft11();
+                    }),
+                centerTitle: true,
+                title: Column(
+                  children: [
+                    Text(
+                      'Office: $kantor',
+                      style: AppStyle.txtSFProTextbold20,
                     ),
+                    const SizedBox(
+                        height: 8), // Space between "Kantor" and "Masuk"
+                    Text(
+                      'Shift: $shift',
+                      style: AppStyle.txtBody,
+                    ),
+                  ],
+                ),
+              ),
+              resizeToAvoidBottomInset: true, // Set this to true
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      Stack(
+                        children: [
+                          Transform.scale(
+                            scale: size.aspectRatio * 2.1,
+                            child: FutureBuilder<void>(
+                              future: _initializeControllerFuture,
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  return CameraPreview(_controller);
+                                } else {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+                              },
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              padding: getPadding(left: 10, right: 10),
+                              color: Colors.white,
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: getPadding(left: 10, right: 10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Icon(Icons.wb_sunny,
+                                            color: ColorConstant.indigo800),
+                                        Expanded(
+                                          // Menggunakan Expanded untuk Slider
+                                          child: Slider(
+                                            value: brightnessValue,
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                brightnessValue = newValue;
+                                                _controller.setExposureOffset(
+                                                    newValue);
+                                              });
+                                            },
+                                            min: -1.0,
+                                            max: 1.0,
+                                            activeColor: ColorConstant
+                                                .indigo800, // Set the color for the active part of the slider
+                                            inactiveColor:
+                                                ColorConstant.gray200,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    padding: getPadding(
+                                        left: 10,
+                                        right: 10,
+                                        top: 10,
+                                        bottom: 10),
+                                    child: TextFormField(
+                                      decoration: const InputDecoration(
+                                        labelText: 'Note',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          note = value;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: getPadding(
+                                        right: 10, left: 10, top: 10),
+                                    child: ElevatedButton(
+                                      onPressed: cekGambar,
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                ColorConstant.indigo800),
+                                        minimumSize: MaterialStateProperty
+                                            .all<Size>(Size(double.infinity,
+                                                50)), // Menetapkan ukuran minimum tombol
+                                        shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                getHorizontalSize(
+                                                    16)), // Adjust the radius as needed
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Take Picture',
+                                        style: AppStyle.txtBodyWhite20,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+              )),
+        ));
   }
 
   void cekGambar() async {
