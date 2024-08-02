@@ -39,16 +39,7 @@ class _InboxScreenState extends State<InboxScreen> {
   Future refreshItem() async {
    controller.getNotificationList();
   }
-  // Future markAllAsRead() async {
-  //   var result =
-  //       await inboxController!.requestReadAllNotification(userId.toString());
-  //   if (result['status'] == 200) {
-  //     await fetchData();
-  //     showSnackBar('All notification is read', Colors.green);
-  //   } else {
-  //     showSnackBar('Failed to perform mark all as read', Colors.red);
-  //   }
-  // }
+
 
   @override
   Widget build(BuildContext context) {

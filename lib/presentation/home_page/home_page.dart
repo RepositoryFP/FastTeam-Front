@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
     DateTime now = DateTime.now();
     DateFormat formatter = DateFormat('yyyy-MM-dd');
     String formattedDate = formatter.format(now);
-    
+
     controller.loadFilter(true);
     controller.getFilterBelumAbsen(formattedDate, 0);
   }
@@ -117,11 +117,11 @@ class _HomePageState extends State<HomePage> {
             keluarAwal = controller.accountInfo!.keluarAwal;
             keluarAkhir = controller.accountInfo!.keluarAkhir;
             shift = controller.accountInfo!.shift;
-      
+
             var employees = controller.filteredEmployees;
-      
+
             var memberDivision = controller.memberEmployees;
-      
+
             return SafeArea(
               child: ListView(
                 children: [
@@ -158,7 +158,8 @@ class _HomePageState extends State<HomePage> {
                                           child: Padding(
                                               padding: getPadding(top: 5),
                                               child: Text("$divisi".tr,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   textAlign: TextAlign.left,
                                                   style: AppStyle
                                                       .txtSFProDisplayRegular16Black900)))
@@ -230,8 +231,9 @@ class _HomePageState extends State<HomePage> {
                                           child: Container(
                                             decoration: BoxDecoration(
                                               color: ColorConstant.whiteA700,
-                                              borderRadius: BorderRadius.circular(
-                                                  getHorizontalSize(10)),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      getHorizontalSize(10)),
                                             ),
                                             height: getVerticalSize(50),
                                             width: getHorizontalSize(350),
@@ -247,14 +249,35 @@ class _HomePageState extends State<HomePage> {
                                                           : null;
                                                     },
                                                     child: Center(
-                                                      child: Text(
-                                                        "Clock In",
-                                                        style: controller
-                                                                .canAbsent(true)
-                                                            ? AppStyle
-                                                                .txtSFProDisplaySemibold18
-                                                            : AppStyle
-                                                                .txtSFProDisplaySemibold18Gray,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Padding(
+                                                            padding: getPadding(
+                                                                right: 8),
+                                                            child: Icon(
+                                                                Icons.input,
+                                                                color: controller
+                                                                        .canAbsent(
+                                                                            true)
+                                                                    ? ColorConstant
+                                                                        .black900
+                                                                    : ColorConstant
+                                                                        .gray300),
+                                                          ),
+                                                          Text(
+                                                            "Clock In",
+                                                            style: controller
+                                                                    .canAbsent(
+                                                                        true)
+                                                                ? AppStyle
+                                                                    .txtSFProDisplaySemibold18
+                                                                : AppStyle
+                                                                    .txtSFProDisplaySemibold18Gray,
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
                                                   ),
@@ -272,19 +295,41 @@ class _HomePageState extends State<HomePage> {
                                                 Expanded(
                                                   child: InkWell(
                                                     onTap: () {
-                                                      controller.canAbsent(false)
+                                                      controller
+                                                              .canAbsent(false)
                                                           ? _clockOut(context)
                                                           : null;
                                                     },
                                                     child: Center(
-                                                      child: Text(
-                                                        "Clock Out",
-                                                        style: controller
-                                                                .canAbsent(false)
-                                                            ? AppStyle
-                                                                .txtSFProDisplaySemibold18
-                                                            : AppStyle
-                                                                .txtSFProDisplaySemibold18Gray,
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Padding(
+                                                            padding: getPadding(
+                                                                right: 8),
+                                                            child: Icon(
+                                                                Icons.output,
+                                                                color: controller
+                                                                        .canAbsent(
+                                                                            false)
+                                                                    ? ColorConstant
+                                                                        .black900
+                                                                    : ColorConstant
+                                                                        .gray300),
+                                                          ),
+                                                          Text(
+                                                            "Clock Out",
+                                                            style: controller
+                                                                    .canAbsent(
+                                                                        false)
+                                                                ? AppStyle
+                                                                    .txtSFProDisplaySemibold18
+                                                                : AppStyle
+                                                                    .txtSFProDisplaySemibold18Gray,
+                                                          ),
+                                                        ],
                                                       ),
                                                     ),
                                                   ),
@@ -308,7 +353,8 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     height: getVerticalSize(10),
                   ),
-                  listMemberAbsent(context, memberData, employees, onSelected,controller.valueDivisi.value),
+                  listMemberAbsent(context, memberData, employees, onSelected,
+                      controller.valueDivisi.value),
                 ],
               ),
             );

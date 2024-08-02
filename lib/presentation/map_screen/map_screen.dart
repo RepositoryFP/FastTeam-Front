@@ -164,7 +164,7 @@ class _MapScreenState extends State<MapScreen> {
           'shift': shift,
         });
 
-        Get.toNamed(AppRoutes.camera, arguments: {
+        Get.offAndToNamed(AppRoutes.camera, arguments: {
           'idUser': idUser,
           'long': _longitude,
           'lat': _latitude,
