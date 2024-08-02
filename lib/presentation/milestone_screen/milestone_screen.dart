@@ -114,7 +114,7 @@ class _MilestoneScreenState extends State<MilestoneScreen> {
     return Column(
       children: [
         SizedBox(
-          height: getVerticalSize(180),
+          height: getVerticalSize(220),
           child: TimelineTile(
             alignment: TimelineAlign.manual,
             lineXY: 0.9,
@@ -139,7 +139,7 @@ class _MilestoneScreenState extends State<MilestoneScreen> {
                   ],
                 ),
                 child: Padding(
-                  padding: getPadding(left: 5, right: 5, top: 8, bottom: 8),
+                  padding: getPadding(left: 20, right: 20, top: 8, bottom: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -261,7 +261,7 @@ class _MilestoneScreenState extends State<MilestoneScreen> {
                   ],
                 ),
                 child: Padding(
-                  padding: getPadding(left: 5, right: 5, top: 8, bottom: 8),
+                  padding: getPadding(left: 20, right: 20, top: 8, bottom: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

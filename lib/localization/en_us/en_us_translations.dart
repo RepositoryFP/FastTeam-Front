@@ -78,6 +78,7 @@ final Map<String, String> enUs = {
   "lbl_card_number": "Card Number",
   "lbl_city_selcetion": "City Selcetion",
   "lbl_password": "Password",
+  "lbl_change_password": "Change Password",
   "lbl_ace_car_wash": "Ace Car Wash",
   "lbl_30_00": "\$30.00",
   "msg_all_cities_a_z": "All Cities (A-Z)",

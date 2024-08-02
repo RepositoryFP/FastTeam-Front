@@ -5,6 +5,7 @@ import 'package:fastteam_app/presentation/inbox_screen/models/inbox_model.dart';
 import 'package:fastteam_app/presentation/inbox_screen/widget/inbox_detail_screen.dart';
 import 'package:fastteam_app/widgets/custom_button.dart';
 import 'package:fastteam_app/widgets/custom_floating_edit_text.dart';
+import 'package:fastteam_app/widgets/custom_refresh_widget.dart';
 import 'package:flutter/services.dart';
 
 import 'package:fastteam_app/core/app_export.dart';
@@ -35,7 +36,9 @@ class _InboxScreenState extends State<InboxScreen> {
     super.initState();
     controller.getNotificationList();
   }
-
+  Future refreshItem() async {
+   controller.getNotificationList();
+  }
   // Future markAllAsRead() async {
   //   var result =
   //       await inboxController!.requestReadAllNotification(userId.toString());
@@ -193,14 +196,17 @@ class _InboxScreenState extends State<InboxScreen> {
       if (controller.notifications.isEmpty) {
         return _noNotifications();
       }
-      return Padding(
-        padding: getPadding(right: 10, left: 10),
-        child: ListView.builder(
-          padding: getPadding(top: 16),
-          itemCount: controller.notifications.length,
-          itemBuilder: (context, index) {
-            return _buildNotificationItem(controller.notifications[index]);
-          },
+      return RefreshWidget(
+        onRefresh: refreshItem,
+        child: Padding(
+          padding: getPadding(right: 10, left: 10),
+          child: ListView.builder(
+            padding: getPadding(top: 16),
+            itemCount: controller.notifications.length,
+            itemBuilder: (context, index) {
+              return _buildNotificationItem(controller.notifications[index]);
+            },
+          ),
         ),
       );
     });
@@ -239,6 +245,7 @@ class _InboxScreenState extends State<InboxScreen> {
             ? Icon(Icons.check_circle, color: Colors.green)
             : Icon(Icons.check_circle_outline),
         onTap: () async {
+          controller.changeStatusInbox(notification.id!);
           await Navigator.push(
             context,
             MaterialPageRoute(

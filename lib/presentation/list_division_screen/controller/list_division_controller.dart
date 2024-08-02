@@ -7,6 +7,7 @@ import 'package:fastteam_app/presentation/home_page/models/home_model.dart';
 import 'package:fastteam_app/presentation/home_page/models/list_employee_absent_model.dart';
 import 'package:fastteam_app/presentation/inbox_screen/models/inbox_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListDivisionController extends GetxController {
@@ -50,11 +51,11 @@ class ListDivisionController extends GetxController {
       var token = prefs.getString('token');
       var idDivisi = prefs.getInt('user-id_divisi');
       isLoading.value = true;
-
+      final date = tanggal.toString().split(' ')[0];
       http.Response response;
       if (idDivisi! > 0) {
         response = await controller.retrieveUserAbsenDateDivisi(
-            token, tanggal, idDivisi);
+            token, date, idDivisi);
       } else {
         response = await controller.retrieveUserAbsenOnly(token);
       }
@@ -68,7 +69,7 @@ class ListDivisionController extends GetxController {
           filteredEmployees.value = responseModel.value.details.data;
         
           // Set isDataLoaded to true after successfully fetching the data
-          isDataLoaded.value = true; // Add this line
+         
         } else {
           // Handle error response
           print('Error: ${result['details']}');

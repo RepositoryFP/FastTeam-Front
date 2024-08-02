@@ -18,9 +18,13 @@ import 'package:fastteam_app/presentation/milestone_screen/binding/milestone_bin
 import 'package:fastteam_app/presentation/milestone_screen/milestone_screen.dart';
 import 'package:fastteam_app/presentation/overtime_screen/binding/Employee_binding.dart';
 import 'package:fastteam_app/presentation/overtime_screen/overtime_screen.dart';
+import 'package:fastteam_app/presentation/payroll_info_screen/binding/payroll_info_binding.dart';
+import 'package:fastteam_app/presentation/payroll_info_screen/payroll_info_screen.dart';
 import 'package:fastteam_app/presentation/payslip_screen/binding/payslip_binding.dart';
 import 'package:fastteam_app/presentation/payslip_screen/payslip_screen.dart';
 import 'package:fastteam_app/presentation/payslip_screen/widget/payslip_validation.dart';
+import 'package:fastteam_app/presentation/sertificate_screen/binding/sertificate_binding.dart';
+import 'package:fastteam_app/presentation/sertificate_screen/sertificate_screen.dart';
 import 'package:fastteam_app/presentation/splash_screen/splash_screen.dart';
 import 'package:fastteam_app/presentation/splash_screen/binding/splash_binding.dart';
 import 'package:fastteam_app/presentation/onboarding_1_screen/onboarding_1_screen.dart';
@@ -231,6 +235,10 @@ class AppRoutes {
   static const String overtimeApproval = '/overtime_approval';
 
   static const String listDivision = '/list_division';
+
+  static const String payrollInfo = '/payroll_info';
+
+  static const String sertificate = '/sertificate';
 
   static List<GetPage> pages = [
     GetPage(
@@ -572,6 +580,22 @@ class AppRoutes {
       page: () => ListDivisionScreen(),
       bindings: [
         ListDivisionBinding(),
+      ],
+    ),
+
+    GetPage(
+      name: payrollInfo,
+      page: () => PayrollInfoScreen(),
+      bindings: [
+        PayrollInfoBinding(),
+      ],
+    ),
+    
+    GetPage(
+      name: sertificate,
+      page: () => SertificateScreen(),
+      bindings: [
+        SertificateBinding(),
       ],
     ),
   ];

@@ -159,8 +159,7 @@ class AttendenceLogController extends GetxController {
 
       final data = await getAbsentData(_selectedDate);
       final totalData = await getTotalData(_selectedDate);
-      print(data);
-      // prettyPrintJson(data);
+     
       dataAbsent = data;
 
       absenCount = totalData['details']['absen'];
@@ -169,7 +168,7 @@ class AttendenceLogController extends GetxController {
       noClockInCount = totalData['details']['no_clock_in'];
       noClockOutCount = totalData['details']['no_clock_out'];
 
-      isDataLoaded.value = true;
+      
     } catch (e) {
       print('Error occurred: $e');
       throw Exception('Failed to load employee data');
