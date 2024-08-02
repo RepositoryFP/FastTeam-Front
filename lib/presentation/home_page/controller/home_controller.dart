@@ -15,7 +15,6 @@ class HomeController extends GetxController {
   HomeController(this.homeModelObj);
 
   Rx<HomeModel> homeModelObj;
-  var accountModel = AccountInformationData();
 
   Rx<int> silderIndex = 0.obs;
   var isLoading = false.obs;
@@ -29,6 +28,7 @@ class HomeController extends GetxController {
 
   String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
+  var accountModel = AccountInformationData();
   var responseModel = EmployeeAbsentResponse(
       status: '0', details: EmployeeAbsentDetails(data: [])).obs;
 
@@ -46,6 +46,9 @@ class HomeController extends GetxController {
   }
 
   void getAccountInformation() async {
+    
+    if (isDataLoaded.value) return;
+
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -54,7 +57,7 @@ class HomeController extends GetxController {
         return;
       }
       isLoading.value = true;
-      if (isDataLoaded.value) return;
+
       var result = await retrieveEmployeeInfo(userEmployeeId);
       var data = Constants().jsonResponse(result);
 
@@ -72,7 +75,14 @@ class HomeController extends GetxController {
           accountInfo = accountModel.accountInformation.isNotEmpty
               ? accountModel.accountInformation[0]
               : null;
-          memberData(currentDate, accountModel.accountInformation[0].id_divisi);
+
+          // Only call memberData if account information is available
+          if (accountInfo != null) {
+            memberData(currentDate, accountInfo!.id_divisi);
+          }
+
+          // Set isDataLoaded to true after successfully fetching the data
+          isDataLoaded.value = true;
         } else {
           print('Details is not a map.');
           throw Exception('Failed to load branch data');
@@ -169,6 +179,9 @@ class HomeController extends GetxController {
   }
 
   void getListBelumAbsen(String tanggal, int idDivisi) async {
+    // Early return if data is already loaded
+    if (isDataLoaded.value) return;
+
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var token = prefs.getString('token');
@@ -181,13 +194,16 @@ class HomeController extends GetxController {
         response = await retrieveUserAbsenOnly(token);
       }
 
-      // Cek status code response terlebih dahulu
+      // Check the status code of the response
       if (response.statusCode == 200) {
-        // Parse JSON dari response body
+        // Parse JSON from the response body
         var result = jsonDecode(response.body);
         if (result['status'] == 'success') {
           responseModel.value = EmployeeAbsentResponse.fromJson(result);
           filteredEmployees.value = responseModel.value.details.data;
+
+          // Set isDataLoaded to true after successfully fetching the data
+          isDataLoaded.value = true; // Add this line
         } else {
           // Handle error response
           print('Error: ${result['details']}');

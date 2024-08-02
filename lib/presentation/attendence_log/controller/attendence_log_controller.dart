@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fastteam_app/core/app_export.dart';
 import 'package:fastteam_app/core/network/base_url.dart';
 import 'package:intl/intl.dart';
@@ -64,7 +66,7 @@ class AttendenceLogController extends GetxController {
                   .hasMatch(rawTimeMasuk)) {
             dateTimeMasuk = DateTime.parse(rawTimeMasuk).toLocal();
           }
-          
+
           final String jamMasuk = dateTimeMasuk != null
               ? DateFormat.Hm().format(dateTimeMasuk)
               : '--:--';
@@ -123,8 +125,7 @@ class AttendenceLogController extends GetxController {
   }
 
   retriveTotalData(token, userId, date) async {
-    var path =
-        "${BaseServer.serverUrl}/log-absen/detail-total/$userId/$date/";
+    var path = "${BaseServer.serverUrl}/log-absen/detail-total/$userId/$date/";
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -149,26 +150,36 @@ class AttendenceLogController extends GetxController {
     return Constants().jsonResponse(totalData);
   }
 
-  loadDataForSelectedMonth(_selectedDate) async {
+  Future<void> loadDataForSelectedMonth(DateTime _selectedDate) async {
+    print(isDataLoaded.value);
+    if (isDataLoaded.value) return;
+
     try {
-      if (isDataLoaded.value) return;
       isLoading.value = true;
+
       final data = await getAbsentData(_selectedDate);
       final totalData = await getTotalData(_selectedDate);
-      
+      prettyPrintJson(data);
       dataAbsent = data;
-      
+
       absenCount = totalData['details']['absen'];
       lateClockInCount = totalData['details']['late_clock_in'];
       earlyClockOutCount = totalData['details']['early_clock_out'];
       noClockInCount = totalData['details']['no_clock_in'];
       noClockOutCount = totalData['details']['no_clock_out'];
 
-    }catch (e) {
+      isDataLoaded.value = true;
+    } catch (e) {
       print('Error occurred: $e');
       throw Exception('Failed to load employee data');
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void prettyPrintJson(List<Map<String, dynamic>> jsonList) {
+    const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+    String prettyJson = encoder.convert(jsonList);
+    print(prettyJson);
   }
 }

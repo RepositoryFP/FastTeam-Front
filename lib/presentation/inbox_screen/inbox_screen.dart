@@ -2,6 +2,7 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:fastteam_app/presentation/employee_screen/controller/employee_controller.dart';
 import 'package:fastteam_app/presentation/inbox_screen/controller/inbox_controller.dart';
 import 'package:fastteam_app/presentation/inbox_screen/models/inbox_model.dart';
+import 'package:fastteam_app/presentation/inbox_screen/widget/inbox_detail_screen.dart';
 import 'package:fastteam_app/widgets/custom_button.dart';
 import 'package:fastteam_app/widgets/custom_floating_edit_text.dart';
 import 'package:flutter/services.dart';
@@ -20,7 +21,7 @@ class InboxScreen extends StatefulWidget {
 }
 
 class _InboxScreenState extends State<InboxScreen> {
-  final InboxController controller = Get.find();
+  final InboxController controller = Get.put(InboxController());
   List<DateTime?> _dates = [];
   List<String> day = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
   String absenType = 'Clock In';
@@ -114,13 +115,13 @@ class _InboxScreenState extends State<InboxScreen> {
         padding: getPadding(top: 16),
         children: [
           menuOption(() {
-            Get.toNamed(AppRoutes.profileDetailsScreen);
+            Get.toNamed(AppRoutes.attendenceApproval);
           }, ImageConstant.imgClock, "Attendance".tr),
           menuOption(() {
-            Get.toNamed(AppRoutes.profileDetailsScreen);
+            Get.toNamed(AppRoutes.leaveApproval);
           }, ImageConstant.imgDate, "Leave".tr),
           menuOption(() {
-            Get.toNamed(AppRoutes.profileDetailsScreen);
+            Get.toNamed(AppRoutes.overtimeApproval);
           }, ImageConstant.imgOvertime, "Overtime".tr),
         ],
       ),
@@ -206,23 +207,48 @@ class _InboxScreenState extends State<InboxScreen> {
   }
 
   Widget _buildNotificationItem(NotificationModel notification) {
-    print(notification.sender?.photo);
     return Container(
-      height: getVerticalSize(40),
-      width: getHorizontalSize(double.infinity),
-      color: ColorConstant.amber700,
+      margin: getMargin(top: 5, bottom: 5),
+      decoration: BoxDecoration(
+          border: Border.all(
+              width: getHorizontalSize(1), color: ColorConstant.indigo800),
+          borderRadius:
+              BorderRadius.all(Radius.circular(getHorizontalSize(10)))),
+      child: ListTile(
+        leading: CustomImageView(
+          url: notification.sender!.photo,
+          height: getSize(50),
+          width: getSize(50),
+          radius: BorderRadius.circular(
+            getHorizontalSize(60),
+          ),
+          color: ColorConstant.gray300,
+        ),
+        title: Padding(
+          padding: getPadding(bottom: 5),
+          child: Text(
+            notification.title ?? 'No Title',
+            style: AppStyle.txtHeadline,
+          ),
+        ),
+        subtitle: Text(
+          notification.message ?? 'No Message',
+          style: AppStyle.txtFootnote,
+        ),
+        trailing: notification.isRead == true
+            ? Icon(Icons.check_circle, color: Colors.green)
+            : Icon(Icons.check_circle_outline),
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  InboxDetailScreen(notificationId: notification.id!),
+            ),
+          );
+        },
+      ),
     );
-    // return ListTile(
-    //   onTap: () {},
-    //   leading: CustomImageView(
-    //     url: notification.sender?.photo,
-    //     height: getSize(50),
-    //     width: getSize(50),
-    //     radius: BorderRadius.circular(getHorizontalSize(60)),
-    //     alignment: Alignment.center,
-    //   ),
-    //   title: Text(notification.sender?.name ?? ''),
-    // );
   }
 
   Widget _noNotifications() {

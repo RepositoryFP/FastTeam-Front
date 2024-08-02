@@ -6,7 +6,6 @@ import 'package:fastteam_app/widgets/custom_image_view.dart';
 import 'package:flutter/material.dart';
 
 Widget listDivision(BuildContext context, RxList<EmployeeAbsent> memberData) {
-  
   return Container(
     width: double.maxFinite,
     child: Container(
@@ -25,7 +24,11 @@ Widget listDivision(BuildContext context, RxList<EmployeeAbsent> memberData) {
                     textAlign: TextAlign.left,
                     style: AppStyle.txtHeadline),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Get.toNamed(
+                      AppRoutes.listDivision,
+                    );
+                  },
                   child: Padding(
                     padding: getPadding(bottom: 2),
                     child: Text("lbl_view_all".tr,

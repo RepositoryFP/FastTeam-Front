@@ -20,12 +20,12 @@ class SplashController extends GetxController {
     Timer(const Duration(seconds: 3), () {
       print("is intro ====== ${isIntro}");
       print("isSignIn ====== ${isSignIn}");
-      // if (isSignIn || isIntro) {
-      //   Get.toNamed(AppRoutes.logInScreen);
-      // } else {
+      if (isSignIn) {
+        Get.toNamed(AppRoutes.logInScreen);
+      } else {
       Get.toNamed(AppRoutes.homeContainerScreen);
 
-      // }
+      }
     });
   }
 
