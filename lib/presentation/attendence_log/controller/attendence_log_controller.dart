@@ -151,7 +151,7 @@ class AttendenceLogController extends GetxController {
   }
 
   Future<void> loadDataForSelectedMonth(DateTime _selectedDate) async {
-    print(isDataLoaded.value);
+    
     if (isDataLoaded.value) return;
 
     try {
@@ -159,7 +159,8 @@ class AttendenceLogController extends GetxController {
 
       final data = await getAbsentData(_selectedDate);
       final totalData = await getTotalData(_selectedDate);
-      prettyPrintJson(data);
+      print(data);
+      // prettyPrintJson(data);
       dataAbsent = data;
 
       absenCount = totalData['details']['absen'];
