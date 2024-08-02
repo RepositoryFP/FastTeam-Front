@@ -10,6 +10,7 @@ class InboxController extends GetxController {
   String serchingText = "";
 
   var notifications = <NotificationModel>[].obs;
+  var notificationDetail = <NotificationModel>[].obs;
   var isLoading = false.obs;
 
   @override
@@ -50,7 +51,7 @@ class InboxController extends GetxController {
       if (token != null && userId != null) {
         var result = await retrieveNotificationList(userId, token);
         var response = Constants().jsonResponse(result);
-        
+
         var notificationsList = (response['details'] as List)
             .map((data) => NotificationModel.fromJson(data))
             .toList();
@@ -62,4 +63,26 @@ class InboxController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  NotificationModel? getNotificationById(int id) {
+    try {
+      return notifications.firstWhere((notification) => notification.id == id);
+    } catch (e) {
+      print('Notification with id $id not found');
+      return null; // Return null if not found
+    }
+  }
+
+  void displayNotification(int id) {
+    NotificationModel? notification = getNotificationById(id);
+    notificationDetail.clear();
+    if (notification != null) {
+      notificationDetail.add(notification);
+      print('Found notification: ${notificationDetail}');
+    } else {
+      print('No notification found');
+    }
+  }
+
+  
 }

@@ -155,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Get.toNamed(AppRoutes.profileDetailsScreen);
                             }, ImageConstant.imgpayroll, "Payroll Info".tr),
                             profileOption(() {
-                              Get.toNamed(AppRoutes.profileDetailsScreen);
+                              Get.toNamed(AppRoutes.resetPasswordScreen);
                             }, ImageConstant.imgLock, "Change Password".tr),
                             profileOption(() {
                               showDialog(

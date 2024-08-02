@@ -1,3 +1,4 @@
+import 'package:fastteam_app/core/app_export.dart';
 import 'package:fastteam_app/core/utils/color_constant.dart';
 import 'package:fastteam_app/core/utils/image_constant.dart';
 import 'package:fastteam_app/core/utils/size_utils.dart';
@@ -27,16 +28,6 @@ class _MilestoneScreenState extends State<MilestoneScreen> {
     super.initState();
     controller.retrieveJobHistory();
   }
-
-  // initData() async {
-  //   milestoneController = Get.put(MilestoneController());
-  //   var result = await milestoneController!.retrieveJobHistory();
-
-  //   setState(() {
-  //     arrayData = result['details'];
-  //     isLoading = false;
-  //   });
-  // }
 
   List<Color> colors = [Colors.purple, Colors.red, Colors.yellow, Colors.green];
   int currentIndex = 0;
@@ -155,42 +146,69 @@ class _MilestoneScreenState extends State<MilestoneScreen> {
                       Center(
                         child: Text(
                           date,
+                          style: AppStyle.txtOutfitBold20,
                         ),
                       ),
-                      SizedBox(height: getVerticalSize(5)),
                       Text(
                         name != null ? name : '',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: AppStyle.txtSFProDisplaySemibold18,
                       ),
                       Text(
                         title ?? 'Judul Tidak Ada',
+                        style: AppStyle.txtSFProDisplaySemibold18,
                       ),
-                      SizedBox(height: getVerticalSize(10)),
-                      Row(children: [
-                        Column(
+                      Padding(
+                        padding: getPadding(top: 8),
+                        child: Column(
                           children: [
-                            const Icon(Icons.work),
-                            SizedBox(height: getVerticalSize(2)),
-                            Icon(MdiIcons.sitemap),
-                            SizedBox(height: getVerticalSize(2)),
-                            Icon(MdiIcons.cashMultiple),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: getPadding(right: 10),
+                                  child: Icon(
+                                    Icons.work,
+                                    size: getFontSize(24),
+                                  ),
+                                ),
+                                Text(
+                                  job,
+                                  style: AppStyle.txtSFProDisplayRegular20,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: getPadding(right: 10),
+                                  child: Icon(
+                                    MdiIcons.sitemap,
+                                    size: getFontSize(24),
+                                  ),
+                                ),
+                                Text(
+                                  position,
+                                  style: AppStyle.txtSFProDisplayRegular20,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: getPadding(right: 10),
+                                  child: Icon(
+                                    MdiIcons.cashMultiple,
+                                    size: getFontSize(24),
+                                  ),
+                                ),
+                                Text(
+                                  salary,
+                                  style: AppStyle.txtSFProDisplayRegular20,
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                        SizedBox(
-                          width: getHorizontalSize(5),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          // mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(job),
-                            SizedBox(height: getVerticalSize(5)),
-                            Text(position),
-                            SizedBox(height: getVerticalSize(5)),
-                            Text(salary),
-                          ],
-                        ),
-                      ]),
+                      )
                     ],
                   ),
                 )),
@@ -250,44 +268,69 @@ class _MilestoneScreenState extends State<MilestoneScreen> {
                       Center(
                         child: Text(
                           date,
+                          style: AppStyle.txtOutfitBold20,
                         ),
                       ),
-                      SizedBox(height: getVerticalSize(5)),
                       Text(
                         name != null ? name : '',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: AppStyle.txtSFProDisplaySemibold18,
                       ),
                       Text(
                         title ?? 'Judul Tidak Ada',
+                        style: AppStyle.txtSFProDisplaySemibold18,
                       ),
-                      SizedBox(
-                        height: getVerticalSize(10),
-                      ),
-                      Row(children: [
-                        Column(
+                      Padding(
+                        padding: getPadding(top: 8),
+                        child: Column(
                           children: [
-                            const Icon(Icons.work),
-                            SizedBox(height: getVerticalSize(2)),
-                            Icon(MdiIcons.sitemap),
-                            SizedBox(height: getVerticalSize(2)),
-                            Icon(MdiIcons.cashMultiple),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: getPadding(right: 10),
+                                  child: Icon(
+                                    Icons.work,
+                                    size: getFontSize(24),
+                                  ),
+                                ),
+                                Text(
+                                  job,
+                                  style: AppStyle.txtSFProDisplayRegular20,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: getPadding(right: 10),
+                                  child: Icon(
+                                    MdiIcons.sitemap,
+                                    size: getFontSize(24),
+                                  ),
+                                ),
+                                Text(
+                                  position,
+                                  style: AppStyle.txtSFProDisplayRegular20,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: getPadding(right: 10),
+                                  child: Icon(
+                                    MdiIcons.cashMultiple,
+                                    size: getFontSize(24),
+                                  ),
+                                ),
+                                Text(
+                                  salary,
+                                  style: AppStyle.txtSFProDisplayRegular20,
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                        SizedBox(
-                          width: getHorizontalSize(5),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          // mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(job),
-                            SizedBox(height: getVerticalSize(5)),
-                            Text(position),
-                            SizedBox(height: getVerticalSize(5)),
-                            Text(salary),
-                          ],
-                        ),
-                      ]),
+                      )
                     ],
                   ),
                 )),
@@ -315,28 +358,28 @@ class _MilestoneScreenState extends State<MilestoneScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Container(
-            width: 200, // Adjust width as needed
-            height: 200, // Adjust height as needed
+            width: getVerticalSize(200), // Adjust width as needed
+            height: getHorizontalSize(200), // Adjust height as needed
             decoration: BoxDecoration(
               color: Colors.blue[100], // Adjust color as needed
               borderRadius: BorderRadius.circular(
-                  100), // Half the height for an oval shape
+                  getHorizontalSize(100)), // Half the height for an oval shape
             ),
-            child: const Center(
+            child: Center(
               child: Icon(
                 Icons.update,
-                size: 100.0,
+                size: getFontSize(100),
                 color: Colors.blue,
               ),
             ),
           ),
-          const SizedBox(
-            height: 16.0,
+          SizedBox(
+            height: getVerticalSize(16),
           ),
-          const Text(
+          Text(
             'There is no data',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: getFontSize(18),
             ),
           )
         ],

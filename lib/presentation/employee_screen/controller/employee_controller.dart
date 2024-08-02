@@ -15,18 +15,28 @@ class EmployeeController extends GetxController {
   String searchingText = "";
 
   @override
-  void onReady() {
-    super.onReady();
-    retrieveEmployeeList(); // Fetch the employee list when the controller is ready
+  void onInit() {
+    super.onInit();
+    resetData();
+    retrieveEmployeeList();
   }
 
   @override
   void onClose() {
     super.onClose();
+    resetData();
   }
 
-  void setSerching(String value) {
-    print(value);
+  void resetData() {
+    searchingText = "";
+    isDataLoaded.value = false; // Ensure data is marked as not loaded
+    filteredEmployees.clear(); // Clear the filtered list
+    responseModel.value = ResponseModel(
+        status: 0,
+        details: Details(status: '', data: [])); // Reset response model
+  }
+
+  void setSearching(String value) {
     searchingText = value;
     updateFilteredEmployees(); // Update filtered employees when searching text changes
     update(); // Update UI
@@ -50,7 +60,6 @@ class EmployeeController extends GetxController {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
       isLoading.value = true;
-      if (isDataLoaded.value) return;
 
       var token = prefs.getString('token');
       if (token == null) {
@@ -81,10 +90,13 @@ class EmployeeController extends GetxController {
 
   void updateFilteredEmployees() {
     if (searchingText.isEmpty) {
-      filteredEmployees.value = List.from(responseModel.value.details.data); // Ensure a fresh copy
+      filteredEmployees.value =
+          List.from(responseModel.value.details.data); // Ensure a fresh copy
     } else {
       filteredEmployees.value = responseModel.value.details.data
-          .where((user) => user.nama.value.toLowerCase().contains(searchingText.toLowerCase()))
+          .where((user) => user.nama.value
+              .toLowerCase()
+              .contains(searchingText.toLowerCase()))
           .toList(); // Ensure toList() is called
     }
   }

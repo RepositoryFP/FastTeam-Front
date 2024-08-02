@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
     );
     super.initState();
     controller.getAccountInformation();
-    // controller.getListBelumAbsen('', 0);
+    controller.getListBelumAbsen('', 0);
   }
 
   @override

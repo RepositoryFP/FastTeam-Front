@@ -2,12 +2,22 @@ import 'package:fastteam_app/presentation/attendence_log/attendence_log_screen.d
 import 'package:fastteam_app/presentation/attendence_log/binding/attendence_detail_binding.dart';
 import 'package:fastteam_app/presentation/attendence_log/binding/attendence_log_binding.dart';
 import 'package:fastteam_app/presentation/attendence_log/component/detail_attendence.dart';
+import 'package:fastteam_app/presentation/attendence_screen/attendence_screen.dart';
+import 'package:fastteam_app/presentation/attendence_screen/binding/attendence_binding.dart';
 import 'package:fastteam_app/presentation/camera_screen/binding/camera_binding.dart';
 import 'package:fastteam_app/presentation/camera_screen/camera_screen.dart';
+import 'package:fastteam_app/presentation/inbox_screen/binding/request_binding.dart';
+import 'package:fastteam_app/presentation/inbox_screen/widget/inbox_detail_screen.dart';
+import 'package:fastteam_app/presentation/leave_screen/binding/Leave_binding.dart';
+import 'package:fastteam_app/presentation/leave_screen/leave_screen.dart';
+import 'package:fastteam_app/presentation/list_division_screen/binding/list_division_binding.dart';
+import 'package:fastteam_app/presentation/list_division_screen/list_division_screen.dart';
 import 'package:fastteam_app/presentation/map_screen/binding/map_binding.dart';
 import 'package:fastteam_app/presentation/map_screen/map_screen.dart';
 import 'package:fastteam_app/presentation/milestone_screen/binding/milestone_binding.dart';
 import 'package:fastteam_app/presentation/milestone_screen/milestone_screen.dart';
+import 'package:fastteam_app/presentation/overtime_screen/binding/Employee_binding.dart';
+import 'package:fastteam_app/presentation/overtime_screen/overtime_screen.dart';
 import 'package:fastteam_app/presentation/payslip_screen/binding/payslip_binding.dart';
 import 'package:fastteam_app/presentation/payslip_screen/payslip_screen.dart';
 import 'package:fastteam_app/presentation/payslip_screen/widget/payslip_validation.dart';
@@ -211,6 +221,16 @@ class AppRoutes {
   static const String payslip = '/payslip';
 
   static const String milestone = '/milestone';
+
+  static const String inbox = '/inbox';
+
+  static const String attendenceApproval = '/attendence_approval';
+
+  static const String leaveApproval = '/leave_approval';
+
+  static const String overtimeApproval = '/overtime_approval';
+
+  static const String listDivision = '/list_division';
 
   static List<GetPage> pages = [
     GetPage(
@@ -484,7 +504,7 @@ class AppRoutes {
         MapBinding(),
       ],
     ),
-   
+
     GetPage(
       name: camera,
       page: () => CameraScreen(),
@@ -520,6 +540,38 @@ class AppRoutes {
       page: () => MilestoneScreen(),
       bindings: [
         MilestoneBinding(),
+      ],
+    ),
+
+    GetPage(
+      name: attendenceApproval,
+      page: () => AttendenceScreen(),
+      bindings: [
+        AttendenceBinding(),
+      ],
+    ),
+
+    GetPage(
+      name: leaveApproval,
+      page: () => LeaveScreen(),
+      bindings: [
+        LeaveBinding(),
+      ],
+    ),
+
+    GetPage(
+      name: overtimeApproval,
+      page: () => OvertimeScreen(),
+      bindings: [
+        OvertimeBinding(),
+      ],
+    ),
+
+    GetPage(
+      name: listDivision,
+      page: () => ListDivisionScreen(),
+      bindings: [
+        ListDivisionBinding(),
       ],
     ),
   ];

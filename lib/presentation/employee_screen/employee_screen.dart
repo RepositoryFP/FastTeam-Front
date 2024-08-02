@@ -26,6 +26,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
           statusBarIconBrightness: Brightness.dark),
     );
     super.initState();
+    controller.resetData();
     controller.retrieveEmployeeList();
   }
 
@@ -108,10 +109,10 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                   child: Column(
                     children: [
                       Padding(
-                        padding: getPadding(left: 10, right: 10, bottom: 20),
+                        padding: getPadding(left: 18, right: 18, bottom: 20),
                         child: CustomSearchView(
                           onChanged: (value) {
-                            controller.setSerching(value);
+                            controller.setSearching(value);
                           },
                           focusNode: FocusNode(),
                           hintText: "Search".tr,
@@ -188,45 +189,42 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                     ),
                   ],
                 ),
-                Row(children: [
-                  Container(
-                    child: Row(
-                      children: [
-                        // Text('${datalist['clock_in']}')
-                        IconButton(
-                          icon: Icon(Icons.phone,
-                              size: getFontSize(24),
-                              color: ColorConstant.indigo800),
-                          onPressed: () {
-                            _launchPhone(wa.toString().substring(1));
-                          },
-                        ),
-                        SizedBox(width: getHorizontalSize(5)),
-                        IconButton(
-                          icon: Icon(Icons.email,
-                              size: getFontSize(24),
-                              color: ColorConstant.indigo800),
-                          onPressed: () {
-                            _launchMail(email);
-                          },
-                        ),
-                        SizedBox(width: getHorizontalSize(5)),
-                        IconButton(
-                          icon: ImageIcon(
-                            const AssetImage(
-                              'assets/fastteam_image/whatsapp.png',
-                            ),
-                            color: ColorConstant.green600,
+                Container(
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.phone,
                             size: getFontSize(24),
+                            color: ColorConstant.indigo800),
+                        onPressed: () {
+                          _launchPhone(wa.toString().substring(1));
+                        },
+                      ),
+                      // SizedBox(width: getHorizontalSize(5)),
+                      IconButton(
+                        icon: Icon(Icons.email,
+                            size: getFontSize(24),
+                            color: ColorConstant.indigo800),
+                        onPressed: () {
+                          _launchMail(email);
+                        },
+                      ),
+                      // SizedBox(width: getHorizontalSize(5)),
+                      IconButton(
+                        icon: ImageIcon(
+                          const AssetImage(
+                            'assets/fastteam_image/whatsapp.png',
                           ),
-                          onPressed: () {
-                            _launchWhatsapp(wa.toString().substring(1));
-                          },
+                          color: ColorConstant.green600,
+                          size: getFontSize(24),
                         ),
-                      ],
-                    ),
+                        onPressed: () {
+                          _launchWhatsapp(wa.toString().substring(1));
+                        },
+                      ),
+                    ],
                   ),
-                ])
+                )
               ],
             ),
           ),
