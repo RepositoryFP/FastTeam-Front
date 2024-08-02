@@ -181,7 +181,7 @@ class HomeController extends GetxController {
   void getListBelumAbsen(String tanggal, int idDivisi) async {
     // Early return if data is already loaded
     if (isDataLoaded.value) return;
-
+    print(idDivisi);
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var token = prefs.getString('token');

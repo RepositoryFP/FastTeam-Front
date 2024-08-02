@@ -39,21 +39,26 @@ class CameraScreenState extends State<CameraScreen> {
 
   HomeController controller = Get.put(HomeController(HomeModel().obs));
 
-  final CameraDescription camera = const CameraDescription(
-    name: '1',
-    lensDirection: CameraLensDirection.front,
-    sensorOrientation: 270,
-  );
-
   @override
   void initState() {
     super.initState();
+    _initializeCamera();
+    controller.getAccountInformation();
+  }
+
+  Future<void> _initializeCamera() async {
+    final cameras = await availableCameras();
+    final frontCamera = cameras.firstWhere(
+      (camera) => camera.lensDirection == CameraLensDirection.front,
+    );
+
     _controller = CameraController(
-      camera,
+      frontCamera,
       ResolutionPreset.high,
     );
+
     _initializeControllerFuture = _controller.initialize();
-     controller.getAccountInformation();
+    setState(() {});
   }
 
   @override

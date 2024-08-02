@@ -2,6 +2,7 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:fastteam_app/core/app_export.dart';
 import 'package:fastteam_app/core/utils/image_constant.dart';
 import 'package:fastteam_app/core/utils/size_utils.dart';
+import 'package:fastteam_app/presentation/list_division_screen/controller/list_division_controller.dart';
 import 'package:fastteam_app/widgets/app_bar/appbar_image.dart';
 import 'package:fastteam_app/widgets/app_bar/appbar_title.dart';
 import 'package:fastteam_app/widgets/app_bar/custom_app_bar.dart';
@@ -25,12 +26,12 @@ class _ListDivisionScreenState extends State<ListDivisionScreen> {
   List<DateTime?> _dates = [];
   List<DateTime?> _dates_absent = [];
   ListDivisionController controller = Get.put(ListDivisionController());
-  
+
   List<dynamic>? dataMember;
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // initData();
+  void initState() {
+    super.initState();
+    controller.getListBelumAbsen(DateTime.now().toString());
   }
 
   // initData() async {
@@ -89,29 +90,40 @@ class _ListDivisionScreenState extends State<ListDivisionScreen> {
   }
 
   Widget _listMember() {
-    return Container(
-      margin: getMargin(left: 10, right: 10),
-      child: DraggableScrollableSheet(
-        initialChildSize: 0.3,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (context, ScrollController scrollController) => ClipRRect(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(getHorizontalSize(25)),
-            topRight: Radius.circular(getHorizontalSize(25)),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: ColorConstant.whiteA700,
-              border: Border.all(
-                color: ColorConstant.gray300, // Border color
-                width: 2.0, // Border width
-              ),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(getHorizontalSize(25)),
-                topRight: Radius.circular(getHorizontalSize(25)),
-              ),
+  return Container(
+    margin: getMargin(left: 10, right: 10),
+    child: DraggableScrollableSheet(
+      initialChildSize: 0.3,
+      minChildSize: 0.3,
+      maxChildSize: 0.8,
+      builder: (context, ScrollController scrollController) => ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(getHorizontalSize(25)),
+          topRight: Radius.circular(getHorizontalSize(25)),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: ColorConstant.whiteA700,
+            border: Border.all(
+              color: ColorConstant.gray300, // Border color
+              width: 2.0, // Border width
             ),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(getHorizontalSize(25)),
+              topRight: Radius.circular(getHorizontalSize(25)),
+            ),
+          ),
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification notification) {
+              if (notification is ScrollUpdateNotification &&
+                  scrollController.position.pixels <=
+                      scrollController.position.minScrollExtent) {
+                scrollController.position
+                    .jumpTo(scrollController.position.minScrollExtent);
+                return true;
+              }
+              return false;
+            },
             child: ListView(
               controller: scrollController,
               children: [
@@ -162,122 +174,124 @@ class _ListDivisionScreenState extends State<ListDivisionScreen> {
                     ),
                   ],
                 ),
-                // ListView.builder(
-                //   shrinkWrap: true,
-                //   physics: const NeverScrollableScrollPhysics(),
-                //   itemCount: dataMember!.length,
-                //   itemBuilder: (context, index) {
-                //     final employee = dataMember![index];
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: controller.filteredEmployees.length,
+                  itemBuilder: (context, index) {
+                    final employee = controller.filteredEmployees[index];
+                    final clockOut = !employee.jamKeluar.isEmpty
+                        ? employee.jamKeluar.last.jamAbsen
+                        : '00:00';
+                    final clockIn = !employee.jamMasuk.isEmpty
+                        ? employee.jamMasuk[0].jamAbsen
+                        : '00:00';
+                   
 
-                //     final clockOut = !employee['jam_keluar'].isEmpty
-                //         ? employee['jam_keluar'].last['jam_absen']
-                //         : '00:00';
-                //     final clockIn = !employee['jam_masuk'].isEmpty
-                //         ? employee['jam_masuk'][0]['jam_absen']
-                //         : '00:00';
+                    String jamClockIn = '00:00';
+                    if (clockIn != '00:00') {
+                      DateTime dateTimeMasuk =
+                          DateTime.parse(clockIn).toLocal();
+                      jamClockIn =
+                          DateFormat.Hm().format(dateTimeMasuk).toString();
+                    }
 
-                //     String jamClockIn = '00:00';
-                //     if (clockIn != '00:00') {
-                //       DateTime dateTimeMasuk = DateTime.parse(clockIn).toLocal();
-                //       jamClockIn =
-                //           DateFormat.Hm().format(dateTimeMasuk).toString();
-                //     }
+                    String jamClockOut = '00:00';
+                    if (clockOut != '00:00') {
+                      DateTime dateTimeKeluar =
+                          DateTime.parse(clockOut).toLocal();
+                      jamClockOut =
+                          DateFormat.Hm().format(dateTimeKeluar).toString();
+                    }
 
-                //     String jamClockOut = '00:00';
-                //     if (clockOut != '00:00') {
-                //       DateTime dateTimeKeluar =
-                //           DateTime.parse(clockOut).toLocal();
-                //       jamClockOut =
-                //           DateFormat.Hm().format(dateTimeKeluar).toString();
-                //     }
-
-                //     return Column(
-                //       children: [
-                //         Container(
-                //           margin:
-                //               getPadding(left: 16, right: 16, top: 5, bottom: 5),
-                //           child: ListTile(
-                //             contentPadding: getPadding(top: 8, bottom: 8),
-                //             leading: CircleAvatar(
-                //               radius: getHorizontalSize(23),
-                //               backgroundImage: NetworkImage(employee['image']),
-                //             ),
-                //             title: Column(
-                //               crossAxisAlignment: CrossAxisAlignment.start,
-                //               children: [
-                //                 Text(
-                //                   employee['nama'],
-                //                   style: TextStyle(
-                //                     fontWeight: FontWeight.bold,
-                //                     fontSize: getFontSize(16),
-                //                   ),
-                //                 ),
-                //                 Text(
-                //                   employee['divisi'],
-                //                   style: TextStyle(
-                //                     fontWeight: FontWeight.w300,
-                //                     fontSize: getFontSize(12),
-                //                   ),
-                //                 ),
-                //                 Row(
-                //                   children: [
-                //                     Row(
-                //                       children: [
-                //                         Icon(
-                //                           MdiIcons.clockTimeSevenOutline,
-                //                           size: getFontSize(18),
-                //                           color: ColorConstant.green600,
-                //                         ),
-                //                         Text(
-                //                           ' $jamClockIn',
-                //                           style: TextStyle(
-                //                             fontSize: getFontSize(15),
-                //                             color: jamClockIn == '00:00'
-                //                                 ? ColorConstant.red
-                //                                 : ColorConstant.black900,
-                //                           ),
-                //                         ),
-                //                       ],
-                //                     ),
-                //                     SizedBox(width: getHorizontalSize(40)),
-                //                     Row(
-                //                       children: [
-                //                         Icon(
-                //                           MdiIcons.clockTimeFourOutline,
-                //                           size: getFontSize(18),
-                //                           color: ColorConstant.yellow50,
-                //                         ),
-                //                         Text(
-                //                           ' $jamClockOut',
-                //                           style: TextStyle(
-                //                             fontSize: getFontSize(15),
-                //                             color: jamClockOut == '00:00'
-                //                                 ? ColorConstant.red
-                //                                 : ColorConstant.black900,
-                //                           ),
-                //                         ),
-                //                       ],
-                //                     ),
-                //                   ],
-                //                 ),
-                //               ],
-                //             ),
-                //           ),
-                //         ),
-                //         Divider(
-                //           height: getVerticalSize(1),
-                //         )
-                //       ],
-                //     );
-                //   },
-                // ),
+                    return Column(
+                      children: [
+                        Container(
+                          margin: getPadding(
+                              left: 16, right: 16, top: 5, bottom: 5),
+                          child: ListTile(
+                            contentPadding: getPadding(top: 8, bottom: 8),
+                            leading: CircleAvatar(
+                              radius: getHorizontalSize(23),
+                              backgroundImage: NetworkImage(employee.image),
+                            ),
+                            title: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  employee.nama,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: getFontSize(16),
+                                  ),
+                                ),
+                                Text(
+                                  employee.divisi,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: getFontSize(12),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          MdiIcons.clockTimeSevenOutline,
+                                          size: getFontSize(18),
+                                          color: ColorConstant.green600,
+                                        ),
+                                        Text(
+                                          ' $jamClockIn',
+                                          style: TextStyle(
+                                            fontSize: getFontSize(15),
+                                            color: jamClockIn == '00:00'
+                                                ? ColorConstant.red
+                                                : ColorConstant.black900,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(width: getHorizontalSize(40)),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          MdiIcons.clockTimeFourOutline,
+                                          size: getFontSize(18),
+                                          color: ColorConstant.yellow50,
+                                        ),
+                                        Text(
+                                          ' $jamClockOut',
+                                          style: TextStyle(
+                                            fontSize: getFontSize(15),
+                                            color: jamClockOut == '00:00'
+                                                ? ColorConstant.red
+                                                : ColorConstant.black900,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Divider(
+                          height: getVerticalSize(1),
+                        )
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _calendar() {
     return Container(
@@ -372,6 +386,8 @@ class _ListDivisionScreenState extends State<ListDivisionScreen> {
                       value: _dates,
                       onValueChanged: (dates) {
                         _dates_absent = dates;
+                        controller
+                            .getListBelumAbsen(_dates_absent[0].toString());
                       },
                     ),
                   ),
