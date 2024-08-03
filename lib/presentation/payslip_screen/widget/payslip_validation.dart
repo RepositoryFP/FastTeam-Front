@@ -24,6 +24,7 @@ class _PayslipValidationScreen extends State<PayslipValidationScreen> {
 
   LogInController controller = Get.put(LogInController());
   TextEditingController passwordController = TextEditingController();
+  
 
   @override
   void initState() {

@@ -147,7 +147,7 @@ class ResultScreen extends StatelessWidget {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
-                                Get.toNamed(AppRoutes.attendenceLog);
+                                Get.offAndToNamed(AppRoutes.attendenceLog);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,

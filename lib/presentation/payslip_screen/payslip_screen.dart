@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class payslipScreen extends StatefulWidget {
   const payslipScreen({super.key});
@@ -65,19 +66,19 @@ class _payslipScreenState extends State<payslipScreen> {
     });
   }
 
-  // Future<void> download() async {
-  //   PayrollController payrollController = Get.put(PayrollController());
-  //   var result = await payrollController.retriveLinkDownloadPayslip(id_payroll);
-  //   Map<String, dynamic> jsonData = result['details'];
-  //   var url = Uri.parse(jsonData['message']);
-  //   if (!await launchUrl(url)) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text("Download Failed"),
-  //       ),
-  //     );
-  //   }
-  // }
+  Future<void> download() async {
+   
+    var result = await controller.retriveLinkDownloadPayslip();
+    Map<String, dynamic> jsonData = result['details'];
+    var url = Uri.parse(jsonData['message']);
+    if (!await launchUrl(url)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Download Failed"),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,20 +121,20 @@ class _payslipScreenState extends State<payslipScreen> {
                                   SizedBox(
                                     height: getVerticalSize(10),
                                   ),
-                                  // ElevatedButton(
-                                  //     onPressed: () {
-                                  //       // download().then((_) {
-                                  //       //   print('Payslip is downloaded !');
-                                  //       // });
-                                  //     },
-                                  //     style: ElevatedButton.styleFrom(
-                                  //       backgroundColor: Colors.blue[900],
-                                  //       splashFactory: InkSplash.splashFactory,
-                                  //     ),
-                                  //     child: const Text(
-                                  //       'Download Salary Slip',
-                                  //       style: TextStyle(color: Colors.white),
-                                  //     ))
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        download().then((_) {
+                                          print('Payslip is downloaded !');
+                                        });
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue[900],
+                                        splashFactory: InkSplash.splashFactory,
+                                      ),
+                                      child: const Text(
+                                        'Download Salary Slip',
+                                        style: TextStyle(color: Colors.white),
+                                      ))
                                 ],
                               ),
                             ),
