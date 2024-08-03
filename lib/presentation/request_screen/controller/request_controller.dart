@@ -122,7 +122,7 @@ class RequestController extends GetxController {
     }
   }
 
-  submitOvertime(context,date, start_time, end_time, reason) async {
+  submitOvertime(context, date, start_time, end_time, reason) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var userEmployeeId = prefs.getInt('user-id_user');
@@ -173,10 +173,9 @@ class RequestController extends GetxController {
       var token = prefs.getString('token');
 
       var result = await insertLeaveSubmission(requestBody, img, token);
-      print(result.statusCode == 200);
+      
       if (result.statusCode == 200) {
-        
-      return result.statusCode;
+        return result.statusCode;
       } else {
         showSnackBar(context, 'Failed to submit Leave: ${result.toString()}');
         return null;

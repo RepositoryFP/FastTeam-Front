@@ -43,7 +43,12 @@ class PrefUtils {
 
   static getIsSignIn() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(signIn) ?? true;
+    if(prefs.getString('token')!.isNotEmpty && prefs.getBool(signIn)!){
+      return true;
+    }else{
+      return false;
+    }
+    
   }
 
   static storeUserInfo(jsonData) async {
