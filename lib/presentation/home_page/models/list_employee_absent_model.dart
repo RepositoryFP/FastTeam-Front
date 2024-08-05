@@ -5,6 +5,7 @@ class EmployeeAbsentResponse {
   EmployeeAbsentResponse({required this.status, required this.details});
 
   factory EmployeeAbsentResponse.fromJson(Map<String, dynamic> json) {
+    print('test = ${json['data']}');
     return EmployeeAbsentResponse(
       status: json['status'],
       details: EmployeeAbsentDetails.fromJson(json['data']),

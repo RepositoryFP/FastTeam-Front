@@ -35,7 +35,6 @@ class PrefUtils {
     return intValue;
   }
 
-
   static setIsSignIn(bool isFav) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(signIn, isFav);
@@ -43,12 +42,13 @@ class PrefUtils {
 
   static getIsSignIn() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.getString('token')!.isNotEmpty && prefs.getBool(signIn)!){
+    // print(prefs.getString('token')!.isNotEmpty && prefs.getBool(signIn)!)
+    var isSignIn = prefs.getBool(signIn) ?? true;
+    if (isSignIn) {
       return true;
-    }else{
+    } else {
       return false;
     }
-    
   }
 
   static storeUserInfo(jsonData) async {
@@ -76,7 +76,7 @@ class PrefUtils {
 
     await prefs.setString('user-shift', '$clockInTime - $clockOutTime');
   }
-  
+
   static storeJsonUser(jsonData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String jsonString =
@@ -85,11 +85,10 @@ class PrefUtils {
     prefs.setString('jsonUser', jsonString);
   }
 
-  static storeUserToken(jsonData) async{
+  static storeUserToken(jsonData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = json.encode(jsonData).replaceAll('"', '');
     prefs.setString('token', token);
-    
   }
 
   static storeEmployeeInfo(jsonData) async {
@@ -110,5 +109,4 @@ class PrefUtils {
     await prefs.setDouble('user-position_lat', lat);
     await prefs.setDouble('user-position_long', long);
   }
-
 }
