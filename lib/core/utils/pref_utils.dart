@@ -20,7 +20,7 @@ class PrefUtils {
   }
 
   ///will clear all the data stored in preference
-  void clearPreferencesData() async {
+  static clearPreferencesData() async {
     _sharedPreferences!.clear();
   }
 
