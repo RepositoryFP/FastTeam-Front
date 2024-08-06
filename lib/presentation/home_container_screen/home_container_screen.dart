@@ -65,7 +65,7 @@ class _HomeContainerScreenState extends State<HomeContainerScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "msg_are_you_sure_you2".tr,
+                              "Are your sure you want to exit?".tr,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.left,
                               style: AppStyle.txtHeadline,

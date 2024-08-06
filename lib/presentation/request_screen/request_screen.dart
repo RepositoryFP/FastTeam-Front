@@ -314,47 +314,42 @@ class _RequestScreenState extends State<RequestScreen> {
               padding: getPadding(left: 16, right: 16, bottom: 16),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("Time Start".tr,
+                  child: Text("Time Start  -  Time End".tr,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtOutfitBold20)),
             ),
-            Padding(
-                padding: getPadding(left: 16, bottom: 16, right: 16),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: TimePickerSpinnerPopUp(
-                    mode: CupertinoDatePickerMode.time,
-                    initTime: DateTime.now(),
-                    onChange: (dateTime) {
-                      setState(() {
-                        _start_overtime = dateTime;
-                      });
-                    },
-                  ),
-                )),
-            Padding(
-              padding: getPadding(left: 16, right: 16, bottom: 16),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text("Time End".tr,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                      style: AppStyle.txtOutfitBold20)),
+            Row(
+              children: [
+                Padding(
+                    padding: getPadding(left: 16, right: 16),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: TimePickerSpinnerPopUp(
+                        mode: CupertinoDatePickerMode.time,
+                        initTime: DateTime.now(),
+                        onChange: (dateTime) {
+                          setState(() {
+                            _start_overtime = dateTime;
+                          });
+                        },
+                      ),
+                    )),
+                Padding(
+                    padding: getPadding(left: 16, right: 16),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TimePickerSpinnerPopUp(
+                          mode: CupertinoDatePickerMode.time,
+                          initTime: DateTime.now(),
+                          onChange: (dateTime) {
+                            setState(() {
+                              _end_overtime = dateTime;
+                            });
+                          },
+                        ))),
+              ],
             ),
-            Padding(
-                padding: getPadding(left: 16, top: 0, right: 16),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TimePickerSpinnerPopUp(
-                      mode: CupertinoDatePickerMode.time,
-                      initTime: DateTime.now(),
-                      onChange: (dateTime) {
-                        setState(() {
-                          _end_overtime = dateTime;
-                        });
-                      },
-                    ))),
             Padding(
               padding: getPadding(left: 16, right: 16),
               child: Align(
@@ -409,46 +404,44 @@ class _RequestScreenState extends State<RequestScreen> {
               padding: getPadding(left: 16, right: 16, bottom: 16),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("Date".tr,
+                  child: Text("Date & Time".tr,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtOutfitBold20)),
             ),
             Padding(
-                padding: getPadding(left: 16, bottom: 16, right: 16),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TimePickerSpinnerPopUp(
-                      mode: CupertinoDatePickerMode.time,
-                      initTime: DateTime.now(),
-                      onChange: (dateTime) {
-                        setState(() {
-                          _dates_leave = [dateTime];
-                        });
-                      },
-                    ))),
-            Padding(
-              padding: getPadding(left: 16, right: 16, bottom: 16),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text("Time".tr,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                      style: AppStyle.txtOutfitBold20)),
+              padding: getPadding(bottom: 8),
+              child: Row(
+                children: [
+                  Padding(
+                      padding: getPadding(left: 16, right: 16),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: TimePickerSpinnerPopUp(
+                            mode: CupertinoDatePickerMode.date,
+                            initTime: DateTime.now(),
+                            onChange: (dateTime) {
+                              setState(() {
+                                _dates_leave = [dateTime];
+                              });
+                            },
+                          ))),
+                  Padding(
+                      padding: getPadding(left: 16, right: 16),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: TimePickerSpinnerPopUp(
+                            mode: CupertinoDatePickerMode.time,
+                            initTime: DateTime.now(),
+                            onChange: (dateTime) {
+                              setState(() {
+                                _time_leave = dateTime;
+                              });
+                            },
+                          ))),
+                ],
+              ),
             ),
-            Padding(
-                padding: getPadding(left: 16, top: 0, right: 16),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TimePickerSpinnerPopUp(
-                      mode: CupertinoDatePickerMode.time,
-                      initTime: DateTime.now(),
-                      onChange: (dateTime) {
-                        setState(() {
-                          _time_leave = dateTime;
-                        });
-                      },
-                    ))),
             Padding(
               padding: getPadding(left: 16, right: 16),
               child: Align(
@@ -588,46 +581,41 @@ class _RequestScreenState extends State<RequestScreen> {
               padding: getPadding(left: 16, right: 16, bottom: 16),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("Date".tr,
+                  child: Text("Date & Time".tr,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtOutfitBold20)),
             ),
-            Padding(
-                padding: getPadding(left: 16, bottom: 16, right: 16),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TimePickerSpinnerPopUp(
-                      mode: CupertinoDatePickerMode.date,
-                      initTime: DateTime.now(),
-                      onChange: (dateTime) {
-                        setState(() {
-                          _dates_absent = [dateTime];
-                        });
-                      },
-                    ))),
-            Padding(
-              padding: getPadding(left: 16, right: 16, bottom: 16),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text("Time".tr,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                      style: AppStyle.txtOutfitBold20)),
+            Row(
+              children: [
+                Padding(
+                    padding: getPadding(left: 16, right: 16),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TimePickerSpinnerPopUp(
+                          mode: CupertinoDatePickerMode.date,
+                          initTime: DateTime.now(),
+                          onChange: (dateTime) {
+                            setState(() {
+                              _dates_absent = [dateTime];
+                            });
+                          },
+                        ))),
+                Padding(
+                    padding: getPadding(left: 16, top: 0, right: 16),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TimePickerSpinnerPopUp(
+                          mode: CupertinoDatePickerMode.time,
+                          initTime: DateTime.now(),
+                          onChange: (dateTime) {
+                            setState(() {
+                              _time_absent = dateTime;
+                            });
+                          },
+                        ))),
+              ],
             ),
-            Padding(
-                padding: getPadding(left: 16, top: 0, right: 16),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TimePickerSpinnerPopUp(
-                      mode: CupertinoDatePickerMode.time,
-                      initTime: DateTime.now(),
-                      onChange: (dateTime) {
-                        setState(() {
-                          _time_absent = dateTime;
-                        });
-                      },
-                    ))),
             Padding(
               padding: getPadding(left: 16, right: 16),
               child: Align(
