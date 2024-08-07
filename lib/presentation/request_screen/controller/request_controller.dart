@@ -1,6 +1,5 @@
 import 'package:fastteam_app/core/app_export.dart';
 import 'package:fastteam_app/core/network/base_url.dart';
-import 'package:fastteam_app/presentation/book_a_wash_screen/models/book_a_wash_model.dart';
 import 'package:fastteam_app/presentation/request_screen/models/request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -173,7 +172,7 @@ class RequestController extends GetxController {
       var token = prefs.getString('token');
 
       var result = await insertLeaveSubmission(requestBody, img, token);
-      
+
       if (result.statusCode == 200) {
         return result.statusCode;
       } else {

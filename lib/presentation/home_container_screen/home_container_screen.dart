@@ -2,14 +2,11 @@ import 'package:fastteam_app/presentation/employee_screen/employee_screen.dart';
 import 'package:fastteam_app/presentation/inbox_screen/inbox_screen.dart';
 import 'package:fastteam_app/presentation/request_screen/request_screen.dart';
 import 'package:flutter/services.dart';
-
 import '../../widgets/app_bar/custum_bottom_bar_controller.dart';
 import '../../widgets/custom_button.dart';
-import '../booking_upcoming_screen/booking_upcoming_screen.dart';
 import '../profile_screen/profile_screen.dart';
 import 'package:fastteam_app/core/app_export.dart';
 import 'package:fastteam_app/presentation/home_page/home_page.dart';
-import 'package:fastteam_app/presentation/location_access_page/location_access_page.dart';
 import 'package:fastteam_app/widgets/custom_bottom_bar.dart';
 import 'package:flutter/material.dart';
 
