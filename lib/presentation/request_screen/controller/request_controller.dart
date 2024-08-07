@@ -1,6 +1,5 @@
 import 'package:fastteam_app/core/app_export.dart';
 import 'package:fastteam_app/core/network/base_url.dart';
-import 'package:fastteam_app/presentation/book_a_wash_screen/models/book_a_wash_model.dart';
 import 'package:fastteam_app/presentation/request_screen/models/request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -122,7 +121,7 @@ class RequestController extends GetxController {
     }
   }
 
-  submitOvertime(context,date, start_time, end_time, reason) async {
+  submitOvertime(context, date, start_time, end_time, reason) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var userEmployeeId = prefs.getInt('user-id_user');
@@ -173,10 +172,9 @@ class RequestController extends GetxController {
       var token = prefs.getString('token');
 
       var result = await insertLeaveSubmission(requestBody, img, token);
-      print(result.statusCode == 200);
+
       if (result.statusCode == 200) {
-        
-      return result.statusCode;
+        return result.statusCode;
       } else {
         showSnackBar(context, 'Failed to submit Leave: ${result.toString()}');
         return null;

@@ -27,8 +27,6 @@ import 'package:fastteam_app/presentation/sertificate_screen/binding/sertificate
 import 'package:fastteam_app/presentation/sertificate_screen/sertificate_screen.dart';
 import 'package:fastteam_app/presentation/splash_screen/splash_screen.dart';
 import 'package:fastteam_app/presentation/splash_screen/binding/splash_binding.dart';
-import 'package:fastteam_app/presentation/onboarding_1_screen/onboarding_1_screen.dart';
-import 'package:fastteam_app/presentation/onboarding_1_screen/binding/onboarding_1_binding.dart';
 import 'package:fastteam_app/presentation/log_in_screen/log_in_screen.dart';
 import 'package:fastteam_app/presentation/log_in_screen/binding/log_in_binding.dart';
 import 'package:fastteam_app/presentation/sign_up_screen/sign_up_screen.dart';
@@ -51,45 +49,12 @@ import 'package:fastteam_app/presentation/top_rated_screen/top_rated_screen.dart
 import 'package:fastteam_app/presentation/top_rated_screen/binding/top_rated_binding.dart';
 import 'package:fastteam_app/presentation/filter_result_screen/filter_result_screen.dart';
 import 'package:fastteam_app/presentation/filter_result_screen/binding/filter_result_binding.dart';
-import 'package:fastteam_app/presentation/service_detail_screen/service_detail_screen.dart';
-import 'package:fastteam_app/presentation/service_detail_screen/binding/service_detail_binding.dart';
-import 'package:fastteam_app/presentation/add_car_details_one_screen/add_car_details_one_screen.dart';
-import 'package:fastteam_app/presentation/add_car_details_one_screen/binding/add_car_details_one_binding.dart';
-import 'package:fastteam_app/presentation/book_a_wash_screen/book_a_wash_screen.dart';
-import 'package:fastteam_app/presentation/book_a_wash_screen/binding/book_a_wash_binding.dart';
-import 'package:fastteam_app/presentation/payment_method_one_screen/payment_method_one_screen.dart';
-import 'package:fastteam_app/presentation/payment_method_one_screen/binding/payment_method_one_binding.dart';
-import 'package:fastteam_app/presentation/reviews_screen/reviews_screen.dart';
-import 'package:fastteam_app/presentation/reviews_screen/binding/reviews_binding.dart';
-import 'package:fastteam_app/presentation/customer_reviews_screen/customer_reviews_screen.dart';
-import 'package:fastteam_app/presentation/customer_reviews_screen/binding/customer_reviews_binding.dart';
-import 'package:fastteam_app/presentation/location_map_screen/location_map_screen.dart';
-import 'package:fastteam_app/presentation/location_map_screen/binding/location_map_binding.dart';
-import 'package:fastteam_app/presentation/location_with_select_screen/location_with_select_screen.dart';
-import 'package:fastteam_app/presentation/location_with_select_screen/binding/location_with_select_binding.dart';
-import 'package:fastteam_app/presentation/location_with_select_one_screen/location_with_select_one_screen.dart';
-import 'package:fastteam_app/presentation/location_with_select_one_screen/binding/location_with_select_one_binding.dart';
-import 'package:fastteam_app/presentation/booking_upcoming_screen/booking_upcoming_screen.dart';
-import 'package:fastteam_app/presentation/booking_upcoming_screen/binding/booking_upcoming_binding.dart';
-import 'package:fastteam_app/presentation/our_reviews_screen/our_reviews_screen.dart';
-import 'package:fastteam_app/presentation/our_reviews_screen/binding/our_reviews_binding.dart';
-import 'package:fastteam_app/presentation/our_reviews_success_screen/our_reviews_success_screen.dart';
-import 'package:fastteam_app/presentation/our_reviews_success_screen/binding/our_reviews_success_binding.dart';
 import 'package:fastteam_app/presentation/profile_screen/profile_screen.dart';
 import 'package:fastteam_app/presentation/profile_screen/binding/profile_binding.dart';
 import 'package:fastteam_app/presentation/profile_details_screen/profile_details_screen.dart';
 import 'package:fastteam_app/presentation/profile_details_screen/binding/profile_details_binding.dart';
 import 'package:fastteam_app/presentation/edit_profile_screen/edit_profile_screen.dart';
 import 'package:fastteam_app/presentation/edit_profile_screen/binding/edit_profile_binding.dart';
-import 'package:fastteam_app/presentation/add_payment_method_screen/add_payment_method_screen.dart';
-import 'package:fastteam_app/presentation/add_payment_method_screen/binding/add_payment_method_binding.dart';
-import 'package:fastteam_app/presentation/add_payment_method_active_screen/add_payment_method_active_screen.dart';
-import 'package:fastteam_app/presentation/add_payment_method_active_screen/binding/add_payment_method_active_binding.dart';
-import 'package:fastteam_app/presentation/payment_method_screen/payment_method_screen.dart';
-import 'package:fastteam_app/presentation/payment_method_screen/binding/payment_method_binding.dart';
-import 'package:fastteam_app/presentation/my_vehicle_screen/my_vehicle_screen.dart';
-import 'package:fastteam_app/presentation/my_vehicle_screen/binding/my_vehicle_binding.dart';
-import 'package:fastteam_app/presentation/notifications_screen/notifications_screen.dart';
 import 'package:fastteam_app/presentation/notifications_screen/binding/notifications_binding.dart';
 import 'package:fastteam_app/presentation/privacy_policy_screen/privacy_policy_screen.dart';
 import 'package:fastteam_app/presentation/privacy_policy_screen/binding/privacy_policy_binding.dart';
@@ -249,13 +214,6 @@ class AppRoutes {
       ],
     ),
     GetPage(
-      name: onboarding1Screen,
-      page: () => Onboarding1Screen(),
-      bindings: [
-        Onboarding1Binding(),
-      ],
-    ),
-    GetPage(
       name: logInScreen,
       page: () => LogInScreen(),
       bindings: [
@@ -297,7 +255,6 @@ class AppRoutes {
         ResetPasswordSuccessBinding(),
       ],
     ),
-
     GetPage(
       name: homeContainerScreen,
       page: () => HomeContainerScreen(),
@@ -334,99 +291,6 @@ class AppRoutes {
       ],
     ),
     GetPage(
-      name: serviceDetailScreen,
-      page: () => ServiceDetailScreen(),
-      bindings: [
-        ServiceDetailBinding(),
-      ],
-    ),
-    GetPage(
-      name: addCarDetailsOneScreen,
-      page: () => AddCarDetailsOneScreen(),
-      bindings: [
-        AddCarDetailsOneBinding(),
-      ],
-    ),
-
-    GetPage(
-      name: bookAWashScreen,
-      page: () => BookAWashScreen(),
-      bindings: [
-        BookAWashBinding(),
-      ],
-    ),
-    GetPage(
-      name: paymentMethodOneScreen,
-      page: () => PaymentMethodOneScreen(),
-      bindings: [
-        PaymentMethodOneBinding(),
-      ],
-    ),
-    GetPage(
-      name: reviewsScreen,
-      page: () => ReviewsScreen(),
-      bindings: [
-        ReviewsBinding(),
-      ],
-    ),
-    GetPage(
-      name: customerReviewsScreen,
-      page: () => CustomerReviewsScreen(),
-      bindings: [
-        CustomerReviewsBinding(),
-      ],
-    ),
-    GetPage(
-      name: locationMapScreen,
-      page: () => LocationMapScreen(),
-      bindings: [
-        LocationMapBinding(),
-      ],
-    ),
-    GetPage(
-      name: locationWithSelectScreen,
-      page: () => LocationWithSelectScreen(),
-      bindings: [
-        LocationWithSelectBinding(),
-      ],
-    ),
-    GetPage(
-      name: locationWithSelectOneScreen,
-      page: () => LocationWithSelectOneScreen(),
-      bindings: [
-        LocationWithSelectOneBinding(),
-      ],
-    ),
-    GetPage(
-      name: bookingUpcomingScreen,
-      page: () => BookingUpcomingScreen(),
-      bindings: [
-        BookingUpcomingBinding(),
-      ],
-    ),
-    // GetPage(
-    //   name: bookingDetailsScreen,
-    //   page: () => BookingDetailsScreen(),
-    //   bindings: [
-    //     BookingDetailsBinding(),
-    //   ],
-    // ),
-
-    GetPage(
-      name: ourReviewsScreen,
-      page: () => OurReviewsScreen(),
-      bindings: [
-        OurReviewsBinding(),
-      ],
-    ),
-    GetPage(
-      name: ourReviewsSuccessScreen,
-      page: () => OurReviewsSuccessScreen(),
-      bindings: [
-        OurReviewsSuccessBinding(),
-      ],
-    ),
-    GetPage(
       name: profileScreen,
       page: () => ProfileScreen(),
       bindings: [
@@ -448,41 +312,6 @@ class AppRoutes {
       ],
     ),
     GetPage(
-      name: addPaymentMethodScreen,
-      page: () => AddPaymentMethodScreen(),
-      bindings: [
-        AddPaymentMethodBinding(),
-      ],
-    ),
-    GetPage(
-      name: addPaymentMethodActiveScreen,
-      page: () => AddPaymentMethodActiveScreen(),
-      bindings: [
-        AddPaymentMethodActiveBinding(),
-      ],
-    ),
-    GetPage(
-      name: paymentMethodScreen,
-      page: () => PaymentMethodScreen(),
-      bindings: [
-        PaymentMethodBinding(),
-      ],
-    ),
-    GetPage(
-      name: myVehicleScreen,
-      page: () => MyVehicleScreen(),
-      bindings: [
-        MyVehicleBinding(),
-      ],
-    ),
-    GetPage(
-      name: notificationsScreen,
-      page: () => NotificationsScreen(),
-      bindings: [
-        NotificationsBinding(),
-      ],
-    ),
-    GetPage(
       name: privacyPolicyScreen,
       page: () => PrivacyPolicyScreen(),
       bindings: [
@@ -496,7 +325,6 @@ class AppRoutes {
         SplashBinding(),
       ],
     ),
-
     GetPage(
       name: attendenceLog,
       page: () => AttendenceLogScreen(),
@@ -504,7 +332,6 @@ class AppRoutes {
         AttendenceLogBinding(),
       ],
     ),
-
     GetPage(
       name: map,
       page: () => MapScreen(),
@@ -512,7 +339,6 @@ class AppRoutes {
         MapBinding(),
       ],
     ),
-
     GetPage(
       name: camera,
       page: () => CameraScreen(),
@@ -520,7 +346,6 @@ class AppRoutes {
         CameraBinding(),
       ],
     ),
-
     GetPage(
       name: attendenceDetail,
       page: () => AttendenceDetailScreen(),
@@ -542,7 +367,6 @@ class AppRoutes {
         PayslipBinding(),
       ],
     ),
-
     GetPage(
       name: milestone,
       page: () => MilestoneScreen(),
@@ -550,7 +374,6 @@ class AppRoutes {
         MilestoneBinding(),
       ],
     ),
-
     GetPage(
       name: attendenceApproval,
       page: () => AttendenceScreen(),
@@ -558,7 +381,6 @@ class AppRoutes {
         AttendenceBinding(),
       ],
     ),
-
     GetPage(
       name: leaveApproval,
       page: () => LeaveScreen(),
@@ -566,7 +388,6 @@ class AppRoutes {
         LeaveBinding(),
       ],
     ),
-
     GetPage(
       name: overtimeApproval,
       page: () => OvertimeScreen(),
@@ -574,7 +395,6 @@ class AppRoutes {
         OvertimeBinding(),
       ],
     ),
-
     GetPage(
       name: listDivision,
       page: () => ListDivisionScreen(),
@@ -582,7 +402,6 @@ class AppRoutes {
         ListDivisionBinding(),
       ],
     ),
-
     GetPage(
       name: payrollInfo,
       page: () => PayrollInfoScreen(),
@@ -590,7 +409,6 @@ class AppRoutes {
         PayrollInfoBinding(),
       ],
     ),
-    
     GetPage(
       name: sertificate,
       page: () => SertificateScreen(),

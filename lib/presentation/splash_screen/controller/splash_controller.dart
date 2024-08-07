@@ -21,6 +21,7 @@ class SplashController extends GetxController {
       print("is intro ====== ${isIntro}");
       print("isSignIn ====== ${isSignIn}");
       if (isSignIn) {
+        
         Get.toNamed(AppRoutes.logInScreen);
       } else {
       Get.toNamed(AppRoutes.homeContainerScreen);

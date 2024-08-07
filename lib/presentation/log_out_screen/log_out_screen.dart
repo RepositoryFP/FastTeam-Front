@@ -77,10 +77,10 @@ class _LogOutScreenState extends State<LogOutScreen> {
                           ),
                         ),
                         Expanded(
-
                           child: CustomButton(
                             onTap: (){
                               PrefUtils.setIsSignIn(true);
+                              PrefUtils.clearPreferencesData();
                               controller.getIndex(0);
                               Get.offAllNamed(AppRoutes.logInScreen);
                             },

@@ -36,7 +36,8 @@ class _FotgotPasswordScreenState extends State<FotgotPasswordScreen> {
   bool isLoading = false;
 
   requestResetPassword() async {
-    var result = await controller.sendResetPassword(controller.emailController.text);
+    var result =
+        await controller.sendResetPassword(controller.emailController.text);
     print(result);
     if (result['status'] == 200) {
       showCustomDialog(
@@ -116,14 +117,14 @@ class _FotgotPasswordScreenState extends State<FotgotPasswordScreen> {
             appBar: CustomAppBar(
                 height: getVerticalSize(81),
                 leadingWidth: 40,
-                leading: AppbarImage(
-                    height: getSize(24),
-                    width: getSize(24),
-                    svgPath: ImageConstant.imgArrowleft,
-                    margin: getMargin(left: 16, top: 29, bottom: 28),
-                    onTap: () {
-                      onTapArrowleft();
-                    }),
+                // leading: AppbarImage(
+                //     height: getSize(24),
+                //     width: getSize(24),
+                //     svgPath: ImageConstant.imgArrowleft,
+                //     margin: getMargin(left: 16, top: 29, bottom: 28),
+                //     onTap: () {
+                //       onTapArrowleft();
+                //     }),
                 centerTitle: true,
                 title: AppbarTitle(text: "lbl_forgot_password".tr),
                 styleType: Style.bgFillWhiteA700),
@@ -176,7 +177,16 @@ class _FotgotPasswordScreenState extends State<FotgotPasswordScreen> {
 
                                     validateFromInput();
                                   }
-                                })
+                                }),
+                            CustomButton(
+                                variant: ButtonVariant.FillGray6001e,
+                                height: getVerticalSize(54),
+                                text: "Back".tr,
+                                fontStyle: ButtonFontStyle.Body,
+                                margin: getMargin(top: 28, bottom: 5),
+                                onTap: () {
+                                  onTapArrowleft();
+                                }),
                           ]))),
             )),
       ),

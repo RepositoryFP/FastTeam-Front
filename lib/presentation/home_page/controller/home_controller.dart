@@ -237,9 +237,10 @@ class HomeController extends GetxController {
       } else {
         response = await retrieveUserAbsenOnly(token);
       }
-        valueDivisi.value = idDivisi;
+      valueDivisi.value = idDivisi;
 
       // Check the status code of the response
+      
       if (response.statusCode == 200) {
         // Parse JSON from the response body
         var result = jsonDecode(response.body);

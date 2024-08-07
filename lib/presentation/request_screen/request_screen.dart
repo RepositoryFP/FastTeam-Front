@@ -30,18 +30,18 @@ class _RequestScreenState extends State<RequestScreen> {
   EmployeeController controller = Get.put(EmployeeController());
   RequestController requestController = Get.put(RequestController());
 
-  List<DateTime?> _dates = [];
-  List<DateTime?> _dates_absent = [];
+  List<DateTime?> _dates = [DateTime.now()];
+  List<DateTime?> _dates_absent = [DateTime.now()];
   DateTime _time_absent = DateTime.now();
   TextEditingController urlController = TextEditingController();
 
   File? imageFile;
   String leaveType = '1';
-  List<DateTime?> _dates_leave = [];
+  List<DateTime?> _dates_leave = [DateTime.now()];
   DateTime _time_leave = DateTime.now();
   TextEditingController reasonController = TextEditingController();
 
-  List<DateTime?> _dates_overtime = [];
+  List<DateTime?> _dates_overtime = [DateTime.now()];
   DateTime _start_overtime = DateTime.now();
   DateTime _end_overtime = DateTime.now();
   TextEditingController overtimeController = TextEditingController();
@@ -59,12 +59,27 @@ class _RequestScreenState extends State<RequestScreen> {
   }
 
   Future<void> submitAbsent() async {
+    // Validate input fields
+    if (_time_absent == null ||
+        _dates_absent.isEmpty ||
+        urlController.text.isEmpty) {
+      requestController.showSnackBar(
+          context, 'Please fill in all the required fields');
+      return;
+    }
+
+    loadingDialog(context);
+
     var jenis = absenType == 'Clock In' ? 'in' : 'out';
     var time = DateFormat('HH:mm:ss').format(_time_absent);
     var date = DateFormat('yyyy-MM-dd').format(_dates_absent[0]!);
     var url = urlController.text;
 
-    var result = await requestController.submitAbsent(context,date, time, jenis, url);
+    var result =
+        await requestController.submitAbsent(context, date, time, jenis, url);
+
+    Navigator.of(context).pop();
+
     if (result['status'] == 200 || result['status'] == 201) {
       setState(() {
         urlController.text = '';
@@ -72,16 +87,34 @@ class _RequestScreenState extends State<RequestScreen> {
       showCustomDialog(context,
           'Request has been submitted, please check your inbox periodically for confirmation updates');
     } else {
-      requestController.showSnackBar(context,'Server having trouble');
+      requestController.showSnackBar(context, 'Server having trouble');
     }
   }
+
   Future<void> submitOvertime() async {
+    // Validate input fields
+    if (_start_overtime == null ||
+        _end_overtime == null ||
+        _dates_overtime.isEmpty ||
+        overtimeController.text.isEmpty) {
+      requestController.showSnackBar(
+          context, 'Please fill in all the required fields');
+      return;
+    }
+
+    loadingDialog(context);
+
     var start_time = DateFormat('HH:mm').format(_start_overtime);
     var end_time = DateFormat('HH:mm').format(_end_overtime);
     var date = DateFormat('yyyy-MM-dd').format(_dates_overtime[0]!);
     var reason = overtimeController.text;
 
-    var result = await requestController.submitOvertime(context,date, start_time, end_time, reason);
+    var result = await requestController.submitOvertime(
+        context, date, start_time, end_time, reason);
+
+    // Dismiss the loading dialog
+    Navigator.of(context).pop();
+
     if (result['status'] == 200 || result['status'] == 201) {
       setState(() {
         overtimeController.text = '';
@@ -89,21 +122,35 @@ class _RequestScreenState extends State<RequestScreen> {
       showCustomDialog(context,
           'Request has been submitted, please check your inbox periodically for confirmation updates');
     } else {
-      requestController.showSnackBar(context,'Server having trouble');
+      requestController.showSnackBar(context, 'Server having trouble');
     }
   }
 
   Future<void> submitLeave() async {
+    // Validate input fields
+    if (_time_leave == null ||
+        _dates_leave.isEmpty ||
+        reasonController.text.isEmpty ||
+        imageFile == null) {
+      requestController.showSnackBar(
+          context, 'Please fill in all the required fields');
+      return;
+    }
+
+    loadingDialog(context);
+
     var jenis = leaveType;
     var time = DateFormat('HH:mm:ss').format(_time_leave);
     var date = DateFormat('yyyy-MM-dd').format(_dates_leave[0]!);
     var reason = reasonController.text;
     var img = imageFile;
 
-    var result =
-        await requestController.submitLeave(context,date, time, jenis, reason, img);
-    
-    if (result == 200 || ProcessResult == 201) {
+    var result = await requestController.submitLeave(
+        context, date, time, jenis, reason, img);
+
+    Navigator.of(context).pop();
+
+    if (result == 200 || result == 201) {
       setState(() {
         reasonController.text = '';
         imageFile = null;
@@ -111,7 +158,7 @@ class _RequestScreenState extends State<RequestScreen> {
       showCustomDialog(context,
           'Request has been submitted, please check your inbox periodically for confirmation updates');
     } else {
-      requestController.showSnackBar(context,'Server having trouble');
+      requestController.showSnackBar(context, 'Server having trouble');
     }
   }
 
@@ -125,8 +172,6 @@ class _RequestScreenState extends State<RequestScreen> {
       });
     }
   }
-
-  
 
   void showCustomDialog(BuildContext context, String message) {
     showDialog(
@@ -143,6 +188,28 @@ class _RequestScreenState extends State<RequestScreen> {
               child: Text('OK'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void loadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 15),
+                Text('Submitting your request...')
+              ],
+            ),
+          ),
         );
       },
     );
@@ -224,57 +291,41 @@ class _RequestScreenState extends State<RequestScreen> {
               padding: getPadding(left: 16, right: 16, bottom: 16),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("msg_select_date_and".tr,
+                  child: Text("Date".tr,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtOutfitBold20)),
             ),
-            CalendarDatePicker2(
-              config: CalendarDatePicker2Config(
-                  weekdayLabelTextStyle: AppStyle.txtSFProTextSemibold13,
-                  weekdayLabels: day,
-                  controlsTextStyle: AppStyle.txtSFProTextSemibold17,
-                  customModePickerIcon: CustomImageView(
-                      svgPath: ImageConstant.imglastMonth,
-                      height: getVerticalSize(11),
-                      width: getHorizontalSize(6),
-                      margin: getMargin(left: 8, top: 4, bottom: 4)),
-                  lastMonthIcon: CustomImageView(
-                      svgPath: ImageConstant.imgPreviousMonth,
-                      height: getVerticalSize(11),
-                      width: getHorizontalSize(6),
-                      margin: getMargin(left: 8, top: 4, bottom: 4)),
-                  nextMonthIcon: CustomImageView(
-                      svgPath: ImageConstant.imglastMonth,
-                      height: getVerticalSize(11),
-                      width: getHorizontalSize(6),
-                      margin: getMargin(left: 8, top: 4, bottom: 4)),
-                  dayTextStyle: TextStyle(
-                    color: ColorConstant.black900,
-                    fontSize: getFontSize(
-                      20,
-                    ),
-                    fontFamily: 'SF Pro Text',
-                    fontWeight: FontWeight.w400,
-                  ),
-                  selectedDayHighlightColor: ColorConstant.indigo800,
-                  selectedDayTextStyle: AppStyle.txtSFProDisplaySemibold20
-                      .copyWith(letterSpacing: getHorizontalSize(0.38))),
-              value: _dates,
-              onValueChanged: (dates) => _dates_overtime = dates,
-            ),
             Padding(
-                padding: getPadding(left: 16, top: 0, right: 16),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                          padding: getPadding(top: 6, bottom: 6),
-                          child: Text("Time Start".tr,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.left,
-                              style: AppStyle.txtSFProTextSemibold17)),
-                      TimePickerSpinnerPopUp(
+                padding: getPadding(left: 16, bottom: 16, right: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TimePickerSpinnerPopUp(
+                    mode: CupertinoDatePickerMode.date,
+                    initTime: DateTime.now(),
+                    onChange: (dateTime) {
+                      setState(() {
+                        _dates_overtime = [dateTime];
+                      });
+                    },
+                  ),
+                )),
+            Padding(
+              padding: getPadding(left: 16, right: 16, bottom: 16),
+              child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text("Time Start  -  Time End".tr,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left,
+                      style: AppStyle.txtOutfitBold20)),
+            ),
+            Row(
+              children: [
+                Padding(
+                    padding: getPadding(left: 16, right: 16),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: TimePickerSpinnerPopUp(
                         mode: CupertinoDatePickerMode.time,
                         initTime: DateTime.now(),
                         onChange: (dateTime) {
@@ -282,29 +333,23 @@ class _RequestScreenState extends State<RequestScreen> {
                             _start_overtime = dateTime;
                           });
                         },
-                      )
-                    ])),
-            Padding(
-                padding: getPadding(left: 16, top: 16, right: 16),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                          padding: getPadding(top: 6, bottom: 6),
-                          child: Text("Time End".tr,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.left,
-                              style: AppStyle.txtSFProTextSemibold17)),
-                      TimePickerSpinnerPopUp(
-                        mode: CupertinoDatePickerMode.time,
-                        initTime: DateTime.now(),
-                        onChange: (dateTime) {
-                          setState(() {
-                            _end_overtime = dateTime;
-                          });
-                        },
-                      )
-                    ])),
+                      ),
+                    )),
+                Padding(
+                    padding: getPadding(left: 16, right: 16),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TimePickerSpinnerPopUp(
+                          mode: CupertinoDatePickerMode.time,
+                          initTime: DateTime.now(),
+                          onChange: (dateTime) {
+                            setState(() {
+                              _end_overtime = dateTime;
+                            });
+                          },
+                        ))),
+              ],
+            ),
             Padding(
               padding: getPadding(left: 16, right: 16),
               child: Align(
@@ -320,9 +365,7 @@ class _RequestScreenState extends State<RequestScreen> {
               padding: getPadding(left: 16, right: 16),
               child: CustomFloatingEditText(
                   focusNode: FocusNode(),
-
-                  controller:
-                      overtimeController,
+                  controller: overtimeController,
                   labelText: "Reason".tr,
                   hintText: "Enter reason".tr,
                   margin: getMargin(top: 16),
@@ -361,66 +404,44 @@ class _RequestScreenState extends State<RequestScreen> {
               padding: getPadding(left: 16, right: 16, bottom: 16),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("msg_select_date_and".tr,
+                  child: Text("Date & Time".tr,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtOutfitBold20)),
             ),
-            CalendarDatePicker2(
-              config: CalendarDatePicker2Config(
-                  weekdayLabelTextStyle: AppStyle.txtSFProTextSemibold13,
-                  weekdayLabels: day,
-                  controlsTextStyle: AppStyle.txtSFProTextSemibold17,
-                  customModePickerIcon: CustomImageView(
-                      svgPath: ImageConstant.imglastMonth,
-                      height: getVerticalSize(11),
-                      width: getHorizontalSize(6),
-                      margin: getMargin(left: 8, top: 4, bottom: 4)),
-                  lastMonthIcon: CustomImageView(
-                      svgPath: ImageConstant.imgPreviousMonth,
-                      height: getVerticalSize(11),
-                      width: getHorizontalSize(6),
-                      margin: getMargin(left: 8, top: 4, bottom: 4)),
-                  nextMonthIcon: CustomImageView(
-                      svgPath: ImageConstant.imglastMonth,
-                      height: getVerticalSize(11),
-                      width: getHorizontalSize(6),
-                      margin: getMargin(left: 8, top: 4, bottom: 4)),
-                  dayTextStyle: TextStyle(
-                    color: ColorConstant.black900,
-                    fontSize: getFontSize(
-                      20,
-                    ),
-                    fontFamily: 'SF Pro Text',
-                    fontWeight: FontWeight.w400,
-                  ),
-                  selectedDayHighlightColor: ColorConstant.indigo800,
-                  selectedDayTextStyle: AppStyle.txtSFProDisplaySemibold20
-                      .copyWith(letterSpacing: getHorizontalSize(0.38))),
-              value: _dates,
-              onValueChanged: (dates) => _dates_leave = dates,
-            ),
             Padding(
-                padding: getPadding(left: 16, top: 0, right: 16),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                          padding: getPadding(top: 6, bottom: 6),
-                          child: Text("lbl_time".tr,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.left,
-                              style: AppStyle.txtSFProTextSemibold17)),
-                      TimePickerSpinnerPopUp(
-                        mode: CupertinoDatePickerMode.time,
-                        initTime: DateTime.now(),
-                        onChange: (dateTime) {
-                          setState(() {
-                            _time_leave = dateTime;
-                          });
-                        },
-                      )
-                    ])),
+              padding: getPadding(bottom: 8),
+              child: Row(
+                children: [
+                  Padding(
+                      padding: getPadding(left: 16, right: 16),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: TimePickerSpinnerPopUp(
+                            mode: CupertinoDatePickerMode.date,
+                            initTime: DateTime.now(),
+                            onChange: (dateTime) {
+                              setState(() {
+                                _dates_leave = [dateTime];
+                              });
+                            },
+                          ))),
+                  Padding(
+                      padding: getPadding(left: 16, right: 16),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: TimePickerSpinnerPopUp(
+                            mode: CupertinoDatePickerMode.time,
+                            initTime: DateTime.now(),
+                            onChange: (dateTime) {
+                              setState(() {
+                                _time_leave = dateTime;
+                              });
+                            },
+                          ))),
+                ],
+              ),
+            ),
             Padding(
               padding: getPadding(left: 16, right: 16),
               child: Align(
@@ -560,68 +581,41 @@ class _RequestScreenState extends State<RequestScreen> {
               padding: getPadding(left: 16, right: 16, bottom: 16),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("msg_select_date_and".tr,
+                  child: Text("Date & Time".tr,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtOutfitBold20)),
             ),
-            CalendarDatePicker2(
-              config: CalendarDatePicker2Config(
-                  weekdayLabelTextStyle: AppStyle.txtSFProTextSemibold13,
-                  weekdayLabels: day,
-                  controlsTextStyle: AppStyle.txtSFProTextSemibold17,
-                  customModePickerIcon: CustomImageView(
-                      svgPath: ImageConstant.imglastMonth,
-                      height: getVerticalSize(11),
-                      width: getHorizontalSize(6),
-                      margin: getMargin(left: 8, top: 4, bottom: 4)),
-                  lastMonthIcon: CustomImageView(
-                      svgPath: ImageConstant.imgPreviousMonth,
-                      height: getVerticalSize(11),
-                      width: getHorizontalSize(6),
-                      margin: getMargin(left: 8, top: 4, bottom: 4)),
-                  nextMonthIcon: CustomImageView(
-                      svgPath: ImageConstant.imglastMonth,
-                      height: getVerticalSize(11),
-                      width: getHorizontalSize(6),
-                      margin: getMargin(left: 8, top: 4, bottom: 4)),
-                  dayTextStyle: TextStyle(
-                    color: ColorConstant.black900,
-                    fontSize: getFontSize(
-                      20,
-                    ),
-                    fontFamily: 'SF Pro Text',
-                    fontWeight: FontWeight.w400,
-                  ),
-                  selectedDayHighlightColor: ColorConstant.indigo800,
-                  selectedDayTextStyle: AppStyle.txtSFProDisplaySemibold20
-                      .copyWith(letterSpacing: getHorizontalSize(0.38))),
-              value: _dates,
-              onValueChanged: (dates) {
-                _dates_absent = dates;
-              },
+            Row(
+              children: [
+                Padding(
+                    padding: getPadding(left: 16, right: 16),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TimePickerSpinnerPopUp(
+                          mode: CupertinoDatePickerMode.date,
+                          initTime: DateTime.now(),
+                          onChange: (dateTime) {
+                            setState(() {
+                              _dates_absent = [dateTime];
+                            });
+                          },
+                        ))),
+                Padding(
+                    padding: getPadding(left: 16, top: 0, right: 16),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: TimePickerSpinnerPopUp(
+                          mode: CupertinoDatePickerMode.time,
+                          initTime: DateTime.now(),
+                          onChange: (dateTime) {
+                            setState(() {
+                              _time_absent = dateTime;
+                            });
+                          },
+                        ))),
+              ],
             ),
-            Padding(
-                padding: getPadding(left: 16, top: 0, right: 16),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                          padding: getPadding(top: 6, bottom: 6),
-                          child: Text("lbl_time".tr,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.left,
-                              style: AppStyle.txtSFProTextSemibold17)),
-                      TimePickerSpinnerPopUp(
-                        mode: CupertinoDatePickerMode.time,
-                        initTime: DateTime.now(),
-                        onChange: (dateTime) {
-                          setState(() {
-                            _time_absent = dateTime;
-                          });
-                        },
-                      )
-                    ])),
             Padding(
               padding: getPadding(left: 16, right: 16),
               child: Align(
@@ -686,26 +680,52 @@ class _RequestScreenState extends State<RequestScreen> {
       children: [
         Row(
           children: [
-            Radio(
-              value: 'Clock In',
-              groupValue: absenType,
-              onChanged: (value) {
-                setState(() {
-                  absenType = value.toString(); // Update nilai absenType
-                });
-              },
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    absenType = 'Clock In';
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                      value: 'Clock In',
+                      groupValue: absenType,
+                      onChanged: (value) {
+                        setState(() {
+                          absenType = value.toString();
+                        });
+                      },
+                    ),
+                    Text('Clock In', style: AppStyle.txtSFProTextRegular16),
+                  ],
+                ),
+              ),
             ),
-            Text('Clock In', style: AppStyle.txtSFProTextRegular16),
-            Radio(
-              value: 'Clock Out',
-              groupValue: absenType,
-              onChanged: (value) {
-                setState(() {
-                  absenType = value.toString(); // Update nilai absenType
-                });
-              },
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    absenType = 'Clock Out';
+                  });
+                },
+                child: Row(
+                  children: [
+                    Radio(
+                      value: 'Clock Out',
+                      groupValue: absenType,
+                      onChanged: (value) {
+                        setState(() {
+                          absenType = value.toString();
+                        });
+                      },
+                    ),
+                    Text('Clock Out', style: AppStyle.txtSFProTextRegular16),
+                  ],
+                ),
+              ),
             ),
-            Text('Clock Out', style: AppStyle.txtSFProTextRegular16),
           ],
         ),
       ],
@@ -718,30 +738,70 @@ class _RequestScreenState extends State<RequestScreen> {
       children: [
         Row(
           children: [
-            Radio(
-              value: '1',
-              groupValue: leaveType,
-              onChanged: (value) {
-                setState(() {});
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  leaveType = '1';
+                });
               },
+              child: Row(
+                children: [
+                  Radio(
+                    value: '1',
+                    groupValue: leaveType,
+                    onChanged: (value) {
+                      setState(() {
+                        leaveType = value.toString();
+                      });
+                    },
+                  ),
+                  Text('Leave', style: AppStyle.txtSFProTextRegular16),
+                ],
+              ),
             ),
-            Text('Leave', style: AppStyle.txtSFProTextRegular16),
-            Radio(
-              value: '2',
-              groupValue: leaveType,
-              onChanged: (value) {
-                setState(() {});
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  leaveType = '2';
+                });
               },
+              child: Row(
+                children: [
+                  Radio(
+                    value: '2',
+                    groupValue: leaveType,
+                    onChanged: (value) {
+                      setState(() {
+                        leaveType = value.toString();
+                      });
+                    },
+                  ),
+                  Text('Sick', style: AppStyle.txtSFProTextRegular16),
+                ],
+              ),
             ),
-            Text('Sick', style: AppStyle.txtSFProTextRegular16),
-            Radio(
-              value: '3',
-              groupValue: leaveType,
-              onChanged: (value) {
-                setState(() {});
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  leaveType = '3';
+                });
               },
+              child: Row(
+                children: [
+                  Radio(
+                    value: '3',
+                    groupValue: leaveType,
+                    onChanged: (value) {
+                      setState(() {
+                        leaveType = value.toString();
+                      });
+                    },
+                  ),
+                  Text('Out of Town Duty',
+                      style: AppStyle.txtSFProTextRegular16),
+                ],
+              ),
             ),
-            Text('Out of Town Dutty', style: AppStyle.txtSFProTextRegular16),
           ],
         ),
       ],
