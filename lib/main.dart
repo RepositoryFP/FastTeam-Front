@@ -3,7 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'core/app_export.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 
+// Future<void> requestTrackingPermission() async {
+//   final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+//   if (status == TrackingStatus.notDetermined) {
+//     final trackingStatus = await AppTrackingTransparency.requestTrackingAuthorization();
+//   }
+// }
+Future<void> requestTrackingPermission() async {
+  try {
+    final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+    if (status == TrackingStatus.notDetermined) {
+      final trackingStatus = await AppTrackingTransparency.requestTrackingAuthorization();
+      print('Tracking status: $trackingStatus');
+    } else {
+      print('Tracking status: $status');
+    }
+  } on PlatformException catch (e) {
+    print('Error requesting tracking permission: $e');
+  }
+}
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -12,15 +32,20 @@ void main() {
       statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
     ),
   );
-  // runApp(MyApp());
+  
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
-  ]).then((value) {
+  ]).then((value) async {
+    // Meminta izin pelacakan
+    await requestTrackingPermission();
+    
     Logger.init(kReleaseMode ? LogMode.live : LogMode.debug);
     runApp(MyApp());
   });
 }
+
+
 
 
 class MyApp extends StatelessWidget {

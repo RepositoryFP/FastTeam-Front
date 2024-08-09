@@ -1,6 +1,6 @@
 name: fastteam_app
 description: A new Flutter project.
-version: 2.4.1+1
+version: 2.4.2+0
 environment:
   sdk: ">=3.0.2 <4.0.0"
 dependencies: 
@@ -38,6 +38,7 @@ dependencies:
   timeline_tile: ^2.0.0
   material_design_icons_flutter: ^7.0.7296
   time_picker_spinner_pop_up: ^1.5.0
+  app_tracking_transparency: ^2.0.6
 
 # When depending on this package from a real application you should use:
   #   image_picker: ^x.y.z

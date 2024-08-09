@@ -43,8 +43,8 @@ import 'package:fastteam_app/presentation/home_container_screen/home_container_s
 import 'package:fastteam_app/presentation/home_container_screen/binding/home_container_binding.dart';
 import 'package:fastteam_app/presentation/popular_centers_screen/popular_centers_screen.dart';
 import 'package:fastteam_app/presentation/popular_centers_screen/binding/popular_centers_binding.dart';
-import 'package:fastteam_app/presentation/recommended_for_you_screen/recommended_for_you_screen.dart';
-import 'package:fastteam_app/presentation/recommended_for_you_screen/binding/recommended_for_you_binding.dart';
+// import 'package:fastteam_app/presentation/recommended_for_you_screen/recommended_for_you_screen.dart';
+// import 'package:fastteam_app/presentation/recommended_for_you_screen/binding/recommended_for_you_binding.dart';
 import 'package:fastteam_app/presentation/top_rated_screen/top_rated_screen.dart';
 import 'package:fastteam_app/presentation/top_rated_screen/binding/top_rated_binding.dart';
 import 'package:fastteam_app/presentation/filter_result_screen/filter_result_screen.dart';
@@ -269,13 +269,13 @@ class AppRoutes {
         PopularCentersBinding(),
       ],
     ),
-    GetPage(
-      name: recommendedForYouScreen,
-      page: () => RecommendedForYouScreen(),
-      bindings: [
-        RecommendedForYouBinding(),
-      ],
-    ),
+    // GetPage(
+    //   name: recommendedForYouScreen,
+    //   page: () => RecommendedForYouScreen(),
+    //   bindings: [
+    //     RecommendedForYouBinding(),
+    //   ],
+    // ),
     GetPage(
       name: topRatedScreen,
       page: () => TopRatedScreen(),
